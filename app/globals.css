@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Spotify-style "This is" header */
+  .spotify-header {
+    @apply bg-white text-black font-black text-7xl md:text-8xl lg:text-9xl;
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+  }
+
+  /* Clean button design */
+  .btn-primary {
+    @apply bg-black text-white px-6 py-3 font-semibold tracking-tight transition-all duration-200;
+  }
+
+  .btn-primary:hover {
+    @apply bg-gray-900;
+    transform: scale(1.02);
+  }
+
+  .btn-secondary {
+    @apply bg-transparent text-black border-2 border-black px-6 py-3 font-semibold tracking-tight transition-all duration-200;
+  }
+
+  .btn-secondary:hover {
+    @apply bg-black text-white;
+  }
+
+  /* Instagram-style gradient border */
+  .instagram-border {
+    background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af, #515bd4);
+    padding: 3px;
+  }
+
+  /* Smooth scroll indicator */
+  .scroll-indicator {
+    @apply absolute bottom-8 left-1/2 transform -translate-x-1/2;
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0) translateX(-50%);
+    }
+    40% {
+      transform: translateY(-10px) translateX(-50%);
+    }
+    60% {
+      transform: translateY(-5px) translateX(-50%);
+    }
+  }
+} 

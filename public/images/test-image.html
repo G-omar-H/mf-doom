@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Test Images</title>
+</head>
+<body>
+    <h1>Create Test Images for MF DOOM Shop</h1>
+    <p>Use this to create simple test images:</p>
+    
+    <canvas id="canvas" width="800" height="800"></canvas>
+    <br>
+    <button onclick="createImage('Green Hoodie', '#3B7F5C')">Create Green Hoodie</button>
+    <button onclick="createImage('Black Hoodie', '#000000')">Create Black Hoodie</button>
+    <button onclick="createImage('Cream Tee', '#F5F5DC')">Create Cream Tee</button>
+    <br><br>
+    <a id="download" download="product.jpg">Download Image</a>
+
+    <script>
+        function createImage(text, color) {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Fill background
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, 800, 800);
+            
+            // Add text
+            ctx.fillStyle = color === '#000000' ? '#FFFFFF' : '#000000';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('MF DOOM', 400, 350);
+            ctx.fillText(text, 400, 450);
+            
+            // Create download link
+            const link = document.getElementById('download');
+            link.href = canvas.toDataURL('image/jpeg');
+            link.download = text.toLowerCase().replace(/ /g, '-') + '.jpg';
+        }
+        
+        // Create first image by default
+        createImage('Product Image', '#8CD4E6');
+    </script>
+</body>
+</html> 
