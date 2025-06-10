@@ -9,19 +9,19 @@ import { Toaster } from 'react-hot-toast'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'MF DOOM Shop - Official Merchandise',
-  description: 'Official MF DOOM merchandise store. Shop exclusive apparel, vinyl, accessories, and more inspired by the legendary masked villain.',
+  title: 'MF DOOM Shop - Paying Tribute to the Villain',
+  description: 'Paying tribute to the villain - MF DOOM merchandise store. Shop exclusive apparel, vinyl, accessories, and more inspired by the legendary masked villain.',
   keywords: 'MF DOOM, merchandise, hip hop, vinyl, apparel, madvillain, operation doomsday',
   metadataBase: new URL('https://mfdoomshop.com'),
   openGraph: {
-    title: 'MF DOOM Shop - Official Merchandise',
+    title: 'MF DOOM Shop - Paying Tribute to the Villain',
     description: 'Shop exclusive MF DOOM merchandise curated by @thismfdoom_',
     images: ['/og-image.png'],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'MF DOOM Shop',
-    description: 'Official MF DOOM merchandise store',
+    description: 'Paying tribute to the villain - MF DOOM merchandise store',
   },
   manifest: '/manifest.json',
 }

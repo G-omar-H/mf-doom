@@ -1,7 +1,7 @@
 {
   "name": "MF DOOM Shop",
   "short_name": "DOOM Shop",
-  "description": "Official MF DOOM merchandise store",
+  "description": "Paying tribute to the villain - MF DOOM merchandise store",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",

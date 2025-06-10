@@ -136,4 +136,84 @@
   opacity: 1;
   transform: translateY(0);
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mobile-specific enhancements */
+@media (max-width: 768px) {
+  /* Enhanced touch targets */
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Better mobile typography */
+  .spotify-header {
+    @apply text-5xl;
+    line-height: 0.9;
+  }
+  
+  /* Mobile-optimized buttons */
+  .btn-primary, .btn-secondary {
+    @apply px-8 py-4 text-base;
+    border-radius: 9999px;
+  }
+  
+  /* Enhanced mobile shadows */
+  .mobile-shadow {
+    box-shadow: 0 4px 20px rgba(140, 212, 230, 0.25);
+  }
+  
+  /* Mobile card styles */
+  .product-card {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  /* Improved mobile spacing */
+  section {
+    @apply py-12;
+  }
+  
+  /* Mobile-optimized gradients */
+  .mobile-gradient {
+    background: linear-gradient(135deg, rgba(140, 212, 230, 0.1) 0%, rgba(92, 172, 196, 0.1) 100%);
+  }
+  
+  /* Mobile-only rounded corners */
+  .mobile-rounded {
+    border-radius: 1rem;
+  }
+  
+  /* Mobile-only shadow effects */
+  .mobile-shadow-xl {
+    box-shadow: 0 10px 30px rgba(140, 212, 230, 0.3);
+  }
+}
+
+/* Remove mobile styles on desktop */
+@media (min-width: 769px) {
+  .mobile-shadow {
+    box-shadow: none !important;
+  }
+  
+  .mobile-rounded {
+    border-radius: 0 !important;
+  }
+  
+  .mobile-shadow-xl {
+    box-shadow: none !important;
+  }
+}
+
+/* iOS-specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* Prevent zoom on input focus */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+  
+  /* Smooth scrolling */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
 } 

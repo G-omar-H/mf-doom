@@ -111,15 +111,15 @@ export const Header: React.FC = () => {
       <motion.div
         initial={false}
         animate={{ height: isMobileMenuOpen ? 'auto' : 0 }}
-        className="md:hidden overflow-hidden bg-white border-t border-gray-100"
+        className="md:hidden overflow-hidden bg-white border-t border-gray-100 shadow-lg"
       >
-        <div className="px-4 py-4 space-y-3">
+        <div className="px-4 py-4 space-y-1">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="block text-sm font-medium hover:text-mf-dark-blue transition-colors"
+              className="block text-base font-medium hover:text-mf-dark-blue hover:bg-mf-blue/10 transition-all duration-200 px-4 py-3 rounded-lg"
             >
               {link.label}
             </Link>
@@ -128,8 +128,9 @@ export const Header: React.FC = () => {
             href="https://instagram.com/thismfdoom_"
             target="_blank"
             rel="noopener noreferrer"
-            className="block text-sm font-medium hover:text-mf-dark-blue transition-colors"
+            className="block text-base font-medium hover:text-mf-dark-blue hover:bg-mf-blue/10 transition-all duration-200 px-4 py-3 rounded-lg flex items-center gap-2"
           >
+            <Instagram size={18} />
             @thismfdoom_ on Instagram
           </a>
         </div>

@@ -13,7 +13,7 @@ export const Footer: React.FC = () => {
           <div className="col-span-1 md:col-span-2">
             <h3 className="text-2xl font-bold mb-4">MF DOOM SHOP</h3>
             <p className="text-gray-400 mb-4 max-w-md">
-              Official merchandise celebrating the masked villain's legacy. 
+              Paying tribute to the villain - celebrating the masked legend's legacy. 
               Curated by @thismfdoom_ for true hip-hop heads.
             </p>
             <p className="text-sm text-gray-500">

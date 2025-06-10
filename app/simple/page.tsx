@@ -13,7 +13,7 @@ export default function SimplePage() {
           <span style={{ display: 'block' }}>MF DOOM</span>
         </h1>
         <p style={{ fontSize: '1.25rem', color: '#737373' }}>
-          The official merchandise collection curated by @thismfdoom_
+                      Paying tribute to the villain - collection curated by @thismfdoom_
         </p>
         <div style={{ 
           marginTop: '3rem', 
@@ -24,7 +24,7 @@ export default function SimplePage() {
           margin: '3rem auto'
         }}>
           <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>
-            Welcome to the Official MF DOOM Shop
+            Paying Tribute to the Villain
           </h2>
           <p style={{ lineHeight: '1.6' }}>
             Born from our Instagram community @thismfdoom_, this shop represents 
