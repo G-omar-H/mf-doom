@@ -15,7 +15,7 @@ export interface Product {
 export interface ProductVariant {
   id: string;
   name: string;
-  type: 'size' | 'color';
+  type: 'size' | 'color' | 'edition' | 'finish' | 'material';
   options: string[];
   priceAdjustment?: number;
 }

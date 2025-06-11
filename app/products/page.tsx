@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { ProductCard } from '@/components/products/ProductCard'
-import { mockProducts } from '@/lib/data/products'
 import { motion } from 'framer-motion'
 
 const categories = [
@@ -19,17 +18,40 @@ export default function ProductsPage() {
   const categoryParam = searchParams.get('category') || 'all'
   const [selectedCategory, setSelectedCategory] = useState(categoryParam)
   const [sortBy, setSortBy] = useState('name')
+  const [products, setProducts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // Fetch products from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true)
+        const url = selectedCategory === 'all' 
+          ? '/api/products' 
+          : `/api/products?category=${selectedCategory}`
+        
+        const response = await fetch(url)
+        if (response.ok) {
+          const data = await response.json()
+          setProducts(data)
+        } else {
+          console.error('Failed to fetch products')
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProducts()
+  }, [selectedCategory])
 
   const filteredProducts = useMemo(() => {
-    let products = [...mockProducts]
-    
-    // Filter by category
-    if (selectedCategory !== 'all') {
-      products = products.filter(p => p.category === selectedCategory)
-    }
+    let filteredList = [...products]
     
     // Sort products
-    products.sort((a, b) => {
+    filteredList.sort((a, b) => {
       switch (sortBy) {
         case 'name':
           return a.name.localeCompare(b.name)
@@ -42,8 +64,8 @@ export default function ProductsPage() {
       }
     })
     
-    return products
-  }, [selectedCategory, sortBy])
+    return filteredList
+  }, [products, sortBy])
 
   return (
     <div className="min-h-screen bg-white py-12">
@@ -94,11 +116,22 @@ export default function ProductsPage() {
 
           {/* Results count */}
           <p className="text-mf-gray mb-6">
-            Showing {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'}
+            {loading ? 'Loading...' : `Showing ${filteredProducts.length} ${filteredProducts.length === 1 ? 'product' : 'products'}`}
           </p>
 
           {/* Products Grid */}
-          {filteredProducts.length === 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {[...Array(8)].map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <div className="bg-gray-200 aspect-square rounded-lg mb-4"></div>
+                  <div className="bg-gray-200 h-4 rounded mb-2"></div>
+                  <div className="bg-gray-200 h-4 rounded w-3/4 mb-2"></div>
+                  <div className="bg-gray-200 h-4 rounded w-1/2"></div>
+                </div>
+              ))}
+            </div>
+          ) : filteredProducts.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-mf-gray text-xl mb-4">No products found in this category.</p>
               <button

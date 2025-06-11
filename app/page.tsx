@@ -3,15 +3,34 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { mockProducts } from '@/lib/data/products'
 import { ProductCard } from '@/components/products/ProductCard'
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false)
-  const featuredProducts = mockProducts.slice(0, 4) // Get first 4 products
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     setIsVisible(true)
+    
+    // Fetch featured products from API
+    const fetchFeaturedProducts = async () => {
+      try {
+        const response = await fetch('/api/products?featured=true')
+        if (response.ok) {
+          const products = await response.json()
+          setFeaturedProducts(products.slice(0, 4)) // Get first 4 featured products
+        } else {
+          console.error('Failed to fetch products')
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchFeaturedProducts()
   }, [])
 
   return (
@@ -141,20 +160,32 @@ export default function Home() {
             </p>
           </motion.div>
 
-          {/* Product Grid with real products */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product, index) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <ProductCard product={product} />
-              </motion.div>
-            ))}
-          </div>
+          {/* Product Grid */}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[...Array(4)].map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <div className="bg-gray-200 aspect-square rounded-lg mb-4"></div>
+                  <div className="bg-gray-200 h-4 rounded mb-2"></div>
+                  <div className="bg-gray-200 h-4 rounded w-3/4"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {featuredProducts.map((product, index) => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <ProductCard product={product} />
+                </motion.div>
+              ))}
+            </div>
+          )}
 
           <div className="text-center mt-12">
             <Link href="/products" className="btn-secondary inline-block">

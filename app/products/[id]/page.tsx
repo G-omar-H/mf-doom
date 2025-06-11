@@ -1,12 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowLeft, ShoppingCart, Package } from 'lucide-react'
-import { mockProducts } from '@/lib/data/products'
 import { formatPrice } from '@/lib/utils/formatters'
 import { Button } from '@/components/ui/Button'
 import { useCartStore } from '@/lib/store/cartStore'
@@ -14,13 +13,56 @@ import toast from 'react-hot-toast'
 
 export default function ProductDetailPage() {
   const params = useParams()
-  const product = mockProducts.find(p => p.id === params.id)
   const addItem = useCartStore((state) => state.addItem)
   
+  const [product, setProduct] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({})
   const [imageError, setImageError] = useState(false)
+
+  // Fetch product from API
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(`/api/products/${params.id}`)
+        if (response.ok) {
+          const data = await response.json()
+          setProduct(data)
+        } else {
+          console.error('Failed to fetch product')
+        }
+      } catch (error) {
+        console.error('Error fetching product:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (params.id) {
+      fetchProduct()
+    }
+  }, [params.id])
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-16">
+        <div className="animate-pulse">
+          <div className="h-4 bg-gray-200 rounded w-32 mb-8"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="bg-gray-200 aspect-square rounded-lg"></div>
+            <div className="space-y-4">
+              <div className="h-8 bg-gray-200 rounded"></div>
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (!product) {
     return (
@@ -39,10 +81,10 @@ export default function ProductDetailPage() {
     // Check if all required variants are selected
     if (product.variants) {
       const missingVariants = product.variants.filter(
-        v => !selectedVariants[v.type]
+        (v: any) => !selectedVariants[v.type]
       )
       if (missingVariants.length > 0) {
-        toast.error(`Please select ${missingVariants.map(v => v.type).join(', ')}`)
+        toast.error(`Please select ${missingVariants.map((v: any) => v.type).join(', ')}`)
         return
       }
     }
@@ -94,7 +136,7 @@ export default function ProductDetailPage() {
           
           {hasImages && product.images.length > 1 && (
             <div className="flex gap-4 mt-4">
-              {product.images.map((image, index) => (
+              {product.images.map((image: string, index: number) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
@@ -135,13 +177,13 @@ export default function ProductDetailPage() {
           {/* Variants */}
           {product.variants && product.variants.length > 0 && (
             <div className="space-y-4">
-              {product.variants.map((variant) => (
+              {product.variants.map((variant: any) => (
                 <div key={variant.type}>
                   <label className="block text-mf-gray mb-2 font-semibold capitalize">
                     {variant.type}
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    {variant.options.map((option) => (
+                    {variant.options.map((option: string) => (
                       <button
                         key={option}
                         onClick={() => setSelectedVariants({
@@ -211,7 +253,7 @@ export default function ProductDetailPage() {
               <span className="font-semibold">Category:</span> {product.category}
             </p>
             <p className="text-mf-gray">
-              <span className="font-semibold">SKU:</span> DOOM-{product.id.toUpperCase()}
+              <span className="font-semibold">SKU:</span> {product.sku || `DOOM-${product.id.toUpperCase()}`}
             </p>
           </div>
         </motion.div>
