@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useCartStore } from '@/lib/store/cartStore'
 import { formatPrice } from '@/lib/utils/formatters'
 import { Button } from '@/components/ui/Button'
@@ -9,13 +10,34 @@ import { Minus, Plus, Trash2, ShoppingBag, Package } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 
+// Disable static generation for this page
+export const dynamic = 'force-dynamic'
+
 export default function CartPage() {
   const { items, removeItem, updateQuantity, getTotalPrice, clearCart } = useCartStore()
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
 
   const subtotal = getTotalPrice()
   const shipping = subtotal > 0 ? 10 : 0
   const tax = subtotal * 0.08 // 8% tax
   const total = subtotal + shipping + tax
+
+  // Don't render until hydrated to prevent hydration mismatch
+  if (!isHydrated) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="font-metal text-5xl text-doom-gold text-center mb-12">
+          YOUR CART
+        </h1>
+        <div className="text-center text-doom-silver">Loading...</div>
+      </div>
+    )
+  }
 
   if (items.length === 0) {
     return (

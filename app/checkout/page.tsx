@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/lib/store/cartStore'
 import { formatPrice } from '@/lib/utils/formatters'
@@ -9,10 +9,19 @@ import { motion } from 'framer-motion'
 import { CreditCard, Lock } from 'lucide-react'
 import toast from 'react-hot-toast'
 
+// Disable static generation for this page
+export const dynamic = 'force-dynamic'
+
 export default function CheckoutPage() {
   const router = useRouter()
   const { items, getTotalPrice, clearCart } = useCartStore()
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
 
   const subtotal = getTotalPrice()
   const shipping = subtotal > 0 ? 10 : 0
@@ -81,8 +90,22 @@ export default function CheckoutPage() {
   }
 
   if (items.length === 0) {
-    router.push('/cart')
+    if (isHydrated) {
+      router.push('/cart')
+    }
     return null
+  }
+
+  // Don't render until hydrated to prevent hydration mismatch
+  if (!isHydrated) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="font-metal text-5xl text-doom-gold text-center mb-12">
+          CHECKOUT
+        </h1>
+        <div className="text-center text-doom-silver">Loading...</div>
+      </div>
+    )
   }
 
   return (
