@@ -5,8 +5,16 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Check if Prisma is available (might be null during build time)
+  if (!prisma) {
+    return NextResponse.json(
+      { error: 'Database not available' },
+      { status: 503 }
+    )
+  }
+
   try {
-    const product = await prisma.product.findUnique({
+    const product = await prisma!.product.findUnique({
       where: {
         id: params.id,
         status: 'ACTIVE',

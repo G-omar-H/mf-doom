@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
+  // Check if Prisma is available (might be null during build time)
+  if (!prisma) {
+    return NextResponse.json(
+      { error: 'Database not available' },
+      { status: 503 }
+    )
+  }
+
   const { searchParams } = new URL(request.url)
   const category = searchParams.get('category')
   const featured = searchParams.get('featured')
@@ -63,6 +71,14 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  // Check if Prisma is available (might be null during build time)
+  if (!prisma) {
+    return NextResponse.json(
+      { error: 'Database not available' },
+      { status: 503 }
+    )
+  }
+
   // Admin only - create new product
   try {
     const body = await request.json()
