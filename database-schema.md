@@ -160,9 +160,10 @@ orders {
   totalAmount: Decimal
   
   // Payment
-  paymentMethod: String? // "card", "apple_pay"
-  stripePaymentIntentId: String?
-  stripeChargeId: String?
+  paymentMethod: String? // "paypal", "card"
+  paypalOrderId: String?
+  paypalCaptureId: String?
+  paypalPayerId: String?
   
   // Shipping
   shippingAddress: Json // Address object

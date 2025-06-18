@@ -1,6 +1,6 @@
 # MF DOOM Shop - E-Commerce Website
 
-A fully functional e-commerce website inspired by the legendary rapper MF DOOM. Built with Next.js 14, TypeScript, Tailwind CSS, and Stripe for payments.
+A fully functional e-commerce website inspired by the legendary rapper MF DOOM. Built with Next.js 14, TypeScript, Tailwind CSS, and PayPal for payments.
 
 ![MF DOOM Shop](https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&h=400&fit=crop)
 
@@ -10,7 +10,7 @@ A fully functional e-commerce website inspired by the legendary rapper MF DOOM. 
 - **Product Catalog**: Browse apparel, vinyl, accessories, and art
 - **Product Variants**: Size and color options for products
 - **Shopping Cart**: Persistent cart with quantity management
-- **Secure Checkout**: Integrated with Stripe for payment processing
+- **Secure Checkout**: Integrated with PayPal for payment processing
 - **Order Management**: Admin dashboard for managing orders
 - **Mobile Responsive**: Optimized for all screen sizes
 
@@ -25,7 +25,7 @@ A fully functional e-commerce website inspired by the legendary rapper MF DOOM. 
 - **Frontend**: Next.js 14, React 18, TypeScript
 - **Styling**: Tailwind CSS with custom DOOM theme
 - **State Management**: Zustand with localStorage persistence
-- **Payments**: Stripe integration
+- **Payments**: PayPal integration with Smart Payment Buttons
 - **Animations**: Framer Motion
 - **Icons**: Lucide React
 - **Notifications**: React Hot Toast
@@ -48,10 +48,11 @@ npm install
 cp .env.example .env.local
 ```
 
-4. Add your Stripe API keys to `.env.local`:
+4. Add your PayPal API keys to `.env.local`:
 ```
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_publishable_key
-STRIPE_SECRET_KEY=your_secret_key
+NEXT_PUBLIC_PAYPAL_CLIENT_ID=your_paypal_client_id
+PAYPAL_CLIENT_SECRET=your_paypal_client_secret
+PAYPAL_ENVIRONMENT=sandbox
 ```
 
 5. Run the development server:
@@ -125,8 +126,9 @@ The project uses:
 ## 🔒 Environment Variables
 
 Required environment variables:
-- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`: Your Stripe publishable key
-- `STRIPE_SECRET_KEY`: Your Stripe secret key
+- `NEXT_PUBLIC_PAYPAL_CLIENT_ID`: Your PayPal client ID
+- `PAYPAL_CLIENT_SECRET`: Your PayPal client secret
+- `PAYPAL_ENVIRONMENT`: Set to 'sandbox' for testing, 'production' for live
 - `ADMIN_PASSWORD`: (Optional) Password for admin access
 
 ## 📝 License
