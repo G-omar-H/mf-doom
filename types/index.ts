@@ -4,7 +4,7 @@ export interface Product {
   description: string;
   price: number;
   images: string[];
-  category: 'apparel' | 'accessories' | 'vinyl' | 'art';
+  category: 't_shirts' | 'hoodies' | 'beanies' | 'sneakers' | 'accessories' | 'vinyl' | 'art';
   variants?: ProductVariant[];
   stock: number;
   featured?: boolean;
