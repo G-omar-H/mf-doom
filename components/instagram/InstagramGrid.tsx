@@ -50,15 +50,31 @@ export function InstagramGrid({ limit = 4, className = '' }: InstagramGridProps)
     )
   }
 
+  if (!posts.length) {
+    return (
+      <div className={`${className} flex items-center justify-center min-h-[200px]`}>
+        <div className="text-center p-6">
+          <div className="text-gray-400 mb-2 text-2xl">📸</div>
+          <div className="text-gray-600 font-medium mb-2">No posts available</div>
+          <div className="text-gray-500 text-sm">
+            Visit{' '}
+            <a 
+              href="https://instagram.com/thismfdoom_" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 underline"
+            >
+              @thismfdoom_
+            </a>
+            {' '}on Instagram
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className={className}>
-      {/* Placeholder indicator */}
-      <div className="text-center mb-3">
-        <p className="text-xs text-gray-500">
-          📱 Placeholder content - Set up Instagram API to show real posts from @thismfdoom_
-        </p>
-      </div>
-      
       <div className="grid grid-cols-2 gap-2">
         {posts.map((post, index) => (
         <motion.a

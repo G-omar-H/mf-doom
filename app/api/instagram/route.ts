@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getInstagramPosts } from '@/lib/data/instagram'
 
 interface InstagramPost {
   id: string
@@ -14,118 +15,151 @@ export async function GET(request: NextRequest) {
   const limit = parseInt(searchParams.get('limit') || '6')
 
   try {
-    // Check if Instagram access token is available
-    const accessToken = process.env.INSTAGRAM_ACCESS_TOKEN
+    const username = 'thismfdoom_'
+    
+    // Method 1: Try Insta-Scraper API (free tier)
+    try {
+      const response = await fetch(
+        `https://instagram-scraper-2022.p.rapidapi.com/ig/posts_username/?user=${username}&batch_size=${limit}`,
+        {
+          headers: {
+            'X-RapidAPI-Key': process.env.RAPIDAPI_KEY || 'demo_key',
+            'X-RapidAPI-Host': 'instagram-scraper-2022.p.rapidapi.com'
+          }
+        }
+      )
 
-    if (accessToken) {
-      // Real Instagram API call
-      try {
-        const response = await fetch(
-          `https://graph.instagram.com/me/media?fields=id,media_url,media_type,caption,permalink,timestamp&access_token=${accessToken}&limit=${limit}`
-        )
+      if (response.ok) {
+        const data = await response.json()
+        const posts = data.result || []
         
-        if (response.ok) {
-          const data = await response.json()
+        const formattedPosts = posts.slice(0, limit).map((post: any) => ({
+          id: post.id || post.pk || Math.random().toString(),
+          media_url: post.image_versions2?.candidates?.[0]?.url || post.display_url || post.thumbnail_url,
+          media_type: post.media_type === 2 ? 'VIDEO' : 'IMAGE',
+          caption: post.caption?.text || post.caption || '',
+          permalink: `https://instagram.com/p/${post.code || post.shortcode}/`,
+          timestamp: new Date((post.taken_at || post.taken_at_timestamp) * 1000).toISOString()
+        }))
+
+        if (formattedPosts.length > 0 && formattedPosts[0].media_url) {
           return NextResponse.json({
-            posts: data.data || [],
-            total: data.data?.length || 0,
+            posts: formattedPosts,
+            total: formattedPosts.length,
             account: '@thismfdoom_',
-            source: 'instagram'
+            source: 'rapidapi_scraper'
           })
         }
-      } catch (error) {
-        console.error('Instagram API error:', error)
-        // Fall back to mock data if API fails
       }
-    }
-
-    // Try to fetch from Instagram's public API (alternative approach)
-    try {
-      // Note: This is a simplified approach. For production, you should use the official API
-      const username = 'thismfdoom_'
-      
-      // For now, we'll use realistic mock data that represents your actual Instagram content
-      // You can replace this with actual API calls once you set up Instagram Basic Display API
     } catch (error) {
-      console.error('Public Instagram fetch error:', error)
+      console.error('RapidAPI Instagram scraper error:', error)
     }
 
-    // Mock data representing typical @thismfdoom_ Instagram content
-    const mockPosts: InstagramPost[] = [
-      {
-        id: 'mock_1',
-        media_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop',
-        media_type: 'IMAGE',
-        caption: '🎭 New MF DOOM tribute pieces dropping soon! Remember ALL CAPS when you spell the man name. What\'s your favorite DOOM track? Drop it in the comments 👇 #MFDOOM #HipHop #Villain #RIPDoom #MetalFace',
-        permalink: 'https://instagram.com/thismfdoom_',
-        timestamp: new Date().toISOString()
-      },
-      {
-        id: 'mock_2',
-        media_url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop',
-        media_type: 'IMAGE',
-        caption: '🔥 Behind the scenes: Designing the perfect tribute to the masked villain. Every detail matters when honoring a legend. #MFDOOM #Design #Tribute #BehindTheScenes',
-        permalink: 'https://instagram.com/thismfdoom_',
-        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: 'mock_3',
-        media_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop&flip=h',
-        media_type: 'IMAGE',
-        caption: '📚 "Operation Doomsday" - Where it all began. DOOM\'s debut solo album changed hip-hop forever. What\'s your favorite track from this masterpiece? #OperationDoomsday #MFDOOM #HipHopHistory',
-        permalink: 'https://instagram.com/thismfdoom_',
-        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: 'mock_4',
-        media_url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop&flip=h',
-        media_type: 'IMAGE',
-        caption: '🎵 Madvillain Monday! The collaboration between DOOM and Madlib gave us some of the most creative hip-hop ever made. "Madvillainy" is pure genius. #Madvillain #MFDOOM #Madlib #MadvillainMonday',
-        permalink: 'https://instagram.com/thismfdoom_',
-        timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: 'mock_5',
-        media_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop&brightness=0.8',
-        media_type: 'IMAGE',
-        caption: '🎭 The mask isn\'t just an accessory - it\'s a statement. DOOM taught us that the art speaks louder than the artist. Respect the craft, honor the legacy. #MFDOOM #MetalFace #HipHopPhilosophy',
-        permalink: 'https://instagram.com/thismfdoom_',
-        timestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: 'mock_6',
-        media_url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop&brightness=0.8',
-        media_type: 'IMAGE',
-        caption: '🏪 Our mission: Keeping DOOM\'s legacy alive through authentic merchandise and community. Every purchase supports hip-hop culture and honors the villain\'s memory. #MFDOOM #HipHopCulture #Community',
-        permalink: 'https://instagram.com/thismfdoom_',
-        timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: 'mock_7',
-        media_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop&saturation=0.8',
-        media_type: 'IMAGE',
-        caption: '📱 Follow @thismfdoom_ for daily DOOM content, exclusive drops, and to connect with fellow fans worldwide. The villain\'s influence never dies. #MFDOOM #Community #FollowUs',
-        permalink: 'https://instagram.com/thismfdoom_',
-        timestamp: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: 'mock_8',
-        media_url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop&saturation=0.8',
-        media_type: 'IMAGE',
-        caption: '🎤 "Just remember ALL CAPS when you spell the man name" - Words that echo through hip-hop history. DOOM\'s wordplay was unmatched. What\'s your favorite DOOM bar? #MFDOOM #ALLCAPS #HipHopLyrics',
-        permalink: 'https://instagram.com/thismfdoom_',
-        timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+    // Method 2: Try Instagram public feed via proxy
+    try {
+      const response = await fetch(
+        `https://www.instagram.com/web/search/topsearch/?query=${username}`,
+        {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'application/json',
+          }
+        }
+      )
+
+      if (response.ok) {
+        const data = await response.json()
+        const user = data.users?.find((u: any) => u.user.username === username)
+        
+        if (user) {
+          // This gives us basic user info, but we need another call for posts
+          const postsResponse = await fetch(
+            `https://www.instagram.com/${username}/?__a=1`,
+            {
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+              }
+            }
+          )
+          
+          if (postsResponse.ok) {
+            const postsData = await postsResponse.json()
+            const posts = postsData?.graphql?.user?.edge_owner_to_timeline_media?.edges || []
+            
+            const formattedPosts = posts.slice(0, limit).map((edge: any) => ({
+              id: edge.node.id,
+              media_url: edge.node.display_url,
+              media_type: edge.node.is_video ? 'VIDEO' : 'IMAGE',
+              caption: edge.node.edge_media_to_caption?.edges[0]?.node?.text || '',
+              permalink: `https://instagram.com/p/${edge.node.shortcode}/`,
+              timestamp: new Date(edge.node.taken_at_timestamp * 1000).toISOString()
+            }))
+
+            if (formattedPosts.length > 0) {
+              return NextResponse.json({
+                posts: formattedPosts,
+                total: formattedPosts.length,
+                account: '@thismfdoom_',
+                source: 'instagram_public'
+              })
+            }
+          }
+        }
       }
-    ]
+    } catch (error) {
+      console.error('Instagram public API error:', error)
+    }
 
-    // Return limited number of posts
-    const posts = mockPosts.slice(0, limit)
+    // Method 3: Try RSS2JSON service
+    try {
+      const response = await fetch(
+        `https://api.rss2json.com/v1/api.json?rss_url=https://rsshub.app/instagram/user/${username}&count=${limit}`
+      )
+      
+      if (response.ok) {
+        const data = await response.json()
+        if (data.status === 'ok' && data.items?.length > 0) {
+          const posts = data.items.slice(0, limit).map((item: any, index: number) => ({
+            id: `rss_${index}_${Date.now()}`,
+            media_url: item.enclosure?.link || item.thumbnail || 'https://via.placeholder.com/400x400?text=Instagram+Post',
+            media_type: 'IMAGE',
+            caption: item.title || item.description?.replace(/<[^>]*>/g, '').substring(0, 100) + '...' || '',
+            permalink: item.link || `https://instagram.com/${username}`,
+            timestamp: item.pubDate || new Date().toISOString()
+          }))
 
+          return NextResponse.json({
+            posts,
+            total: posts.length,
+            account: '@thismfdoom_',
+            source: 'rss'
+          })
+        }
+      }
+    } catch (error) {
+      console.error('RSS feed error:', error)
+    }
+
+    // If all methods fail, use local Instagram data as fallback
+    console.log('All Instagram fetching methods failed, using local data for @thismfdoom_')
+    const localPosts = getInstagramPosts(limit)
+    
+    if (localPosts.length > 0) {
+      return NextResponse.json({
+        posts: localPosts,
+        total: localPosts.length,
+        account: '@thismfdoom_',
+        source: 'local'
+      })
+    }
+
+    // If no local data either, return empty array
     return NextResponse.json({
-      posts,
-      total: mockPosts.length,
+      posts: [],
+      total: 0,
       account: '@thismfdoom_',
-      source: 'mock'
+      source: 'unavailable',
+      message: 'Instagram posts temporarily unavailable. Please visit @thismfdoom_ directly on Instagram.'
     })
 
   } catch (error) {
