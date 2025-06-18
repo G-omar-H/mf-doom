@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { ProductCard } from '@/components/products/ProductCard'
+import { InstagramGrid } from '@/components/instagram/InstagramGrid'
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false)
@@ -95,11 +96,9 @@ export default function Home() {
                 </svg>
                 <h3 className="text-xl md:text-2xl font-bold mb-2">@thismfdoom_</h3>
                 <p className="text-mf-gray text-sm md:text-base">Follow us on Instagram</p>
-                {/* Instagram feed placeholder with gradient */}
-                <div className="mt-4 md:mt-6 bg-gradient-to-br from-purple-400 via-pink-500 to-orange-400 rounded-xl aspect-square flex items-center justify-center p-1">
-                  <div className="bg-white rounded-xl w-full h-full flex items-center justify-center">
-                    <span className="text-mf-gray font-medium text-sm md:text-base">Latest Posts</span>
-                  </div>
+                {/* Instagram feed */}
+                <div className="mt-4 md:mt-6">
+                  <InstagramGrid limit={4} className="w-full" />
                 </div>
               </div>
             </div>
