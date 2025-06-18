@@ -7,7 +7,10 @@ import { motion } from 'framer-motion'
 
 const categories = [
   { value: 'all', label: 'All Products' },
-  { value: 'apparel', label: 'Apparel' },
+  { value: 't_shirts', label: 'T-Shirts' },
+  { value: 'hoodies', label: 'Hoodies' },
+  { value: 'beanies', label: 'Beanies' },
+  { value: 'sneakers', label: 'Sneakers' },
   { value: 'vinyl', label: 'Vinyl' },
   { value: 'accessories', label: 'Accessories' },
   { value: 'art', label: 'Art' },
