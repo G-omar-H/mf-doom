@@ -280,11 +280,18 @@ export default function CheckoutPage() {
                     <PayPalProvider
                       items={items}
                       customerEmail={formData.email}
+                      customerData={{
+                        name: formData.name,
+                        email: formData.email,
+                        phone: formData.phone,
+                      }}
                       shippingAddress={{
                         name: formData.name,
+                        address: formData.address,
                         line1: formData.address,
                         city: formData.city,
                         state: formData.state,
+                        zip: formData.zip,
                         postalCode: formData.zip,
                         country: formData.country,
                       }}
