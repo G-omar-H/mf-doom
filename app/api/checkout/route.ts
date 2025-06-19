@@ -21,7 +21,7 @@ async function getPayPalAccessToken() {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: 'grant_type=client_credentials',
-  })
+})
 
   const data = await response.json()
   return data.access_token

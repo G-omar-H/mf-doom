@@ -3,6 +3,7 @@ export interface Product {
   name: string;
   description: string;
   price: number;
+  compareAtPrice?: number;
   images: string[];
   category: 't_shirts' | 'hoodies' | 'beanies' | 'sneakers' | 'accessories' | 'vinyl' | 'art';
   variants?: ProductVariant[];

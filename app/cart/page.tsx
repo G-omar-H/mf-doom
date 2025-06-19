@@ -146,7 +146,7 @@ export default function CartPage() {
           ))}
 
           <div className="flex justify-end mt-6">
-            <Button variant="danger" onClick={clearCart}>
+            <Button variant="destructive" onClick={clearCart}>
               Clear Cart
             </Button>
           </div>

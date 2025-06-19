@@ -13,15 +13,63 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const category = searchParams.get('category')
   const featured = searchParams.get('featured')
+  const search = searchParams.get('search')
+
+  // Map navigation categories to actual product categories
+  const getCategoryFilter = (navCategory: string | null) => {
+    if (!navCategory || navCategory === 'all') return undefined
+
+    const categoryMap: Record<string, string[]> = {
+      'apparel': ['T_SHIRTS', 'HOODIES', 'BEANIES', 'SNEAKERS'],
+      'vinyl': ['VINYL'],
+      'accessories': ['ACCESSORIES'],
+      'art': ['ART'],
+      // Also support direct category names
+      't_shirts': ['T_SHIRTS'],
+      'hoodies': ['HOODIES'], 
+      'beanies': ['BEANIES'],
+      'sneakers': ['SNEAKERS']
+    }
+
+    const categories = categoryMap[navCategory.toLowerCase()]
+    if (categories) {
+      return categories.length === 1 
+        ? { category: categories[0] as any }
+        : { category: { in: categories as any[] } }
+    }
+
+    return undefined
+  }
 
   try {
+    const categoryFilter = getCategoryFilter(category)
+    
     const products = await prisma.product.findMany({
       where: {
         status: 'ACTIVE',
-        ...(category && category !== 'all' && { 
-          category: category.toUpperCase() as any 
-        }),
+        ...categoryFilter,
         ...(featured === 'true' && { featured: true }),
+        ...(search && {
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: 'insensitive'
+              }
+            },
+            {
+              description: {
+                contains: search,
+                mode: 'insensitive'
+              }
+            },
+            {
+              tags: {
+                hasSome: search.split(' ')
+              }
+            }
+          ]
+        }),
       },
       include: {
         images: true,
@@ -33,7 +81,15 @@ export async function GET(request: NextRequest) {
           }
         },
       },
-      orderBy: {
+      orderBy: search ? [
+        // Prioritize exact name matches
+        {
+          name: 'asc'
+        },
+        {
+          createdAt: 'desc'
+        }
+      ] : {
         createdAt: 'desc',
       },
     })

@@ -6,8 +6,9 @@ import { useCartStore } from '@/lib/store/cartStore'
 import { formatPrice } from '@/lib/utils/formatters'
 import { Button } from '@/components/ui/Button'
 import { PayPalProvider } from '@/components/payment/PayPalProvider'
-import { motion } from 'framer-motion'
-import { Lock, Shield } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Lock, Shield, CheckCircle, Package, Truck, RotateCcw, Star, CreditCard, Award, Eye, Clock } from 'lucide-react'
+import Image from 'next/image'
 import toast from 'react-hot-toast'
 
 // Disable static generation for this page
@@ -19,6 +20,7 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [isHydrated, setIsHydrated] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'card'>('paypal')
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({})
 
   // Prevent hydration mismatch
   useEffect(() => {
@@ -44,11 +46,34 @@ export default function CheckoutPage() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+    
+    // Clear error when user starts typing
+    if (formErrors[name]) {
+      setFormErrors(prev => ({ ...prev, [name]: '' }))
+    }
+  }
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {}
+    
+    if (!formData.email) errors.email = 'Email is required'
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = 'Please enter a valid email'
+    
+    if (!formData.name) errors.name = 'Full name is required'
+    if (!formData.address) errors.address = 'Address is required'
+    if (!formData.city) errors.city = 'City is required'
+    if (!formData.state) errors.state = 'State is required'
+    if (!formData.zip) errors.zip = 'ZIP code is required'
+    
+    setFormErrors(errors)
+    return Object.keys(errors).length === 0
   }
 
   const handlePayPalSuccess = async (details: any) => {
-    setIsProcessing(true)
+    if (!validateForm()) return
     
+    setIsProcessing(true)
+
     try {
       // Create order in database
       const orderData = {
@@ -124,252 +149,497 @@ export default function CheckoutPage() {
   // Don't render until hydrated to prevent hydration mismatch
   if (!isHydrated) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-12">
-          CHECKOUT
-        </h1>
-        <div className="text-center text-gray-500">Loading...</div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 py-12">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center">
+            <div className="animate-pulse">
+              <div className="h-12 bg-gray-200 rounded-lg w-64 mx-auto mb-8" />
+              <div className="h-96 bg-gray-200 rounded-2xl" />
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-center mb-12">
-        CHECKOUT
-      </h1>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Checkout Form */}
-        <div className="lg:col-span-2 space-y-8">
-          {/* Contact Information */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white p-6 rounded-lg shadow-sm border"
-          >
-            <h2 className="text-2xl font-semibold mb-4">Contact Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-gray-700 mb-2">Email *</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 mb-2">Phone</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-gray-700 mb-2">Full Name *</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
-                />
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 py-12">
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Enhanced Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-16"
+        >
+          <div className="inline-flex items-center gap-3 mb-4">
+            <motion.div
+              animate={{ rotate: [0, 5, -5, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="w-12 h-12 bg-gradient-to-br from-gray-900 to-black rounded-xl flex items-center justify-center shadow-lg"
+            >
+              <Lock size={24} className="text-white" />
+            </motion.div>
+            <h1 className="text-5xl md:text-6xl font-black tracking-tight text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+              Secure Checkout
+            </h1>
+          </div>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Complete your order with confidence. Your information is protected with enterprise-grade security.
+          </p>
+          
+          {/* Trust Indicators */}
+          <div className="flex items-center justify-center gap-8 mt-8 text-sm text-gray-500">
+            <div className="flex items-center gap-2">
+              <Shield size={16} className="text-green-500" />
+              <span>SSL Encrypted</span>
             </div>
-          </motion.div>
-
-          {/* Shipping Address */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white p-6 rounded-lg shadow-sm border"
-          >
-            <h2 className="text-2xl font-semibold mb-4">Shipping Address</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-gray-700 mb-2">Address *</label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-gray-700 mb-2">City *</label>
-                  <input
-                    type="text"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 mb-2">State *</label>
-                  <input
-                    type="text"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 mb-2">ZIP Code *</label>
-                  <input
-                    type="text"
-                    name="zip"
-                    value={formData.zip}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
-                  />
-                </div>
-              </div>
+            <div className="flex items-center gap-2">
+              <Award size={16} className="text-blue-500" />
+              <span>Verified Merchant</span>
             </div>
-          </motion.div>
+            <div className="flex items-center gap-2">
+              <Star size={16} className="text-yellow-500" />
+              <span>5-Star Reviews</span>
+            </div>
+          </div>
+        </motion.div>
 
-          {/* Payment Method Selection */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white p-6 rounded-lg shadow-sm border"
-          >
-            <h2 className="text-2xl font-semibold mb-4">Payment Method</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* Enhanced Checkout Form */}
+          <div className="lg:col-span-2 space-y-8">
             
-            <div className="space-y-4 mb-6">
-              <div className="flex items-center space-x-3">
-                <input
-                  type="radio"
-                  id="paypal"
-                  name="paymentMethod"
-                  value="paypal"
-                  checked={paymentMethod === 'paypal'}
-                  onChange={(e) => setPaymentMethod(e.target.value as 'paypal')}
-                  className="w-4 h-4 text-mf-blue"
-                />
-                <label htmlFor="paypal" className="text-gray-700 font-medium">
-                  PayPal (Recommended)
-                </label>
+            {/* Contact Information */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">1</div>
+                <h2 className="text-2xl font-bold text-gray-900">Contact Information</h2>
               </div>
-              <p className="text-sm text-gray-600 ml-7">
-                Pay with PayPal or credit/debit card through PayPal's secure checkout
-              </p>
-            </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="md:col-span-2">
+                  <label className="block text-gray-700 font-medium mb-3">Email Address *</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                    className={`w-full px-4 py-4 border-2 rounded-xl text-lg transition-colors focus:outline-none ${
+                      formErrors.email 
+                        ? 'border-red-300 focus:border-red-500' 
+                        : 'border-gray-200 focus:border-blue-500'
+                    }`}
+                    placeholder="your@email.com"
+                  />
+                  {formErrors.email && (
+                    <motion.p 
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-red-500 text-sm mt-2"
+                    >
+                      {formErrors.email}
+                    </motion.p>
+                  )}
+                </div>
+                
+                <div>
+                  <label className="block text-gray-700 font-medium mb-3">Full Name *</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    className={`w-full px-4 py-4 border-2 rounded-xl text-lg transition-colors focus:outline-none ${
+                      formErrors.name 
+                        ? 'border-red-300 focus:border-red-500' 
+                        : 'border-gray-200 focus:border-blue-500'
+                    }`}
+                    placeholder="John Doe"
+                  />
+                  {formErrors.name && (
+                    <motion.p 
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-red-500 text-sm mt-2"
+                    >
+                      {formErrors.name}
+                    </motion.p>
+                  )}
+                </div>
+                
+                <div>
+                  <label className="block text-gray-700 font-medium mb-3">Phone Number</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl text-lg focus:border-blue-500 focus:outline-none transition-colors"
+                    placeholder="+1 (555) 123-4567"
+                  />
+                </div>
+              </div>
+            </motion.div>
 
-            {/* PayPal Payment */}
-            {paymentMethod === 'paypal' && (
-              <div>
-                {isFormValid ? (
+            {/* Shipping Address */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm">2</div>
+                <h2 className="text-2xl font-bold text-gray-900">Shipping Address</h2>
+              </div>
+              
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-gray-700 font-medium mb-3">Street Address *</label>
+                  <input
+                    type="text"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    required
+                    className={`w-full px-4 py-4 border-2 rounded-xl text-lg transition-colors focus:outline-none ${
+                      formErrors.address 
+                        ? 'border-red-300 focus:border-red-500' 
+                        : 'border-gray-200 focus:border-blue-500'
+                    }`}
+                    placeholder="123 Main Street"
+                  />
+                  {formErrors.address && (
+                    <motion.p 
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-red-500 text-sm mt-2"
+                    >
+                      {formErrors.address}
+                    </motion.p>
+                  )}
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <PayPalProvider
-                      items={items}
-                      customerEmail={formData.email}
-                      customerData={{
-                        name: formData.name,
-                        email: formData.email,
-                        phone: formData.phone,
-                      }}
-                      shippingAddress={{
-                        name: formData.name,
-                        address: formData.address,
-                        line1: formData.address,
-                        city: formData.city,
-                        state: formData.state,
-                        zip: formData.zip,
-                        postalCode: formData.zip,
-                        country: formData.country,
-                      }}
-                      onSuccess={handlePayPalSuccess}
-                      onError={handlePayPalError}
-                      disabled={isProcessing}
+                    <label className="block text-gray-700 font-medium mb-3">City *</label>
+                    <input
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleInputChange}
+                      required
+                      className={`w-full px-4 py-4 border-2 rounded-xl text-lg transition-colors focus:outline-none ${
+                        formErrors.city 
+                          ? 'border-red-300 focus:border-red-500' 
+                          : 'border-gray-200 focus:border-blue-500'
+                      }`}
+                      placeholder="New York"
                     />
-                    <div className="flex items-center gap-2 text-sm text-gray-500 mt-4">
-                      <Shield size={16} />
-                      <span>Your payment is secured by PayPal's buyer protection</span>
+                    {formErrors.city && (
+                      <motion.p 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-red-500 text-sm mt-2"
+                      >
+                        {formErrors.city}
+                      </motion.p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <label className="block text-gray-700 font-medium mb-3">State *</label>
+                    <input
+                      type="text"
+                      name="state"
+                      value={formData.state}
+                      onChange={handleInputChange}
+                      required
+                      className={`w-full px-4 py-4 border-2 rounded-xl text-lg transition-colors focus:outline-none ${
+                        formErrors.state 
+                          ? 'border-red-300 focus:border-red-500' 
+                          : 'border-gray-200 focus:border-blue-500'
+                      }`}
+                      placeholder="NY"
+                    />
+                    {formErrors.state && (
+                      <motion.p 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-red-500 text-sm mt-2"
+                      >
+                        {formErrors.state}
+                      </motion.p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <label className="block text-gray-700 font-medium mb-3">ZIP Code *</label>
+                    <input
+                      type="text"
+                      name="zip"
+                      value={formData.zip}
+                      onChange={handleInputChange}
+                      required
+                      className={`w-full px-4 py-4 border-2 rounded-xl text-lg transition-colors focus:outline-none ${
+                        formErrors.zip 
+                          ? 'border-red-300 focus:border-red-500' 
+                          : 'border-gray-200 focus:border-blue-500'
+                      }`}
+                      placeholder="10001"
+                    />
+                    {formErrors.zip && (
+                      <motion.p 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-red-500 text-sm mt-2"
+                      >
+                        {formErrors.zip}
+                      </motion.p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Payment Method */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-sm">3</div>
+                <h2 className="text-2xl font-bold text-gray-900">Payment Method</h2>
+              </div>
+              
+              <div className="space-y-6">
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
+                  <div className="flex items-center gap-3 mb-4">
+                    <input
+                      type="radio"
+                      id="paypal"
+                      name="paymentMethod"
+                      value="paypal"
+                      checked={paymentMethod === 'paypal'}
+                      onChange={(e) => setPaymentMethod(e.target.value as 'paypal')}
+                      className="w-5 h-5 text-blue-600"
+                    />
+                    <label htmlFor="paypal" className="text-lg font-bold text-gray-900 flex items-center gap-3">
+                      <CreditCard size={24} className="text-blue-600" />
+                      PayPal Checkout (Recommended)
+                    </label>
+                  </div>
+                  <p className="text-gray-600 ml-8 mb-4">
+                    Pay securely with PayPal or use any major credit/debit card through PayPal's trusted checkout system.
+                  </p>
+                  
+                  <div className="flex items-center gap-4 ml-8 text-sm text-gray-500">
+                    <div className="flex items-center gap-1">
+                      <Shield size={14} />
+                      <span>Buyer Protection</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Lock size={14} />
+                      <span>256-bit SSL</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <CheckCircle size={14} />
+                      <span>Instant Processing</span>
                     </div>
                   </div>
-                ) : (
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-gray-600 text-center">
-                      Please complete the contact and shipping information above to continue with payment.
-                    </p>
+                </div>
+
+                {/* PayPal Payment */}
+                {paymentMethod === 'paypal' && (
+                  <div className="mt-6">
+                    {isFormValid ? (
+                      <div>
+                        <PayPalProvider
+                          items={items}
+                          customerEmail={formData.email}
+                          customerData={{
+                            name: formData.name,
+                            email: formData.email,
+                            phone: formData.phone,
+                          }}
+                          shippingAddress={{
+                            name: formData.name,
+                            address: formData.address,
+                            line1: formData.address,
+                            city: formData.city,
+                            state: formData.state,
+                            zip: formData.zip,
+                            postalCode: formData.zip,
+                            country: formData.country,
+                          }}
+                          onSuccess={handlePayPalSuccess}
+                          onError={handlePayPalError}
+                          disabled={isProcessing}
+                        />
+                        
+                        {isProcessing && (
+                          <motion.div 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200"
+                          >
+                            <div className="flex items-center gap-3 text-blue-700">
+                              <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full"
+                              />
+                              <span className="font-medium">Processing your payment...</span>
+                            </div>
+                          </motion.div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center">
+                        <Eye size={24} className="mx-auto text-gray-400 mb-3" />
+                        <p className="text-gray-600 font-medium mb-2">Complete Required Information</p>
+                        <p className="text-gray-500 text-sm">
+                          Please fill out the contact and shipping information above to proceed with payment.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-            )}
-          </motion.div>
-        </div>
-
-        {/* Order Summary */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="bg-white p-6 rounded-lg shadow-sm border h-fit"
-        >
-          <h2 className="text-2xl font-semibold mb-6">Order Summary</h2>
-
-          <div className="space-y-4 mb-6">
-            {items.map((item) => (
-              <div key={`${item.product.id}-${JSON.stringify(item.selectedVariants)}`} className="flex justify-between text-sm">
-                <div>
-                  <p className="text-gray-800">{item.product.name}</p>
-                  {item.selectedVariants && (
-                    <p className="text-gray-500 text-xs">
-                      {Object.entries(item.selectedVariants).map(([key, value]) => `${key}: ${value}`).join(', ')}
-                    </p>
-                  )}
-                  <p className="text-gray-500">Qty: {item.quantity}</p>
-                </div>
-                <p className="text-gray-800 font-medium">{formatPrice(item.product.price * item.quantity)}</p>
-              </div>
-            ))}
+            </motion.div>
           </div>
 
-          <div className="border-t pt-4 space-y-3">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Subtotal</span>
-              <span className="font-medium">{formatPrice(subtotal)}</span>
+          {/* Enhanced Order Summary */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+            className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 h-fit sticky top-8"
+          >
+            <div className="flex items-center gap-3 mb-8">
+              <Package size={24} className="text-purple-600" />
+              <h2 className="text-2xl font-bold text-gray-900">Order Summary</h2>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Shipping</span>
-              <span className="font-medium">{shipping === 0 ? 'FREE' : formatPrice(shipping)}</span>
+
+            {/* Order Items */}
+            <div className="space-y-4 mb-8">
+              {items.map((item, index) => (
+                <motion.div
+                  key={`${item.product.id}-${JSON.stringify(item.selectedVariants)}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 + index * 0.1 }}
+                  className="flex gap-4 p-4 bg-gray-50 rounded-xl"
+                >
+                  <div className="relative w-16 h-16 bg-white rounded-lg overflow-hidden flex-shrink-0">
+                    {item.product.images.length > 0 ? (
+                      <Image
+                        src={item.product.images[0]}
+                        alt={item.product.name}
+                        fill
+                        className="object-cover"
+                        sizes="64px"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Package size={20} className="text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-gray-900 text-sm line-clamp-2 mb-1">
+                      {item.product.name}
+                    </h3>
+                    {item.selectedVariants && (
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {Object.entries(item.selectedVariants).map(([key, value]) => (
+                          <span key={key} className="text-xs bg-white text-gray-600 px-2 py-1 rounded-full">
+                            {key}: {value}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-500">Qty: {item.quantity}</span>
+                      <span className="font-bold text-gray-900">
+                        {formatPrice(item.product.price * item.quantity)}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Tax</span>
-              <span className="font-medium">{formatPrice(tax)}</span>
-            </div>
-            <div className="border-t pt-3">
-              <div className="flex justify-between">
-                <span className="text-xl font-semibold">Total</span>
-                <span className="text-xl font-semibold text-mf-dark-blue">
-                  {formatPrice(total)}
+
+            {/* Pricing Breakdown */}
+            <div className="border-t border-gray-200 pt-6 space-y-4">
+              <div className="flex justify-between text-gray-600">
+                <span>Subtotal</span>
+                <span className="font-medium">{formatPrice(subtotal)}</span>
+              </div>
+              
+              <div className="flex justify-between text-gray-600">
+                <span>Shipping</span>
+                <span className="font-medium">
+                  {shipping === 0 ? (
+                    <span className="text-green-600 font-bold">FREE</span>
+                  ) : (
+                    formatPrice(shipping)
+                  )}
                 </span>
               </div>
+              
+              <div className="flex justify-between text-gray-600">
+                <span>Tax</span>
+                <span className="font-medium">{formatPrice(tax)}</span>
+              </div>
+              
+              <div className="border-t border-gray-200 pt-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-xl font-bold text-gray-900">Total</span>
+                  <span className="text-3xl font-black text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                    {formatPrice(total)}
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div className="mt-6 text-sm text-gray-500">
-            <p>✓ Secure checkout with PayPal</p>
-            <p>✓ Free shipping on orders over $100</p>
-            <p>✓ 30-day return policy</p>
-          </div>
-        </motion.div>
+            {/* Enhanced Trust Signals */}
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <Shield size={16} className="text-green-500" />
+                Your Order is Protected
+              </h3>
+              
+              <div className="space-y-3 text-sm text-gray-600">
+                <div className="flex items-center gap-3">
+                  <CheckCircle size={16} className="text-green-500 flex-shrink-0" />
+                  <span>SSL encrypted secure checkout</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Truck size={16} className="text-blue-500 flex-shrink-0" />
+                  <span>Free shipping on orders over $100</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <RotateCcw size={16} className="text-purple-500 flex-shrink-0" />
+                  <span>30-day hassle-free returns</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Clock size={16} className="text-orange-500 flex-shrink-0" />
+                  <span>Ships within 1-2 business days</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </div>
   )

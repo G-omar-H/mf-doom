@@ -47,13 +47,13 @@ export default function CheckoutSuccessPage() {
         // Clear cart after successful order
         clearCart()
         
-        // Trigger confetti animation
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#FFD700', '#C0C0C0', '#8B0000']
-        })
+    // Trigger confetti animation
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#FFD700', '#C0C0C0', '#8B0000']
+    })
       })
       .catch(err => {
         console.error('Payment capture error:', err)

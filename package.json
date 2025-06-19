@@ -10,6 +10,7 @@
     "lint": "next lint",
     "migrate": "npx ts-node scripts/migrate-products.ts",
     "rebuild-products": "npx tsx scripts/analyze-and-create-products.ts",
+    "seed-products": "npx tsx scripts/seed-products.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
