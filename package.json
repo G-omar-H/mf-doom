@@ -11,7 +11,12 @@
     "migrate": "npx ts-node scripts/migrate-products.ts",
     "rebuild-products": "npx tsx scripts/analyze-and-create-products.ts",
     "seed-products": "npx tsx scripts/seed-products.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "db:generate": "prisma generate",
+    "seed:optimized": "npx tsx scripts/seed-optimized-products.ts",
+    "check:data": "npx tsx scripts/check-existing-data.ts"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",

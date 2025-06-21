@@ -4,7 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence, Variants } from 'framer-motion'
-import { ShoppingCart, Menu, X, Instagram, Search, Hash, Command } from 'lucide-react'
+import { ShoppingCart, Menu, X, Instagram, Search, Hash, Command, Skull } from 'lucide-react'
 import { useCartStore } from '@/lib/store/cartStore'
 import { useState, useEffect } from 'react'
 import { SearchModal } from '@/components/search/SearchModal'
@@ -53,11 +53,11 @@ export const Header: React.FC = () => {
   }
 
   const navLinks = [
-    { href: '/products', label: 'Shop', description: 'Browse all items' },
-    { href: '/products?category=apparel', label: 'Apparel', description: 'Clothing & gear' },
-    { href: '/products?category=vinyl', label: 'Vinyl', description: 'Records & music' },
-    { href: '/products?category=accessories', label: 'Accessories', description: 'Premium extras' },
-    { href: '/products?category=art', label: 'Art', description: 'Artistic pieces' },
+    { href: '/products', label: 'SHOP', description: 'ALL ITEMS' },
+    { href: '/products?category=apparel', label: 'GEAR', description: 'CLOTHING' },
+    { href: '/products?category=vinyl', label: 'VINYL', description: 'RECORDS' },
+    { href: '/products?category=accessories', label: 'EXTRAS', description: 'ACCESSORIES' },
+    { href: '/products?category=art', label: 'ART', description: 'PIECES' },
   ]
 
   const menuVariants: Variants = {
@@ -100,67 +100,65 @@ export const Header: React.FC = () => {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled 
-            ? 'bg-white/98 backdrop-blur-xl shadow-xl border-b border-gray-100/50' 
-            : 'bg-white/95 backdrop-blur-md'
+            ? 'bg-doom-black/95 backdrop-blur-xl shadow-villain-xl border-b border-doom-gold/20' 
+            : 'bg-doom-dark/90 backdrop-blur-md'
         }`}
       >
         <div className="px-6 md:px-12 lg:px-20">
           <nav className="flex items-center justify-between h-24">
-            {/* MF DOOM Logo with Mask GIF */}
+            {/* MF DOOM Villain Logo */}
             <Link href="/" className="relative z-50">
-              <div className="flex items-center gap-3">
-                {/* MF DOOM Mask GIF */}
+              <div className="flex items-center gap-4">
+                {/* DOOM Mask with Gritty Effect */}
                 <motion.div 
-                  className="w-12 h-12 rounded-lg flex items-center justify-center shadow-lg overflow-hidden relative"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.3 }}
+                  className="w-14 h-14 border-2 border-doom-gold bg-villain-metal flex items-center justify-center shadow-villain-md overflow-hidden relative"
+                  whileHover={{ scale: 1.1, rotate: 2 }}
+                  transition={{ duration: 0.3, ease: "comic" }}
                   style={{
-                    background: 'linear-gradient(135deg, rgba(139, 212, 230, 0.1), rgba(147, 51, 234, 0.1))'
+                    clipPath: 'polygon(10% 0%, 90% 0%, 100% 25%, 100% 75%, 90% 100%, 10% 100%, 0% 75%, 0% 25%)'
                   }}
                 >
-                  <div className="relative w-10 h-8 overflow-hidden rounded-md">
+                  <div className="relative w-12 h-10 overflow-hidden">
                     <Image
                       src="/icons/mfdoomcask.gif"
                       alt="MF DOOM Mask"
-                      width={40}
+                      width={48}
                       height={40}
-                      className="w-10 h-10 object-cover"
+                      className="w-12 h-12 object-cover"
                       style={{
-                        mixBlendMode: 'screen',
-                        filter: 'contrast(1.2) brightness(1.1)',
+                        filter: 'contrast(1.5) brightness(0.8) saturate(0.7)',
                         objectPosition: 'center top',
                         transform: 'translateY(-2px)'
                       }}
                       unoptimized
                     />
                   </div>
+                  {/* Metallic shine effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-doom-silver/30 to-transparent transform -skew-x-12 animate-gold-shine" />
                 </motion.div>
 
-                {/* Simple Typography */}
+                {/* Bold Villain Typography */}
                 <div className="flex flex-col">
                   <h1 
-                    className="text-2xl md:text-3xl font-black tracking-tight leading-none"
+                    className="text-3xl md:text-4xl font-villain text-doom-gold leading-none tracking-wider"
                     style={{
-                      fontFamily: 'Playfair Display, serif',
-                      background: 'linear-gradient(135deg, #000, #374151)',
-                      backgroundClip: 'text',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent'
+                      textShadow: '3px 3px 0px #000000, -1px -1px 0px #000000, 1px -1px 0px #000000, -1px 1px 0px #000000',
+                      filter: 'drop-shadow(0 0 8px rgba(255, 215, 0, 0.5))'
                     }}
                   >
                     MF DOOM
                   </h1>
                   
-                  <p className="text-xs tracking-widest font-medium uppercase text-gray-500">
-                    <Hash size={8} className="inline mr-1" />
-                    SHOP
+                  <p className="text-xs tracking-[0.3em] font-bold uppercase text-doom-silver font-mono">
+                    <Skull size={8} className="inline mr-1" />
+                    VILLAIN SHOP
                   </p>
                 </div>
               </div>
             </Link>
 
-            {/* Enhanced Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-2 relative z-40">
+            {/* Gritty Desktop Navigation */}
+            <div className="hidden lg:flex items-center space-x-1 relative z-40">
               {navLinks.map((link, index) => (
                 <motion.div
                   key={link.href}
@@ -171,31 +169,36 @@ export const Header: React.FC = () => {
                 >
                   <Link
                     href={link.href}
-                    className="flex flex-col items-center px-4 py-3 rounded-xl hover:bg-gray-50 transition-all duration-300 relative overflow-hidden"
+                    className="flex flex-col items-center px-3 py-3 bg-doom-charcoal/50 border border-doom-gray/30 hover:bg-doom-gray/60 hover:border-doom-gold/50 transition-all duration-300 relative overflow-hidden"
+                    style={{
+                      clipPath: 'polygon(5% 0%, 95% 0%, 100% 15%, 100% 85%, 95% 100%, 5% 100%, 0% 85%, 0% 15%)'
+                    }}
                   >
+                    {/* Background glow on hover */}
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      className="absolute inset-0 bg-doom-gold/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                       initial={{ scale: 0.8 }}
                       whileHover={{ scale: 1 }}
                       transition={{ duration: 0.3 }}
-                      style={{ zIndex: 1 }}
                     />
                     
-                    <span className="relative z-10 text-sm font-semibold text-gray-700 group-hover:text-gray-900 transition-colors duration-300">
+                    <span className="relative z-10 text-sm font-villain text-doom-silver group-hover:text-doom-gold transition-colors duration-300 tracking-wide">
                       {link.label}
                     </span>
-                    <span className="relative z-10 text-xs text-gray-500 group-hover:text-gray-700 transition-colors duration-300 mt-1">
+                    <span className="relative z-10 text-xs text-doom-metal group-hover:text-doom-silver transition-colors duration-300 mt-1 font-mono tracking-wider">
                       {link.description}
                     </span>
                     
+                    {/* Sharp bottom accent */}
                     <motion.div
-                      className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-gradient-to-r from-gray-900 to-gray-600 group-hover:w-3/4 transition-all duration-300"
-                      style={{ transform: 'translateX(-50%)', zIndex: 2 }}
+                      className="absolute bottom-0 left-1/2 w-0 h-1 bg-doom-gold group-hover:w-3/4 transition-all duration-300"
+                      style={{ transform: 'translateX(-50%)' }}
                     />
                   </Link>
                 </motion.div>
               ))}
               
+              {/* Instagram with Villain Styling */}
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -206,32 +209,38 @@ export const Header: React.FC = () => {
                   href="https://instagram.com/thismfdoom_"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition-all duration-300 hover:shadow-lg hover:scale-105 relative z-30"
+                  className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-doom-blood to-doom-red text-white hover:from-doom-red hover:to-doom-blood transition-all duration-300 hover:shadow-red-glow hover:scale-105 relative z-30 border border-doom-red/50"
+                  style={{
+                    clipPath: 'polygon(10% 0%, 90% 0%, 100% 20%, 100% 80%, 90% 100%, 10% 100%, 0% 80%, 0% 20%)'
+                  }}
                 >
                   <Instagram size={16} />
-                  <span className="text-sm font-medium hidden xl:inline">@thismfdoom_</span>
+                  <span className="text-sm font-villain hidden xl:inline tracking-wide">@VILLAIN</span>
                 </a>
               </motion.div>
             </div>
 
-            {/* Right Side Actions */}
-            <div className="flex items-center space-x-4 relative z-40">
-              {/* Enhanced Search Button */}
+            {/* Right Side Actions - Villain Style */}
+            <div className="flex items-center space-x-3 relative z-40">
+              {/* Search with Dark Styling */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={openSearch}
-                className="hidden md:flex items-center justify-center gap-2 px-4 h-11 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors duration-300 group relative z-30"
+                className="hidden md:flex items-center justify-center gap-2 px-4 h-12 bg-doom-charcoal border border-doom-gray hover:bg-doom-gray hover:border-doom-gold/50 transition-colors duration-300 group relative z-30"
+                style={{
+                  clipPath: 'polygon(8% 0%, 92% 0%, 100% 20%, 100% 80%, 92% 100%, 8% 100%, 0% 80%, 0% 20%)'
+                }}
               >
-                <Search size={18} className="text-gray-600 group-hover:text-gray-800 transition-colors" />
-                <span className="text-sm text-gray-600 group-hover:text-gray-800 transition-colors hidden lg:inline">
-                  Search
+                <Search size={18} className="text-doom-silver group-hover:text-doom-gold transition-colors" />
+                <span className="text-sm text-doom-silver group-hover:text-doom-gold transition-colors hidden lg:inline font-mono tracking-wide">
+                  SEARCH
                 </span>
                 <div className="hidden xl:flex items-center gap-1 ml-2">
-                  <kbd className="px-1.5 py-0.5 bg-white rounded text-xs text-gray-500 border border-gray-300">
-                    {typeof navigator !== 'undefined' && navigator.platform.includes('Mac') ? '⌘' : 'Ctrl'}
+                  <kbd className="px-1.5 py-0.5 bg-doom-dark border border-doom-gray text-xs text-doom-metal font-mono">
+                    {typeof navigator !== 'undefined' && navigator.platform.includes('Mac') ? '⌘' : 'CTRL'}
                   </kbd>
-                  <kbd className="px-1.5 py-0.5 bg-white rounded text-xs text-gray-500 border border-gray-300">
+                  <kbd className="px-1.5 py-0.5 bg-doom-dark border border-doom-gray text-xs text-doom-metal font-mono">
                     K
                   </kbd>
                 </div>
@@ -242,25 +251,35 @@ export const Header: React.FC = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={openSearch}
-                className="md:hidden flex items-center justify-center w-11 h-11 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors duration-300 group relative z-30"
+                className="md:hidden flex items-center justify-center w-12 h-12 bg-doom-charcoal border border-doom-gray hover:bg-doom-gray hover:border-doom-gold/50 transition-colors duration-300 group relative z-30"
+                style={{
+                  clipPath: 'polygon(10% 0%, 90% 0%, 100% 25%, 100% 75%, 90% 100%, 10% 100%, 0% 75%, 0% 25%)'
+                }}
               >
-                <Search size={20} className="text-gray-600 group-hover:text-gray-800 transition-colors" />
+                <Search size={20} className="text-doom-silver group-hover:text-doom-gold transition-colors" />
               </motion.button>
 
+              {/* Villain Cart Button */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleCart}
-                className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-gray-900 hover:bg-black transition-all duration-300 group shadow-lg hover:shadow-xl z-30"
+                className="relative flex items-center justify-center w-12 h-12 bg-villain-dark border-2 border-doom-gold hover:bg-doom-charcoal transition-all duration-300 group shadow-villain-md hover:shadow-gold-glow z-30"
+                style={{
+                  clipPath: 'polygon(15% 0%, 85% 0%, 100% 30%, 100% 70%, 85% 100%, 15% 100%, 0% 70%, 0% 30%)'
+                }}
               >
-                <ShoppingCart size={20} className="text-white" />
+                <ShoppingCart size={20} className="text-doom-gold" />
                 <AnimatePresence>
                   {totalItems > 0 && (
                     <motion.span
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0, opacity: 0 }}
-                      className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold shadow-lg border-2 border-white z-40"
+                      className="absolute -top-2 -right-2 bg-doom-red text-white text-xs w-6 h-6 flex items-center justify-center font-villain shadow-villain-sm border-2 border-doom-dark z-40"
+                      style={{
+                        clipPath: 'polygon(20% 0%, 80% 0%, 100% 40%, 100% 60%, 80% 100%, 20% 100%, 0% 60%, 0% 40%)'
+                      }}
                     >
                       {totalItems}
                     </motion.span>
@@ -269,18 +288,25 @@ export const Header: React.FC = () => {
                 
                 {totalItems > 0 && (
                   <motion.div
-                    className="absolute inset-0 rounded-xl bg-red-500 opacity-20"
+                    className="absolute inset-0 bg-doom-red/20 opacity-60"
                     animate={{ scale: [1, 1.1, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
+                    style={{
+                      clipPath: 'polygon(15% 0%, 85% 0%, 100% 30%, 100% 70%, 85% 100%, 15% 100%, 0% 70%, 0% 30%)'
+                    }}
                   />
                 )}
               </motion.button>
 
+              {/* Mobile Menu with Sharp Styling */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden flex items-center justify-center w-11 h-11 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors duration-300 relative z-30"
+                className="lg:hidden flex items-center justify-center w-12 h-12 bg-doom-charcoal border border-doom-gray hover:bg-doom-gray hover:border-doom-gold/50 transition-colors duration-300 relative z-30"
+                style={{
+                  clipPath: 'polygon(10% 0%, 90% 0%, 100% 25%, 100% 75%, 90% 100%, 10% 100%, 0% 75%, 0% 25%)'
+                }}
               >
                 <AnimatePresence mode="wait">
                   {isMobileMenuOpen ? (
@@ -291,7 +317,7 @@ export const Header: React.FC = () => {
                       exit={{ rotate: 90, opacity: 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <X size={20} className="text-gray-700" />
+                      <X size={20} className="text-doom-silver" />
                     </motion.div>
                   ) : (
                     <motion.div
@@ -301,7 +327,7 @@ export const Header: React.FC = () => {
                       exit={{ rotate: -90, opacity: 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <Menu size={20} className="text-gray-700" />
+                      <Menu size={20} className="text-doom-silver" />
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -310,7 +336,7 @@ export const Header: React.FC = () => {
           </nav>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Dark Mobile Navigation */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
@@ -318,10 +344,10 @@ export const Header: React.FC = () => {
               initial="closed"
               animate="open"
               exit="closed"
-              className="lg:hidden overflow-hidden bg-white/98 backdrop-blur-xl border-t border-gray-100 shadow-2xl relative z-40"
+              className="lg:hidden overflow-hidden bg-doom-dark/98 backdrop-blur-xl border-t border-doom-gold/30 shadow-villain-2xl relative z-40"
             >
-              <div className="px-6 py-8 space-y-6">
-                {/* Mobile Search */}
+              <div className="px-6 py-8 space-y-6 bg-paper-texture">
+                {/* Mobile Search - Villain Style */}
                 <motion.div
                   custom={-1}
                   variants={itemVariants}
@@ -331,12 +357,15 @@ export const Header: React.FC = () => {
                 >
                   <button
                     onClick={openSearch}
-                    className="w-full flex items-center gap-4 p-4 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all duration-300"
+                    className="w-full flex items-center gap-4 p-4 bg-doom-charcoal/80 border border-doom-gray hover:bg-doom-gray/60 hover:border-doom-gold/50 transition-all duration-300"
+                    style={{
+                      clipPath: 'polygon(5% 0%, 95% 0%, 100% 15%, 100% 85%, 95% 100%, 5% 100%, 0% 85%, 0% 15%)'
+                    }}
                   >
-                    <Search size={24} className="text-gray-600" />
+                    <Search size={24} className="text-doom-gold" />
                     <div className="text-left">
-                      <h3 className="text-lg font-semibold text-gray-900">Search Products</h3>
-                      <p className="text-sm text-gray-500">Find exactly what you're looking for</p>
+                      <h3 className="text-lg font-villain text-doom-silver tracking-wide">SEARCH ITEMS</h3>
+                      <p className="text-sm text-doom-metal font-mono">Find your villain gear</p>
                     </div>
                   </button>
                 </motion.div>
@@ -353,46 +382,56 @@ export const Header: React.FC = () => {
                     <Link
                       href={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="group block p-4 rounded-2xl hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 transition-all duration-300"
+                      className="group block p-4 bg-doom-charcoal/50 border border-doom-gray/30 hover:bg-doom-gray/60 hover:border-doom-gold/50 transition-all duration-300"
+                      style={{
+                        clipPath: 'polygon(3% 0%, 97% 0%, 100% 12%, 100% 88%, 97% 100%, 3% 100%, 0% 88%, 0% 12%)'
+                      }}
                     >
                       <div className="flex justify-between items-center">
                         <div>
-                          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-gray-800 transition-colors">
+                          <h3 className="text-lg font-villain text-doom-silver group-hover:text-doom-gold transition-colors tracking-wide">
                             {link.label}
                           </h3>
-                          <p className="text-sm text-gray-500 group-hover:text-gray-600 transition-colors">
+                          <p className="text-sm text-doom-metal group-hover:text-doom-silver transition-colors font-mono tracking-wider">
                             {link.description}
                           </p>
                         </div>
                         <motion.div
-                          className="w-8 h-8 rounded-full bg-gray-100 group-hover:bg-gray-200 flex items-center justify-center transition-colors"
+                          className="w-8 h-8 bg-doom-gray group-hover:bg-doom-gold/20 flex items-center justify-center transition-colors border border-doom-metal"
                           whileHover={{ scale: 1.1 }}
+                          style={{
+                            clipPath: 'polygon(20% 0%, 80% 0%, 100% 40%, 100% 60%, 80% 100%, 20% 100%, 0% 60%, 0% 40%)'
+                          }}
                         >
-                          <div className="w-2 h-2 rounded-full bg-gray-400 group-hover:bg-gray-500 transition-colors" />
+                          <div className="w-2 h-2 bg-doom-gold" />
                         </motion.div>
                       </div>
                     </Link>
                   </motion.div>
                 ))}
                 
+                {/* Instagram with Dark Villain Styling */}
                 <motion.div
                   custom={navLinks.length}
                   variants={itemVariants}
                   initial="closed"
                   animate="open"
                   exit="closed"
-                  className="pt-6 border-t border-gray-200"
+                  className="pt-6 border-t border-doom-gold/30"
                 >
                   <a
                     href="https://instagram.com/thismfdoom_"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition-all duration-300 hover:scale-105"
+                    className="flex items-center gap-4 p-4 bg-gradient-to-r from-doom-blood to-doom-red text-white hover:from-doom-red hover:to-doom-blood transition-all duration-300 hover:scale-105 border border-doom-red/50"
+                    style={{
+                      clipPath: 'polygon(8% 0%, 92% 0%, 100% 18%, 100% 82%, 92% 100%, 8% 100%, 0% 82%, 0% 18%)'
+                    }}
                   >
                     <Instagram size={24} />
                     <div>
-                      <h3 className="font-semibold">Follow @thismfdoom_</h3>
-                      <p className="text-sm opacity-90">Join our community</p>
+                      <h3 className="font-villain tracking-wide">FOLLOW THE VILLAIN</h3>
+                      <p className="text-sm opacity-90 font-mono">@thismfdoom_</p>
                     </div>
                   </a>
                 </motion.div>

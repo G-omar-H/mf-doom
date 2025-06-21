@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { ProductCard } from '@/components/products/ProductCard'
 import { InstagramGrid } from '@/components/instagram/InstagramGrid'
 import { Button, GradientButton } from '@/components/ui/Button'
-import { ChevronDown, Sparkles, Disc, Shirt, Heart, ArrowRight, Play } from 'lucide-react'
+import { ChevronDown, Sparkles, Disc, Shirt, Heart, ArrowRight, Play, Skull, Zap, Shield } from 'lucide-react'
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false)
@@ -14,11 +14,11 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const { scrollY } = useScroll()
   
-  // Enhanced parallax effects
-  const heroY = useTransform(scrollY, [0, 800], [0, 200])
-  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0])
-  const textY = useTransform(scrollY, [0, 600], [0, 150])
-  const backgroundY = useTransform(scrollY, [0, 1000], [0, -100])
+  // Dark villain parallax effects
+  const heroY = useTransform(scrollY, [0, 800], [0, 100])
+  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.3])
+  const textY = useTransform(scrollY, [0, 600], [0, 80])
+  const backgroundY = useTransform(scrollY, [0, 1000], [0, -50])
 
   useEffect(() => {
     setIsVisible(true)
@@ -32,11 +32,11 @@ export default function Home() {
           if (products.length > 0) {
             setFeaturedProducts(products.slice(0, 4))
           } else {
-            // Fallback products when database is empty
+            // Fallback villain products when database is empty
             setFeaturedProducts([
               {
                 id: 'demo-1',
-                name: 'Villain Mask Tee',
+                name: 'VILLAIN MASK TEE',
                 price: 45,
                 compareAtPrice: 55,
                 images: ['https://picsum.photos/400/400?random=1'],
@@ -47,7 +47,7 @@ export default function Home() {
               },
               {
                 id: 'demo-2',
-                name: 'Madvillainy Vinyl',
+                name: 'MADVILLAINY VINYL',
                 price: 85,
                 compareAtPrice: 95,
                 images: ['https://picsum.photos/400/400?random=2'],
@@ -58,7 +58,7 @@ export default function Home() {
               },
               {
                 id: 'demo-3',
-                name: 'DOOM Hoodie',
+                name: 'DOOM HOODIE',
                 price: 95,
                 compareAtPrice: 110,
                 images: ['https://picsum.photos/400/400?random=3'],
@@ -69,7 +69,7 @@ export default function Home() {
               },
               {
                 id: 'demo-4',
-                name: 'Metal Face Pin',
+                name: 'METAL FACE PIN',
                 price: 25,
                 images: ['https://picsum.photos/400/400?random=4'],
                 category: 'accessories',
@@ -85,7 +85,7 @@ export default function Home() {
           setFeaturedProducts([
             {
               id: 'demo-1',
-              name: 'Villain Mask Tee',
+              name: 'VILLAIN MASK TEE',
               price: 45,
               compareAtPrice: 55,
               images: ['https://picsum.photos/400/400?random=1'],
@@ -96,7 +96,7 @@ export default function Home() {
             },
             {
               id: 'demo-2',
-              name: 'Madvillainy Vinyl',
+              name: 'MADVILLAINY VINYL',
               price: 85,
               compareAtPrice: 95,
               images: ['https://picsum.photos/400/400?random=2'],
@@ -107,7 +107,7 @@ export default function Home() {
             },
             {
               id: 'demo-3',
-              name: 'DOOM Hoodie',
+              name: 'DOOM HOODIE',
               price: 95,
               compareAtPrice: 110,
               images: ['https://picsum.photos/400/400?random=3'],
@@ -118,7 +118,7 @@ export default function Home() {
             },
             {
               id: 'demo-4',
-              name: 'Metal Face Pin',
+              name: 'METAL FACE PIN',
               price: 25,
               images: ['https://picsum.photos/400/400?random=4'],
               category: 'accessories',
@@ -134,7 +134,7 @@ export default function Home() {
         setFeaturedProducts([
           {
             id: 'demo-1',
-            name: 'Villain Mask Tee',
+            name: 'VILLAIN MASK TEE',
             price: 45,
             compareAtPrice: 55,
             images: ['https://picsum.photos/400/400?random=1'],
@@ -145,7 +145,7 @@ export default function Home() {
           },
           {
             id: 'demo-2',
-            name: 'Madvillainy Vinyl',
+            name: 'MADVILLAINY VINYL',
             price: 85,
             compareAtPrice: 95,
             images: ['https://picsum.photos/400/400?random=2'],
@@ -156,7 +156,7 @@ export default function Home() {
           },
           {
             id: 'demo-3',
-            name: 'DOOM Hoodie',
+            name: 'DOOM HOODIE',
             price: 95,
             compareAtPrice: 110,
             images: ['https://picsum.photos/400/400?random=3'],
@@ -167,7 +167,7 @@ export default function Home() {
           },
           {
             id: 'demo-4',
-            name: 'Metal Face Pin',
+            name: 'METAL FACE PIN',
             price: 25,
             images: ['https://picsum.photos/400/400?random=4'],
             category: 'accessories',
@@ -211,62 +211,71 @@ export default function Home() {
 
   return (
     <>
-      {/* Enhanced Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Sophisticated Background */}
+      {/* Dark Villain Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-villain-dark">
+        {/* Gritty Dark Background */}
         <motion.div 
           style={{ y: backgroundY }}
           className="absolute inset-0"
         >
-          {/* Gradient Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-blue-50" />
+          {/* Dark gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-doom-black via-doom-dark to-doom-charcoal" />
           
-          {/* Animated Grid Pattern */}
-          <div className="absolute inset-0 opacity-[0.02]">
+          {/* Grunge texture overlay */}
+          <div className="absolute inset-0 bg-grunge-texture opacity-60" />
+          
+          {/* Sharp grid pattern */}
+          <div className="absolute inset-0 opacity-[0.08]">
             <motion.div
               className="absolute inset-0"
               style={{
                 backgroundImage: `
-                  linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px)
+                  linear-gradient(rgba(255, 215, 0, 0.3) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(255, 215, 0, 0.3) 1px, transparent 1px)
                 `,
-                backgroundSize: '40px 40px'
+                backgroundSize: '60px 60px'
               }}
               animate={{
-                backgroundPosition: ['0px 0px', '40px 40px'],
+                backgroundPosition: ['0px 0px', '60px 60px'],
               }}
               transition={{
-                duration: 20,
+                duration: 30,
                 repeat: Infinity,
                 ease: "linear"
               }}
             />
           </div>
           
-          {/* Floating Elements */}
+          {/* Dramatic floating elements */}
           <motion.div
-            className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-br from-blue-400/10 to-blue-600/20 rounded-full blur-3xl"
+            className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-doom-gold/20 to-doom-bronze/30 blur-3xl"
             animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.6, 0.3],
+              scale: [1, 1.3, 1],
+              opacity: [0.2, 0.4, 0.2],
             }}
             transition={{
-              duration: 8,
+              duration: 12,
               repeat: Infinity,
               ease: "easeInOut"
             }}
+            style={{
+              clipPath: 'polygon(20% 0%, 80% 0%, 100% 30%, 100% 70%, 80% 100%, 20% 100%, 0% 70%, 0% 30%)'
+            }}
           />
           <motion.div
-            className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-tl from-purple-300/10 to-pink-500/20 rounded-full blur-3xl"
+            className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-tl from-doom-red/20 to-doom-blood/30 blur-3xl"
             animate={{
               scale: [1.2, 1, 1.2],
-              opacity: [0.2, 0.5, 0.2],
+              opacity: [0.3, 0.6, 0.3],
             }}
             transition={{
-              duration: 10,
+              duration: 15,
               repeat: Infinity,
               ease: "easeInOut",
-              delay: 2
+              delay: 3
+            }}
+            style={{
+              clipPath: 'polygon(30% 0%, 70% 0%, 100% 40%, 100% 60%, 70% 100%, 30% 100%, 0% 60%, 0% 40%)'
             }}
           />
         </motion.div>
@@ -280,70 +289,83 @@ export default function Home() {
         >
           <motion.div 
             variants={itemVariants}
-            className="relative mb-12"
+            className="relative mb-16"
           >
-            {/* Enhanced Hero Card */}
+            {/* Bold Villain Hero Card */}
             <motion.div
               initial={{ scale: 0.9, opacity: 0, rotateX: 15 }}
               animate={{ scale: 1, opacity: 1, rotateX: 0 }}
               transition={{ duration: 1.2, ease: "easeOut" }}
-              className="relative bg-white/90 backdrop-blur-xl inline-block px-12 md:px-16 py-8 md:py-12 rounded-3xl shadow-2xl border border-gray-100/50"
+              className="relative bg-doom-charcoal/90 backdrop-blur-xl inline-block px-16 md:px-20 py-12 md:py-16 border-4 border-doom-gold shadow-villain-2xl"
+              style={{
+                clipPath: 'polygon(8% 0%, 92% 0%, 100% 15%, 100% 85%, 92% 100%, 8% 100%, 0% 85%, 0% 15%)',
+                background: 'linear-gradient(135deg, rgba(26, 26, 26, 0.95), rgba(42, 42, 42, 0.9))'
+              }}
             >
-              {/* Gradient Border Effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-xl opacity-60" />
+              {/* Gold border glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-doom-gold/30 via-doom-bronze/20 to-doom-gold/30 blur-xl opacity-80" />
               
               <div className="relative z-10">
                 <motion.h1 
-                  className="doom-hero-title relative mb-4"
+                  className="relative mb-6"
                   initial={{ backgroundPosition: "0% 50%" }}
                   animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
                   transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
                 >
                   <motion.span 
-                    className="block"
+                    className="block font-villain text-doom-xl md:text-doom-3xl text-doom-silver tracking-[0.1em] leading-none"
                     initial={{ y: 40, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.5, duration: 1 }}
+                    style={{
+                      textShadow: '4px 4px 0px #000000, -2px -2px 0px #000000, 2px -2px 0px #000000, -2px 2px 0px #000000'
+                    }}
                   >
                     THIS IS
                   </motion.span>
                   <motion.span 
-                    className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800"
+                    className="block font-villain text-doom-hero md:text-doom-hero text-doom-gold tracking-[-0.02em] leading-none mt-2"
                     initial={{ y: 40, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.7, duration: 1 }}
+                    style={{
+                      textShadow: '6px 6px 0px #000000, -3px -3px 0px #000000, 3px -3px 0px #000000, -3px 3px 0px #000000',
+                      filter: 'drop-shadow(0 0 20px rgba(255, 215, 0, 0.8))'
+                    }}
                   >
                     MF DOOM
                   </motion.span>
                 </motion.h1>
                 
                 <motion.p 
-                  className="text-xl md:text-2xl font-medium text-gray-600 leading-relaxed"
+                  className="text-doom-lg md:text-doom-xl font-villain text-doom-silver leading-tight tracking-wide"
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.9, duration: 0.8 }}
-                  style={{ fontFamily: 'Playfair Display, serif' }}
+                  style={{
+                    textShadow: '2px 2px 0px #000000'
+                  }}
                 >
-                  Paying tribute to the villain
+                  PAYING TRIBUTE TO THE VILLAIN
                 </motion.p>
               </div>
               
-              {/* Floating Decorative Elements */}
+              {/* Sharp decorative elements */}
               <motion.div
-                className="absolute -top-6 -right-6 text-blue-400"
+                className="absolute -top-8 -right-8 text-doom-gold"
                 animate={{ 
                   rotate: 360,
-                  scale: [1, 1.2, 1]
+                  scale: [1, 1.3, 1]
                 }}
                 transition={{ 
                   rotate: { duration: 20, repeat: Infinity, ease: "linear" },
                   scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
                 }}
               >
-                <Sparkles size={40} />
+                <Skull size={48} />
               </motion.div>
               <motion.div
-                className="absolute -bottom-6 -left-6 text-purple-500"
+                className="absolute -bottom-8 -left-8 text-doom-bronze"
                 animate={{ 
                   rotate: -360,
                   scale: [1.2, 1, 1.2]
@@ -353,70 +375,93 @@ export default function Home() {
                   scale: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }
                 }}
               >
-                <Disc size={36} />
+                <Shield size={44} />
               </motion.div>
             </motion.div>
           </motion.div>
           
           <motion.p 
             variants={itemVariants}
-            className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-16 leading-relaxed"
+            className="text-doom-lg md:text-doom-xl text-doom-metal max-w-4xl mx-auto mb-16 leading-relaxed font-mono tracking-wide"
+            style={{
+              textShadow: '1px 1px 0px #000000'
+            }}
           >
             A curated collection celebrating the masked legend's eternal influence on 
-            <span className="font-semibold text-gray-800"> hip-hop culture</span> and 
-            <span className="font-semibold text-gray-800"> artistic expression</span>.
+            <span className="font-villain text-doom-silver"> HIP-HOP CULTURE</span> and 
+            <span className="font-villain text-doom-silver"> ARTISTIC EXPRESSION</span>.
           </motion.p>
 
           <motion.div 
             variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16"
+            className="flex flex-col sm:flex-row gap-8 justify-center items-center mb-20"
           >
-            <Button 
-              size="lg" 
-              rightIcon={<ArrowRight size={20} />}
-              className="shadow-2xl hover:shadow-blue-500/25"
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="group"
             >
-              <Link href="/products">Explore Collection</Link>
-            </Button>
+              <Link 
+                href="/products"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-villain-gold border-3 border-doom-bronze text-doom-black font-villain text-doom-base tracking-wide shadow-villain-lg hover:shadow-gold-glow transition-all duration-300"
+                style={{
+                  clipPath: 'polygon(10% 0%, 90% 0%, 100% 25%, 100% 75%, 90% 100%, 10% 100%, 0% 75%, 0% 25%)',
+                  textShadow: 'none'
+                }}
+              >
+                EXPLORE COLLECTION
+                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </motion.div>
             
-            <Button 
-              variant="secondary" 
-              size="lg"
-              leftIcon={<Play size={20} />}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="group"
             >
-              <Link href="#story">Our Story</Link>
-            </Button>
+              <Link 
+                href="#story"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-doom-charcoal border-3 border-doom-silver text-doom-silver font-villain text-doom-base tracking-wide shadow-villain-lg hover:shadow-silver-glow hover:text-doom-gold transition-all duration-300"
+                style={{
+                  clipPath: 'polygon(10% 0%, 90% 0%, 100% 25%, 100% 75%, 90% 100%, 10% 100%, 0% 75%, 0% 25%)'
+                }}
+              >
+                <Play size={20} className="group-hover:scale-110 transition-transform" />
+                OUR STORY
+              </Link>
+            </motion.div>
           </motion.div>
         </motion.div>
 
-        {/* Properly Centered Scroll Indicator */}
+        {/* Sharp scroll indicator */}
         <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-8">
           <motion.div 
-            className="flex flex-col items-center gap-2"
+            className="flex flex-col items-center gap-3"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 2.5, duration: 1 }}
           >
-            <span className="text-sm font-medium tracking-wider uppercase text-gray-600 opacity-80">
-              Scroll to explore
+            <span className="text-sm font-villain tracking-[0.2em] uppercase text-doom-silver opacity-80">
+              SCROLL DOWN
             </span>
             <motion.div
-              animate={{ y: [0, 12, 0] }}
+              animate={{ y: [0, 15, 0] }}
               transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-              className="text-gray-500"
+              className="text-doom-gold"
             >
-              <ChevronDown size={28} />
+              <ChevronDown size={32} />
             </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* Enhanced Story Section */}
-      <section id="story" className="relative bg-white py-32 overflow-hidden">
+      {/* Dark Story Section */}
+      <section id="story" className="relative bg-doom-dark py-32 overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
-          <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
+          <div className="absolute inset-0 bg-paper-texture opacity-30" />
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-doom-gold to-transparent" />
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-doom-gold to-transparent" />
           </div>
 
         <div className="max-w-7xl mx-auto px-6">
@@ -427,44 +472,47 @@ export default function Home() {
             transition={{ duration: 1.2 }}
             viewport={{ once: true, margin: "-100px" }}
           >
-            {/* Content */}
+            {/* Dark Content */}
             <motion.div 
-              className="space-y-10"
+              className="space-y-12"
               initial={{ x: -80, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
               transition={{ duration: 1, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              <div className="space-y-6">
+              <div className="space-y-8">
                 <motion.div
-                  className="flex items-center gap-3 text-blue-600 font-semibold text-sm tracking-wider uppercase"
+                  className="flex items-center gap-3 text-doom-gold font-villain text-doom-sm tracking-[0.2em] uppercase"
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   transition={{ delay: 0.4 }}
                   viewport={{ once: true }}
                 >
-                  <Heart size={16} />
-                  <span>Our Mission</span>
+                  <Skull size={20} />
+                  <span>OUR MISSION</span>
                 </motion.div>
                 
-                <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight">
-                  Paying Tribute to 
-                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800">
-                    the Villain
+                <h2 className="font-villain text-doom-2xl md:text-doom-3xl lg:text-doom-3xl text-doom-silver leading-tight tracking-wide">
+                  PAYING TRIBUTE TO 
+                  <span className="block text-doom-gold mt-2" style={{
+                    textShadow: '3px 3px 0px #000000, -1px -1px 0px #000000',
+                    filter: 'drop-shadow(0 0 15px rgba(255, 215, 0, 0.6))'
+                  }}>
+                    THE VILLAIN
                   </span>
             </h2>
               </div>
               
-              <div className="space-y-8 text-xl leading-relaxed text-gray-600">
+              <div className="space-y-8 text-doom-base leading-relaxed text-doom-metal font-mono">
                 <p>
                   Born from our vibrant Instagram community{' '}
                   <a 
                     href="https://instagram.com/thismfdoom_" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="font-bold text-blue-600 hover:text-blue-700 transition-colors underline decoration-blue-300 hover:decoration-blue-500"
+                    className="font-villain text-doom-gold hover:text-doom-bronze transition-colors underline decoration-doom-gold/50 hover:decoration-doom-bronze tracking-wide"
                   >
-                    @thismfdoom_
+                    @THISMFDOOM_
                   </a>
                   , our shop represents more than merchandise — it's a sanctuary for preserving 
                   and celebrating the profound legacy of Daniel Dumile.
@@ -474,44 +522,56 @@ export default function Home() {
                   artistic genius, from the iconic mask that became legend to the intricate 
                   wordplay that redefined hip-hop's creative boundaries.
                 </p>
-                <p className="font-semibold text-gray-800">
-                  We believe in quality over quantity, authenticity over imitation, and 
-                  community over commerce.
+                <p className="font-villain text-doom-silver tracking-wide">
+                  WE BELIEVE IN QUALITY OVER QUANTITY, AUTHENTICITY OVER IMITATION, AND 
+                  COMMUNITY OVER COMMERCE.
               </p>
             </div>
               
               <motion.div 
-                className="flex flex-col sm:flex-row gap-6 pt-6"
+                className="flex flex-col sm:flex-row gap-6 pt-8"
                 initial={{ y: 30, opacity: 0 }}
                 whileInView={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.8 }}
                 viewport={{ once: true }}
               >
-                <Button 
-                  variant="gradient" 
-                  size="lg"
-                  rightIcon={<ArrowRight size={20} />}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <Link href="/products">Browse Collection</Link>
-                </Button>
+                  <Link 
+                    href="/products"
+                    className="inline-flex items-center gap-3 px-6 py-3 bg-villain-gold border-2 border-doom-bronze text-doom-black font-villain text-doom-sm tracking-wide shadow-villain-md hover:shadow-gold-glow transition-all duration-300"
+                    style={{
+                      clipPath: 'polygon(8% 0%, 92% 0%, 100% 20%, 100% 80%, 92% 100%, 8% 100%, 0% 80%, 0% 20%)'
+                    }}
+                  >
+                    BROWSE COLLECTION
+                    <ArrowRight size={18} />
+                  </Link>
+                </motion.div>
                 
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  rightIcon={<Sparkles size={20} />}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   <a 
                     href="https://instagram.com/thismfdoom_" 
                     target="_blank" 
                     rel="noopener noreferrer"
+                    className="inline-flex items-center gap-3 px-6 py-3 bg-doom-charcoal border-2 border-doom-silver text-doom-silver font-villain text-doom-sm tracking-wide shadow-villain-md hover:shadow-silver-glow hover:text-doom-gold transition-all duration-300"
+                    style={{
+                      clipPath: 'polygon(8% 0%, 92% 0%, 100% 20%, 100% 80%, 92% 100%, 8% 100%, 0% 80%, 0% 20%)'
+                    }}
                   >
-                    Join Community
+                    FOLLOW US
+                    <Zap size={18} />
                   </a>
-                </Button>
+                </motion.div>
               </motion.div>
             </motion.div>
 
-            {/* Enhanced Instagram Panel */}
+            {/* Right side could have image or additional content */}
             <motion.div 
               className="relative"
               initial={{ x: 80, opacity: 0 }}
@@ -519,39 +579,16 @@ export default function Home() {
               transition={{ duration: 1, delay: 0.4 }}
               viewport={{ once: true }}
             >
-              <div className="relative max-w-lg mx-auto">
-                {/* Glowing Background */}
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 rounded-3xl blur-2xl opacity-25 scale-105" />
-                
-                {/* Main Panel */}
-                <div className="relative bg-white rounded-3xl p-10 shadow-2xl border border-gray-100">
-                  <div className="text-center mb-8">
-                    <motion.div
-                      animate={{ 
-                        rotate: [0, 5, -5, 0],
-                        scale: [1, 1.05, 1]
-                      }}
-                      transition={{ 
-                        duration: 6, 
-                        repeat: Infinity, 
-                        ease: "easeInOut" 
-                      }}
-                      className="inline-block mb-6"
-                    >
-                      <div className="w-20 h-20 mx-auto bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 rounded-3xl flex items-center justify-center text-white shadow-xl">
-                        <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1112.324 0 6.162 6.162 0 01-12.324 0zM12 16a4 4 0 110-8 4 4 0 010 8zm4.965-10.405a1.44 1.44 0 112.881.001 1.44 1.44 0 01-2.881-.001z"/>
-                        </svg>
-                      </div>
-                    </motion.div>
-                    
-                    <h3 className="text-3xl font-bold text-gray-900 mb-3">@thismfdoom_</h3>
-                    <p className="text-lg text-gray-600 mb-8">Follow our journey on Instagram</p>
-                  </div>
-                  
-                  <div className="rounded-2xl overflow-hidden shadow-lg">
-                    <InstagramGrid limit={4} className="w-full" />
-                  </div>
+              <div className="bg-doom-charcoal/50 border-2 border-doom-gold/30 p-8 shadow-villain-lg">
+                <div className="text-center space-y-6" style={{
+                  clipPath: 'polygon(5% 0%, 95% 0%, 100% 10%, 100% 90%, 95% 100%, 5% 100%, 0% 90%, 0% 10%)'
+                }}>
+                  <blockquote className="text-doom-lg md:text-doom-xl font-villain text-doom-gold leading-tight tracking-wide">
+                    "REMEMBER ALL CAPS WHEN YOU SPELL THE MAN NAME"
+                  </blockquote>
+                  <cite className="text-doom-base font-mono text-doom-silver tracking-[0.1em]">
+                    — MF DOOM
+                  </cite>
                 </div>
             </div>
           </motion.div>

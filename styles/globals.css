@@ -1,31 +1,36 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* CSS Variables for Dynamic Theming */
-  :root {
-  --color-primary: 59, 130, 246;
-  --color-secondary: 147, 51, 234;
-  --color-accent: 236, 72, 153;
-  --color-success: 34, 197, 94;
-  --color-warning: 251, 191, 36;
-  --color-error: 239, 68, 68;
+/* CSS Variables for Villain Theming */
+:root {
+  --color-doom-black: 0, 0, 0;
+  --color-doom-dark: 17, 17, 17;
+  --color-doom-charcoal: 26, 26, 26;
+  --color-doom-gray: 42, 42, 42;
+  --color-doom-gold: 255, 215, 0;
+  --color-doom-bronze: 205, 127, 50;
+  --color-doom-silver: 192, 192, 192;
+  --color-doom-blood: 139, 0, 0;
+  --color-doom-red: 220, 20, 60;
   
-  --gradient-primary: linear-gradient(135deg, rgb(59, 130, 246) 0%, rgb(147, 51, 234) 100%);
-  --gradient-secondary: linear-gradient(135deg, rgb(147, 51, 234) 0%, rgb(236, 72, 153) 100%);
-  --gradient-doom: linear-gradient(135deg, rgb(17, 24, 39) 0%, rgb(55, 65, 81) 50%, rgb(75, 85, 99) 100%);
+  --gradient-villain-dark: linear-gradient(135deg, rgb(0, 0, 0) 0%, rgb(26, 26, 26) 50%, rgb(42, 42, 42) 100%);
+  --gradient-villain-gold: linear-gradient(135deg, rgb(205, 127, 50) 0%, rgb(255, 215, 0) 50%, rgb(255, 237, 78) 100%);
+  --gradient-villain-metal: linear-gradient(135deg, rgb(74, 74, 74) 0%, rgb(112, 128, 144) 50%, rgb(192, 192, 192) 100%);
   
-  --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-large: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-doom: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-villain-sm: 0 2px 8px rgba(0, 0, 0, 0.8);
+  --shadow-villain-md: 0 4px 16px rgba(0, 0, 0, 0.6);
+  --shadow-villain-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-villain-xl: 0 16px 48px rgba(0, 0, 0, 0.4);
+  --shadow-gold-glow: 0 0 20px rgba(255, 215, 0, 0.5);
+  --shadow-red-glow: 0 0 25px rgba(220, 20, 60, 0.6);
   
-  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-bouncy: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --transition-villain: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-comic: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-/* Enhanced Base Styles */
+/* Enhanced Base Styles for Villain Aesthetic */
 * {
   box-sizing: border-box;
   padding: 0;
@@ -33,87 +38,91 @@
 }
 
 html {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Inter', 'Courier Prime', monospace, sans-serif;
   scroll-behavior: smooth;
-  }
+  background: rgb(0, 0, 0);
+}
 
-  body {
-  color: rgb(15, 23, 42);
-  background: rgb(255, 255, 255);
+body {
+  color: rgb(192, 192, 192);
+  background: linear-gradient(135deg, rgb(0, 0, 0) 0%, rgb(17, 17, 17) 100%);
   font-feature-settings: 'cv01', 'cv02', 'cv03', 'cv04';
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
 
-/* Custom Scrollbar */
+/* Villain Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 12px;
+  height: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(243, 244, 246, 0.8);
-  backdrop-filter: blur(10px);
+  background: rgba(26, 26, 26, 0.9);
+  border: 1px solid rgba(255, 215, 0, 0.1);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgb(59, 130, 246) 0%, rgb(147, 51, 234) 100%);
-  border-radius: 12px;
-  transition: var(--transition-smooth);
+  background: linear-gradient(180deg, rgb(255, 215, 0) 0%, rgb(205, 127, 50) 100%);
+  border: 2px solid rgb(26, 26, 26);
+  transition: var(--transition-villain);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgb(37, 99, 235) 0%, rgb(126, 34, 206) 100%);
+  background: linear-gradient(180deg, rgb(255, 237, 78) 0%, rgb(255, 215, 0) 100%);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
   transform: scale(1.1);
 }
 
-/* Enhanced Typography Components */
+/* Villain Typography Components */
 .doom-hero-title {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(3rem, 8vw, 8rem);
+  font-family: 'Bebas Neue', 'Impact', 'Arial Black', sans-serif;
+  font-size: clamp(4rem, 12vw, 12rem);
   font-weight: 900;
-  line-height: 0.9;
+  line-height: 0.8;
   letter-spacing: -0.05em;
-  background: linear-gradient(135deg, 
-    rgb(17, 24, 39) 0%, 
-    rgb(55, 65, 81) 25%, 
-    rgb(75, 85, 99) 50%, 
-    rgb(99, 102, 241) 75%, 
-    rgb(59, 130, 246) 100%);
-  background-size: 400% 400%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradient-shift 8s ease-in-out infinite;
-  text-shadow: 0 0 40px rgba(59, 130, 246, 0.3);
+  color: rgb(255, 215, 0);
+  text-shadow: 
+    6px 6px 0px rgb(0, 0, 0),
+    -3px -3px 0px rgb(0, 0, 0),
+    3px -3px 0px rgb(0, 0, 0),
+    -3px 3px 0px rgb(0, 0, 0),
+    0 0 20px rgba(255, 215, 0, 0.8);
+  filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8));
+  animation: villain-glow 3s ease-in-out infinite;
 }
 
 .doom-subtitle {
-  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
-  color: rgb(75, 85, 99);
-  font-weight: 400;
-  line-height: 1.6;
+  font-family: 'Bebas Neue', 'Impact', sans-serif;
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  color: rgb(192, 192, 192);
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
+  text-shadow: 2px 2px 0px rgb(0, 0, 0);
 }
 
 .doom-quote {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(2rem, 5vw, 4rem);
-  font-weight: 700;
-  font-style: italic;
-  line-height: 1.2;
-    letter-spacing: -0.02em;
+  font-family: 'Bebas Neue', 'Impact', sans-serif;
+  font-size: clamp(2rem, 6vw, 5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: 0.05em;
   position: relative;
+  color: rgb(255, 215, 0);
+  text-shadow: 3px 3px 0px rgb(0, 0, 0);
 }
 
 .doom-quote::before,
 .doom-quote::after {
   content: '"';
   font-size: 1.5em;
-  opacity: 0.4;
+  opacity: 0.6;
   position: absolute;
-  animation: pulse-quote 3s ease-in-out infinite;
+  color: rgb(205, 127, 50);
+  animation: quote-flicker 4s ease-in-out infinite;
 }
 
 .doom-quote::before {
@@ -124,138 +133,149 @@ html {
 .doom-quote::after {
   bottom: -0.4em;
   right: -0.5em;
-  animation-delay: 1.5s;
+  animation-delay: 2s;
 }
 
-/* Sophisticated Button System */
-.btn-doom-primary {
+/* Villain Button System */
+.btn-villain-primary {
   @apply relative inline-flex items-center justify-center;
-  @apply px-8 py-4 font-semibold tracking-wide text-white;
-  @apply bg-gradient-to-r from-gray-900 to-black;
-  @apply hover:from-black hover:to-gray-800;
-  @apply border border-gray-800 rounded-xl;
+  @apply px-8 py-4 font-extrabold tracking-wide;
+  @apply bg-gradient-to-r from-yellow-500 to-yellow-600;
+  @apply hover:from-yellow-400 hover:to-yellow-500;
+  @apply text-black border-2 border-yellow-600;
   @apply shadow-lg hover:shadow-xl;
   @apply transition-all duration-300 ease-out;
-  @apply focus:outline-none focus:ring-4 focus:ring-gray-300;
+  @apply focus:outline-none focus:ring-4 focus:ring-yellow-300;
   @apply transform hover:scale-105 hover:-translate-y-1;
   @apply overflow-hidden;
+  font-family: 'Bebas Neue', 'Impact', sans-serif;
+  letter-spacing: 0.1em;
+  clip-path: polygon(10% 0%, 90% 0%, 100% 25%, 100% 75%, 90% 100%, 10% 100%, 0% 75%, 0% 25%);
 }
 
-.btn-doom-primary::before {
+.btn-villain-primary::before {
   content: '';
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
   transition: left 0.6s ease-in-out;
 }
 
-.btn-doom-primary:hover::before {
+.btn-villain-primary:hover::before {
   left: 100%;
 }
 
-.btn-doom-secondary {
+.btn-villain-secondary {
   @apply relative inline-flex items-center justify-center;
-  @apply px-8 py-4 font-semibold tracking-wide text-gray-900;
-  @apply bg-white border-2 border-gray-900;
-  @apply hover:bg-gray-900 hover:text-white;
-  @apply rounded-xl shadow-md hover:shadow-lg;
+  @apply px-8 py-4 font-extrabold tracking-wide;
+  @apply bg-gray-800 border-2 border-gray-300;
+  @apply hover:bg-gray-700 hover:border-yellow-400;
+  @apply text-gray-300 hover:text-yellow-400;
+  @apply shadow-lg hover:shadow-xl;
   @apply transition-all duration-300 ease-out;
-  @apply focus:outline-none focus:ring-4 focus:ring-gray-300;
+  @apply focus:outline-none focus:ring-4 focus:ring-gray-500;
   @apply transform hover:scale-105 hover:-translate-y-1;
   @apply overflow-hidden;
+  font-family: 'Bebas Neue', 'Impact', sans-serif;
+  letter-spacing: 0.1em;
+  clip-path: polygon(10% 0%, 90% 0%, 100% 25%, 100% 75%, 90% 100%, 10% 100%, 0% 75%, 0% 25%);
 }
 
-.btn-doom-secondary::before {
+.btn-villain-secondary::before {
   content: '';
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
   transition: left 0.6s ease-in-out;
 }
 
-.btn-doom-secondary:hover::before {
+.btn-villain-secondary:hover::before {
   left: 100%;
 }
 
-/* Premium Card Components */
+/* Villain Card Components */
 .doom-product-card {
-  @apply relative bg-white rounded-2xl shadow-lg;
-  @apply hover:shadow-xl transition-all duration-500 ease-out;
+  @apply relative bg-gray-900 border-2 border-gray-700;
+  @apply hover:border-yellow-500 transition-all duration-500 ease-out;
   @apply transform hover:scale-105 hover:-translate-y-2;
-  @apply border border-gray-100 hover:border-blue-200;
-  @apply overflow-hidden backdrop-blur-sm;
+  @apply overflow-hidden;
+  @apply shadow-lg hover:shadow-xl;
+  clip-path: polygon(5% 0%, 95% 0%, 100% 15%, 100% 85%, 95% 100%, 5% 100%, 0% 85%, 0% 15%);
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.9), rgba(42, 42, 42, 0.8));
 }
 
 .doom-product-card::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(205, 127, 50, 0.1) 100%);
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
-  border-radius: inherit;
 }
 
 .doom-product-card:hover::before {
   opacity: 1;
 }
 
-/* Enhanced Loading Animations */
+/* Enhanced Villain Animations */
 .doom-skeleton {
-  @apply bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200;
-  @apply animate-pulse;
+  @apply bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800;
   background-size: 200% 100%;
-  animation: skeleton-loading 2s ease-in-out infinite;
+  animation: villain-skeleton-loading 2s ease-in-out infinite;
 }
 
 /* Navigation Components */
 .doom-nav-link {
-  @apply relative font-medium text-gray-700 hover:text-blue-600;
+  @apply relative font-bold text-gray-300 hover:text-yellow-400;
   @apply transition-colors duration-300 ease-out;
   @apply after:absolute after:bottom-0 after:left-0;
-  @apply after:w-0 after:h-0.5 after:bg-gradient-to-r;
-  @apply after:from-blue-500 after:to-purple-600;
+  @apply after:w-0 after:h-1 after:bg-gradient-to-r;
+  @apply after:from-yellow-500 after:to-yellow-600;
   @apply after:transition-all after:duration-300;
   @apply hover:after:w-full;
+  font-family: 'Bebas Neue', 'Impact', sans-serif;
+  letter-spacing: 0.1em;
 }
 
 /* Scroll Indicator */
 .doom-scroll-indicator {
   @apply absolute bottom-8 left-1/2 transform -translate-x-1/2;
   @apply flex flex-col items-center gap-3;
-  @apply text-gray-600;
+  @apply text-gray-400;
 }
 
 .doom-scroll-text {
-  @apply text-sm font-medium tracking-wider uppercase;
+  @apply text-sm font-bold tracking-widest uppercase;
   @apply opacity-80;
+  font-family: 'Bebas Neue', 'Impact', sans-serif;
+  letter-spacing: 0.2em;
 }
 
 /* Background Patterns */
 .doom-bg-pattern {
   background-image: 
-    radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 75% 25%, rgba(236, 72, 153, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 25% 75%, rgba(34, 197, 94, 0.03) 0%, transparent 50%);
-  background-size: 100px 100px, 80px 80px, 120px 120px, 90px 90px;
-  background-position: 0 0, 40px 40px, 80px 0, 0 80px;
-  animation: pattern-drift 20s linear infinite;
+    radial-gradient(circle at 25% 25%, rgba(255, 215, 0, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(205, 127, 50, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 75% 25%, rgba(220, 20, 60, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 25% 75%, rgba(192, 192, 192, 0.03) 0%, transparent 50%);
+  background-size: 120px 120px, 100px 100px, 140px 140px, 110px 110px;
+  background-position: 0 0, 60px 60px, 120px 0, 0 120px;
+  animation: villain-pattern-drift 25s linear infinite;
 }
 
-.doom-bg-gradient-subtle {
+.doom-bg-gradient-dark {
   background: linear-gradient(135deg, 
-    rgb(249, 250, 251) 0%, 
-    rgb(243, 244, 246) 25%, 
-    rgba(59, 130, 246, 0.02) 50%, 
-    rgb(243, 244, 246) 75%, 
-    rgb(249, 250, 251) 100%);
+    rgb(0, 0, 0) 0%, 
+    rgb(17, 17, 17) 25%, 
+    rgba(255, 215, 0, 0.02) 50%, 
+    rgb(17, 17, 17) 75%, 
+    rgb(0, 0, 0) 100%);
 }
 
 /* Section Dividers */
@@ -269,8 +289,8 @@ html {
   position: absolute;
   left: 0;
   right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), transparent);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.6), transparent);
 }
 
 .doom-section-divider::before {
@@ -281,17 +301,17 @@ html {
   bottom: 0;
 }
 
-/* Enhanced Animations */
-@keyframes gradient-shift {
+/* Enhanced Villain Animations */
+@keyframes villain-glow {
   0%, 100% {
-    background-position: 0% 50%;
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
   }
   50% {
-    background-position: 100% 50%;
+    filter: drop-shadow(0 0 40px rgba(255, 215, 0, 1));
   }
 }
 
-@keyframes skeleton-loading {
+@keyframes villain-skeleton-loading {
   0% {
     background-position: -200% 0;
   }
@@ -300,145 +320,134 @@ html {
   }
 }
 
-@keyframes pulse-quote {
+@keyframes quote-flicker {
   0%, 100% {
-    opacity: 0.4;
+    opacity: 0.6;
     transform: scale(1);
+  }
+  25% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+  75% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes villain-pattern-drift {
+  0% {
+    background-position: 0 0, 60px 60px, 120px 0, 0 120px;
+  }
+  100% {
+    background-position: 120px 120px, 180px 180px, 240px 120px, 120px 240px;
+  }
+}
+
+@keyframes villain-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(2deg);
+  }
+}
+
+@keyframes villain-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes comic-pop {
+  0% {
+    transform: scale(0.95) rotate(-1deg);
+  }
+  50% {
+    transform: scale(1.05) rotate(1deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes mask-flicker {
+  0%, 100% {
+    opacity: 1;
   }
   50% {
     opacity: 0.8;
-    transform: scale(1.05);
+  }
+  75% {
+    opacity: 0.9;
   }
 }
 
-@keyframes pattern-drift {
+@keyframes gold-shine {
   0% {
-    background-position: 0 0, 40px 40px, 80px 0, 0 80px;
+    background-position: -200% center;
   }
   100% {
-    background-position: 100px 100px, 140px 140px, 180px 100px, 100px 180px;
-  }
-}
-
-@keyframes gentle-float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes glow-pulse {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(59, 130, 246, 0.8);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-@keyframes bounce-in {
-  0% {
-    transform: scale(0.3) translateY(100px);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.05) translateY(-10px);
-  }
-  70% {
-    transform: scale(0.9) translateY(0px);
-  }
-  100% {
-    transform: scale(1) translateY(0px);
-    opacity: 1;
-  }
-}
-
-@keyframes slide-up {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0%);
-    opacity: 1;
-  }
-}
-
-@keyframes fade-in-scale {
-  from {
-    transform: scale(0.9);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
+    background-position: 200% center;
   }
 }
 
 /* Utility Animation Classes */
-.animate-gentle-float {
-  animation: gentle-float 3s ease-in-out infinite;
+.animate-villain-float {
+  animation: villain-float 4s ease-in-out infinite;
 }
 
-.animate-glow-pulse {
-  animation: glow-pulse 2s ease-in-out infinite;
+.animate-villain-pulse {
+  animation: villain-pulse 2s ease-in-out infinite;
 }
 
-.animate-shimmer {
-  animation: shimmer 2s infinite;
+.animate-comic-pop {
+  animation: comic-pop 0.6s ease-out;
 }
 
-.animate-bounce-in {
-  animation: bounce-in 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+.animate-mask-flicker {
+  animation: mask-flicker 3s ease-in-out infinite;
 }
 
-.animate-slide-up {
-  animation: slide-up 0.6s ease-out;
-}
-
-.animate-fade-in-scale {
-  animation: fade-in-scale 0.6s ease-out;
+.animate-gold-shine {
+  animation: gold-shine 2s linear infinite;
 }
 
 /* Interactive States */
-.interactive-lift {
+.interactive-villain-lift {
   @apply transition-all duration-300 ease-out;
-  @apply hover:shadow-xl hover:-translate-y-2;
+  @apply hover:shadow-xl hover:-translate-y-3;
+  @apply hover:shadow-yellow-500/20;
 }
 
-.interactive-glow:hover {
-  @apply shadow-lg;
-  box-shadow: 0 10px 40px rgba(59, 130, 246, 0.3);
+.interactive-villain-glow:hover {
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
 }
 
-.interactive-scale {
+.interactive-villain-scale {
   @apply transition-transform duration-300 ease-out;
-  @apply hover:scale-105 active:scale-95;
+  @apply hover:scale-110 active:scale-95;
 }
 
 /* Responsive Design Enhancements */
 @media (max-width: 640px) {
   .doom-hero-title {
-    font-size: clamp(2.5rem, 12vw, 6rem);
+    font-size: clamp(3rem, 15vw, 8rem);
   }
   
   .doom-quote {
-    font-size: clamp(1.5rem, 8vw, 3rem);
+    font-size: clamp(1.8rem, 10vw, 4rem);
   }
   
-  .btn-doom-primary,
-  .btn-doom-secondary {
+  .btn-villain-primary,
+  .btn-villain-secondary {
     @apply px-6 py-3 text-sm;
   }
 }
@@ -453,11 +462,12 @@ html {
   }
 }
 
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-primary: 96, 165, 250;
-    --color-secondary: 168, 85, 247;
+/* Dark Mode is Default for Villain Theme */
+@media (prefers-color-scheme: light) {
+  /* Maintain dark theme even in light mode preference */
+  body {
+    background: linear-gradient(135deg, rgb(0, 0, 0) 0%, rgb(17, 17, 17) 100%);
+    color: rgb(192, 192, 192);
   }
 }
 

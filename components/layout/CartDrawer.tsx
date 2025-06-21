@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Minus, Plus, Trash2, Package, ShoppingBag, Lock, ArrowRight, Sparkles } from 'lucide-react'
+import { X, Minus, Plus, Trash2, Package, ShoppingBag, Lock, ArrowRight, Skull, Shield, Zap } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCartStore } from '@/lib/store/cartStore'
@@ -17,59 +17,64 @@ export const CartDrawer: React.FC = () => {
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Enhanced Backdrop */}
+          {/* Villain Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsOpen(false)}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-40"
+            className="fixed inset-0 bg-doom-black/80 backdrop-blur-md z-40"
           />
 
-          {/* Enhanced Drawer */}
+          {/* Villain Drawer */}
           <motion.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed right-0 top-0 h-full w-full max-w-lg bg-white shadow-2xl z-50 overflow-hidden"
+            className="fixed right-0 top-0 h-full w-full max-w-lg bg-villain-dark shadow-villain-2xl z-50 overflow-hidden border-l-4 border-doom-gold"
           >
             <div className="flex flex-col h-full">
-              {/* Enhanced Header */}
-              <div className="relative bg-gradient-to-r from-gray-900 via-black to-gray-900 p-6 border-b border-gray-800">
+              {/* Villain Header */}
+              <div className="relative bg-doom-charcoal p-6 border-b-2 border-doom-gold/30">
                 {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-10">
-                  <div className="absolute inset-0" style={{
-                    backgroundImage: `radial-gradient(circle at 25% 25%, rgba(139, 212, 230, 0.1) 0%, transparent 50%),
-                                     radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.1) 0%, transparent 50%)`
-                  }} />
-                </div>
+                <div className="absolute inset-0 bg-grunge-texture opacity-20" />
+                <div className="absolute inset-0 bg-doom-bg-pattern opacity-10" />
                 
                 <div className="relative flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     <motion.div
-                      animate={{ rotate: [0, 5, -5, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                      className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center"
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                      className="w-12 h-12 bg-villain-gold border-2 border-doom-bronze flex items-center justify-center shadow-gold-glow"
+                      style={{
+                        clipPath: 'polygon(20% 0%, 80% 0%, 100% 40%, 100% 60%, 80% 100%, 20% 100%, 0% 60%, 0% 40%)'
+                      }}
                     >
-                      <ShoppingBag size={20} className="text-white" />
+                      <ShoppingBag size={24} className="text-doom-black" />
                     </motion.div>
                     
                     <div>
-                      <h2 className="text-2xl font-black tracking-tight text-white" style={{ fontFamily: 'Playfair Display, serif' }}>
-                        Your Cart
+                      <h2 className="font-villain text-doom-xl text-doom-gold tracking-wide leading-none"
+                          style={{
+                            textShadow: '2px 2px 0px #000000'
+                          }}>
+                        YOUR CART
                       </h2>
-                      <p className="text-blue-300 text-sm font-medium">
-                        {totalItems} {totalItems === 1 ? 'item' : 'items'}
+                      <p className="text-doom-silver font-mono text-doom-sm mt-1">
+                        {totalItems} {totalItems === 1 ? 'ITEM' : 'ITEMS'}
                       </p>
                     </div>
                   </div>
                   
                   <motion.button
-                    whileHover={{ scale: 1.1 }}
+                    whileHover={{ scale: 1.1, rotate: 90 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setIsOpen(false)}
-                    className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+                    className="w-12 h-12 bg-doom-charcoal border-2 border-doom-silver text-doom-silver hover:border-doom-red hover:text-doom-red transition-all duration-300"
+                    style={{
+                      clipPath: 'polygon(20% 0%, 80% 0%, 100% 40%, 100% 60%, 80% 100%, 20% 100%, 0% 60%, 0% 40%)'
+                    }}
                   >
                     <X size={20} />
                   </motion.button>
@@ -77,44 +82,60 @@ export const CartDrawer: React.FC = () => {
               </div>
 
               {/* Cart Items */}
-              <div className="flex-1 overflow-y-auto">
+              <div className="flex-1 overflow-y-auto bg-villain-dark">
                 {items.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full px-6 text-center">
+                  <div className="flex flex-col items-center justify-center h-full px-6 text-center bg-paper-texture">
                     <motion.div
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ delay: 0.2 }}
-                      className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-6"
+                      className="w-28 h-28 bg-doom-charcoal border-2 border-doom-gold/30 flex items-center justify-center mb-8 shadow-villain-md"
+                      style={{
+                        clipPath: 'polygon(20% 0%, 80% 0%, 100% 30%, 100% 70%, 80% 100%, 20% 100%, 0% 70%, 0% 30%)'
+                      }}
                     >
-                      <Package size={40} className="text-gray-400" />
+                      <Package size={48} className="text-doom-gold/60" />
                     </motion.div>
                     
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">Your cart is empty</h3>
-                    <p className="text-gray-500 mb-8 max-w-sm">
-                      Discover our exclusive MF DOOM collection and add some items to get started.
+                    <h3 className="font-villain text-doom-lg text-doom-gold mb-3 tracking-wide">
+                      YOUR CART IS EMPTY
+                    </h3>
+                    <p className="text-doom-metal font-mono mb-8 max-w-sm leading-relaxed">
+                      Discover our exclusive MF DOOM collection and add some villain gear to get started.
                     </p>
                     
-                    <Button 
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => setIsOpen(false)}
-                      className="bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-800"
+                      className="bg-villain-gold text-doom-black font-villain px-8 py-4 shadow-villain-lg hover:shadow-gold-glow transition-all duration-300 tracking-wide"
+                      style={{
+                        clipPath: 'polygon(10% 0%, 90% 0%, 100% 25%, 100% 75%, 90% 100%, 10% 100%, 0% 75%, 0% 25%)'
+                      }}
                     >
-                      Continue Shopping
-                    </Button>
+                      CONTINUE SHOPPING
+                    </motion.button>
                   </div>
                 ) : (
-                  <div className="p-6 space-y-6">
+                  <div className="p-6 space-y-6 bg-paper-texture">
                     {items.map((item, index) => (
                       <motion.div
                         key={`${item.product.id}-${JSON.stringify(item.selectedVariants)}`}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className="group relative bg-white rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden"
+                        className="group relative bg-doom-charcoal border-2 border-doom-gray hover:border-doom-gold/50 hover:shadow-villain-md transition-all duration-300 overflow-hidden"
+                        style={{
+                          clipPath: 'polygon(5% 0%, 95% 0%, 100% 12%, 100% 88%, 95% 100%, 5% 100%, 0% 88%, 0% 12%)'
+                        }}
                       >
                         <div className="p-4">
                           <div className="flex gap-4">
-                            {/* Enhanced Product Image */}
-                            <div className="relative w-20 h-20 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden flex-shrink-0">
+                            {/* Villain Product Image */}
+                            <div className="relative w-20 h-20 bg-doom-gray border border-doom-gold/30 overflow-hidden flex-shrink-0"
+                                 style={{
+                                   clipPath: 'polygon(15% 0%, 85% 0%, 100% 30%, 100% 70%, 85% 100%, 15% 100%, 0% 70%, 0% 30%)'
+                                 }}>
                               {item.product.images.length > 0 ? (
                                 <Image
                                   src={item.product.images[0]}
@@ -125,25 +146,28 @@ export const CartDrawer: React.FC = () => {
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
-                                  <Package size={24} className="text-gray-400" />
+                                  <Package size={28} className="text-doom-gold/60" />
                                 </div>
                               )}
                             </div>
                             
                             {/* Product Details */}
                             <div className="flex-1 min-w-0">
-                              <h3 className="font-bold text-gray-900 text-sm leading-tight mb-1 line-clamp-2">
-                                {item.product.name}
+                              <h3 className="font-villain text-doom-sm text-doom-gold leading-tight mb-2 line-clamp-2 tracking-wide">
+                                {item.product.name.toUpperCase()}
                               </h3>
                               
                               {item.selectedVariants && (
-                                <div className="flex flex-wrap gap-1 mb-2">
+                                <div className="flex flex-wrap gap-1 mb-3">
                                   {Object.entries(item.selectedVariants).map(([key, value]) => (
                                     <span 
                                       key={key}
-                                      className="inline-block text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full"
+                                      className="inline-block text-xs bg-doom-gold/20 text-doom-gold px-2 py-1 font-mono border border-doom-gold/30"
+                                      style={{
+                                        clipPath: 'polygon(10% 0%, 90% 0%, 100% 30%, 100% 70%, 90% 100%, 10% 100%, 0% 70%, 0% 30%)'
+                                      }}
                                     >
-                                      {key}: {value}
+                                      {key.toUpperCase()}: {value.toUpperCase()}
                                     </span>
                                   ))}
                                 </div>
@@ -151,19 +175,19 @@ export const CartDrawer: React.FC = () => {
                               
                               <div className="flex items-center justify-between">
                                 <div className="flex flex-col">
-                                  <span className="text-lg font-bold text-gray-900">
+                                  <span className="font-villain text-doom-base text-doom-gold tracking-wide">
                                     {formatPrice(item.product.price)}
                                   </span>
                                   {item.quantity > 1 && (
-                                    <span className="text-sm text-gray-500">
-                                      {formatPrice(item.product.price * item.quantity)} total
+                                    <span className="text-doom-sm text-doom-silver font-mono">
+                                      {formatPrice(item.product.price * item.quantity)} TOTAL
                                     </span>
                                   )}
                                 </div>
                                 
-                                {/* Quantity Controls */}
+                                {/* Villain Quantity Controls */}
                                 <div className="flex items-center gap-3">
-                                  <div className="flex items-center bg-gray-50 rounded-lg">
+                                  <div className="flex items-center bg-doom-charcoal border border-doom-gray">
                                     <motion.button
                                       whileTap={{ scale: 0.9 }}
                                       onClick={() => {
@@ -172,19 +196,19 @@ export const CartDrawer: React.FC = () => {
                                         }
                                       }}
                                       disabled={item.quantity <= 1}
-                                      className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                                      className="w-8 h-8 flex items-center justify-center text-doom-silver hover:text-doom-gold disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
                                     >
                                       <Minus size={14} />
                                     </motion.button>
                                     
-                                    <span className="w-8 text-center text-sm font-medium text-gray-900">
+                                    <span className="w-8 text-center text-doom-sm font-villain text-doom-gold">
                                       {item.quantity}
                                     </span>
                                     
                                     <motion.button
                                       whileTap={{ scale: 0.9 }}
                                       onClick={() => updateQuantity(item.product.id, item.quantity + 1, item.selectedVariants)}
-                                      className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900"
+                                      className="w-8 h-8 flex items-center justify-center text-doom-silver hover:text-doom-gold transition-colors duration-300"
                                     >
                                       <Plus size={14} />
                                     </motion.button>
@@ -194,7 +218,10 @@ export const CartDrawer: React.FC = () => {
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.9 }}
                                     onClick={() => removeItem(item.product.id, item.selectedVariants)}
-                                    className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                    className="w-8 h-8 flex items-center justify-center text-doom-metal hover:text-doom-red hover:bg-doom-red/10 border border-doom-gray hover:border-doom-red transition-all duration-300"
+                                    style={{
+                                      clipPath: 'polygon(20% 0%, 80% 0%, 100% 40%, 100% 60%, 80% 100%, 20% 100%, 0% 60%, 0% 40%)'
+                                    }}
                                   >
                                     <Trash2 size={16} />
                                   </motion.button>
@@ -209,56 +236,68 @@ export const CartDrawer: React.FC = () => {
                 )}
               </div>
 
-              {/* Enhanced Footer */}
+              {/* Villain Footer */}
               {items.length > 0 && (
-                <div className="border-t border-gray-200 bg-gradient-to-br from-gray-50 to-white p-6">
-                  {/* Subtotal */}
+                <div className="border-t-2 border-doom-gold/30 bg-doom-charcoal p-6">
+                  {/* Villain Subtotal */}
                   <div className="mb-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-gray-600 font-medium">Subtotal</span>
-                      <span className="text-2xl font-black text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-doom-silver font-villain text-doom-base tracking-wide">SUBTOTAL</span>
+                      <span className="font-villain text-doom-xl text-doom-gold tracking-wide"
+                            style={{
+                              textShadow: '2px 2px 0px #000000'
+                            }}>
                         {formatPrice(getTotalPrice())}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-500">
-                      Shipping and taxes calculated at checkout
+                    <p className="text-doom-sm text-doom-metal font-mono">
+                      SHIPPING AND TAXES CALCULATED AT CHECKOUT
                     </p>
                   </div>
                   
-                  {/* Trust Signals */}
-                  <div className="grid grid-cols-3 gap-3 mb-6 text-center">
-                    <div className="text-xs text-gray-500">
-                      <Lock size={14} className="mx-auto mb-1" />
-                      Secure Checkout
+                  {/* Villain Trust Signals */}
+                  <div className="grid grid-cols-3 gap-2 mb-6 text-center">
+                    <div className="text-xs text-doom-silver font-mono">
+                      <Lock size={14} className="mx-auto mb-1 text-doom-gold" />
+                      SECURE
                     </div>
-                    <div className="text-xs text-gray-500">
-                      <Package size={14} className="mx-auto mb-1" />
-                      Free Shipping $100+
+                    <div className="text-xs text-doom-silver font-mono">
+                      <Package size={14} className="mx-auto mb-1 text-doom-gold" />
+                      FREE $100+
                     </div>
-                    <div className="text-xs text-gray-500">
-                      <Sparkles size={14} className="mx-auto mb-1" />
-                      Authentic Merch
+                    <div className="text-xs text-doom-silver font-mono">
+                      <Skull size={14} className="mx-auto mb-1 text-doom-gold" />
+                      AUTHENTIC
                     </div>
                   </div>
                   
-                  {/* Action Buttons */}
-                  <div className="space-y-3">
+                  {/* Villain Action Buttons */}
+                  <div className="space-y-4">
                     <Link href="/cart" onClick={() => setIsOpen(false)} className="block">
-                      <Button 
-                        variant="secondary" 
-                        className="w-full border-gray-300 text-gray-900 hover:bg-gray-50"
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="w-full text-center px-6 py-3 bg-doom-charcoal border-2 border-doom-silver text-doom-silver hover:border-doom-gold hover:text-doom-gold font-villain text-doom-sm tracking-wide transition-all duration-300"
+                        style={{
+                          clipPath: 'polygon(8% 0%, 92% 0%, 100% 20%, 100% 80%, 92% 100%, 8% 100%, 0% 80%, 0% 20%)'
+                        }}
                       >
-                        View Cart Details
-                      </Button>
+                        VIEW CART DETAILS
+                      </motion.div>
                     </Link>
                     
                     <Link href="/checkout" onClick={() => setIsOpen(false)} className="block">
-                      <Button 
-                        className="w-full bg-gradient-to-r from-gray-900 via-black to-gray-900 hover:from-black hover:via-gray-900 hover:to-black shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300"
-                        rightIcon={<ArrowRight size={18} />}
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-villain-gold border-2 border-doom-bronze text-doom-black font-villain text-doom-base tracking-wide shadow-villain-lg hover:shadow-gold-glow transition-all duration-300"
+                        style={{
+                          clipPath: 'polygon(8% 0%, 92% 0%, 100% 20%, 100% 80%, 92% 100%, 8% 100%, 0% 80%, 0% 20%)'
+                        }}
                       >
-                        Secure Checkout
-                      </Button>
+                        SECURE CHECKOUT
+                        <ArrowRight size={20} />
+                      </motion.div>
                     </Link>
                   </div>
                 </div>
