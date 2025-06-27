@@ -2,7 +2,26 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['localhost', 'images.unsplash.com'],
+    domains: [
+      'localhost', 
+      'images.unsplash.com',
+      'scontent-vie1-1.cdninstagram.com',
+      'scontent.cdninstagram.com'
+    ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.cdninstagram.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'scontent-*.cdninstagram.com',
+        port: '',
+        pathname: '/**',
+      }
+    ],
   },
   env: {
     NEXT_PUBLIC_PAYPAL_CLIENT_ID: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID,

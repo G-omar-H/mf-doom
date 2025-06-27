@@ -14,42 +14,58 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const limit = parseInt(searchParams.get('limit') || '6')
 
+  console.log(`Instagram API called with limit: ${limit}`)
+
   try {
     const username = 'thismfdoom_'
     
-    // Method 1: Try Insta-Scraper API (free tier)
+    // Method 1: Try RapidAPI Instagram Scraper with correct endpoint
     try {
+      console.log('Attempting RapidAPI Instagram scraper...')
       const response = await fetch(
-        `https://instagram-scraper-2022.p.rapidapi.com/ig/posts_username/?user=${username}&batch_size=${limit}`,
+        `https://instagram-scraper-20251.p.rapidapi.com/userposts/?username_or_id=${username}`,
         {
           headers: {
-            'X-RapidAPI-Key': process.env.RAPIDAPI_KEY || 'demo_key',
-            'X-RapidAPI-Host': 'instagram-scraper-2022.p.rapidapi.com'
+            'X-RapidAPI-Key': process.env.RAPIDAPI_KEY || '3328cba8f3mshfba2b62f08809fdp1acaacjsnaf63587e76ca',
+            'X-RapidAPI-Host': 'instagram-scraper-20251.p.rapidapi.com'
           }
         }
       )
 
+      console.log(`RapidAPI response status: ${response.status}`)
+
       if (response.ok) {
         const data = await response.json()
-        const posts = data.result || []
+        console.log(`RapidAPI response keys:`, Object.keys(data))
+        const posts = data.data?.items || data.items || []
+        console.log(`Found ${posts.length} posts in response`)
         
         const formattedPosts = posts.slice(0, limit).map((post: any) => ({
-          id: post.id || post.pk || Math.random().toString(),
-          media_url: post.image_versions2?.candidates?.[0]?.url || post.display_url || post.thumbnail_url,
-          media_type: post.media_type === 2 ? 'VIDEO' : 'IMAGE',
-          caption: post.caption?.text || post.caption || '',
-          permalink: `https://instagram.com/p/${post.code || post.shortcode}/`,
-          timestamp: new Date((post.taken_at || post.taken_at_timestamp) * 1000).toISOString()
+          id: post.id || Math.random().toString(),
+          media_url: post.image_versions?.items?.[0]?.url || 
+                     post.video_versions?.[0]?.url || 
+                     post.thumbnail_url || '',
+          media_type: post.media_type === 2 || post.is_video ? 'VIDEO' : 'IMAGE',
+          caption: post.caption?.text || '',
+          permalink: `https://instagram.com/p/${post.code}/`,
+          timestamp: new Date(post.taken_at * 1000).toISOString()
         }))
 
+        console.log(`Formatted ${formattedPosts.length} Instagram posts from API`)
+        
         if (formattedPosts.length > 0 && formattedPosts[0].media_url) {
+          console.log('Returning real Instagram posts from API')
           return NextResponse.json({
             posts: formattedPosts,
             total: formattedPosts.length,
             account: '@thismfdoom_',
             source: 'rapidapi_scraper'
           })
+        } else {
+          console.log('No valid posts found in API response')
         }
+      } else {
+        console.log(`RapidAPI failed with status: ${response.status}`)
       }
     } catch (error) {
       console.error('RapidAPI Instagram scraper error:', error)
@@ -145,6 +161,7 @@ export async function GET(request: NextRequest) {
     const localPosts = getInstagramPosts(limit)
     
     if (localPosts.length > 0) {
+      console.log(`Returning ${localPosts.length} local Instagram posts`)
       return NextResponse.json({
         posts: localPosts,
         total: localPosts.length,
@@ -154,6 +171,7 @@ export async function GET(request: NextRequest) {
     }
 
     // If no local data either, return empty array
+    console.log('No Instagram posts available at all')
     return NextResponse.json({
       posts: [],
       total: 0,

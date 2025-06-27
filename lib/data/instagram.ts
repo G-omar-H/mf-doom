@@ -16,43 +16,43 @@ export interface InstagramPost {
 export const instagramPosts: InstagramPost[] = [
   {
     id: 'doom_post_1',
+    media_url: '/images/art/photography/doom-mask-artistic-moody.jpg',
+    media_type: 'IMAGE',
+    caption: '🎭 The mask speaks in silence... New artistic photography piece capturing the eternal villain aesthetic. Available now. #MFDOOM #VillainAesthetic #FineArt',
+    permalink: 'https://instagram.com/thismfdoom_',
+    timestamp: new Date('2024-01-22').toISOString()
+  },
+  {
+    id: 'doom_post_2',
     media_url: '/images/T-Shirts/mf-doom-all-caps-madvillain-tshirt-grey-back.jpg',
     media_type: 'IMAGE',
-    caption: '🎭 New ALL CAPS tribute tee available now! Remember ALL CAPS when you spell the man name. Rest in power to the masked villain. #MFDOOM #ALLCAPS #HipHop #RIPDoom',
+    caption: '🎯 ALL CAPS when you spell the man name. New Madvillain tribute tee paying respect to the legendary collaboration. Rest in power. #MFDOOM #ALLCAPS #Madvillain',
     permalink: 'https://instagram.com/thismfdoom_',
     timestamp: new Date('2024-01-20').toISOString()
   },
   {
-    id: 'doom_post_2',
-    media_url: '/images/Hoodies/mf-doom-mask-graphic-hoodie-front.jpg',
+    id: 'doom_post_3',
+    media_url: '/images/Beanies/mf-doom-mask-beanie-green-folded.jpeg',
     media_type: 'IMAGE',
-    caption: '🔥 Fresh DOOM mask hoodie drop! The villain\'s legacy lives on through authentic streetwear. Quality materials, iconic design. #MFDOOM #Streetwear #MetalFace #HipHopFashion',
+    caption: '🧢 Metal Face Graffiti Patch Beanie - Villain Green. Keep your head warm while keeping the culture alive. Premium knit, iconic design. #MFDOOM #MetalFace #VillainGreen',
     permalink: 'https://instagram.com/thismfdoom_',
     timestamp: new Date('2024-01-18').toISOString()
   },
   {
-    id: 'doom_post_3',
+    id: 'doom_post_4',
     media_url: '/images/Sneakers/BAPE_Sta_Mask_Embroidered/mf-doom-bapesta-mask-embroidered-sneaker-pair-angled.jpeg',
     media_type: 'IMAGE',
-    caption: '👟 DOOM x BAPE collaboration sneakers - where hip-hop meets high fashion. Limited edition mask embroidery. The villain would approve. #MFDOOM #BAPE #Sneakers #HipHopCulture',
+    caption: '👟 DOOM x BAPE collaboration where street meets luxury. Limited edition mask embroidery on premium BAPE STA silhouette. The villain would approve. #MFDOOM #BAPE #Collaboration',
     permalink: 'https://instagram.com/thismfdoom_',
     timestamp: new Date('2024-01-16').toISOString()
   },
   {
-    id: 'doom_post_4',
+    id: 'doom_post_5',
     media_url: '/images/T-Shirts/mf-doom-graffiti-logo-tshirt-grey-front.jpg',
     media_type: 'IMAGE',
     caption: '🎨 Graffiti-style DOOM logo tee - paying homage to hip-hop\'s roots. From the underground to your wardrobe. Art meets music. #MFDOOM #Graffiti #HipHop #StreetArt',
     permalink: 'https://instagram.com/thismfdoom_',
     timestamp: new Date('2024-01-14').toISOString()
-  },
-  {
-    id: 'doom_post_5',
-    media_url: '/images/Beanies/mf-doom-mask-knit-beanie-green-flat.jpeg',
-    media_type: 'IMAGE',
-    caption: '🧢 Stay warm with the DOOM mask beanie. Perfect for winter sessions and keeping the villain\'s spirit alive. Comfort meets style. #MFDOOM #Beanie #WinterWear #HipHopStyle',
-    permalink: 'https://instagram.com/thismfdoom_',
-    timestamp: new Date('2024-01-12').toISOString()
   },
   {
     id: 'doom_post_6',

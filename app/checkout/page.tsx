@@ -7,8 +7,10 @@ import { formatPrice } from '@/lib/utils/formatters'
 import { Button } from '@/components/ui/Button'
 import { PayPalProvider } from '@/components/payment/PayPalProvider'
 import { motion } from 'framer-motion'
-import { Lock, Shield } from 'lucide-react'
+import { Lock, Shield, Package, CreditCard, Truck, ArrowLeft } from 'lucide-react'
 import toast from 'react-hot-toast'
+import Image from 'next/image'
+import Link from 'next/link'
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic'
@@ -48,58 +50,38 @@ export default function CheckoutPage() {
 
   const handlePayPalSuccess = async (details: any) => {
     setIsProcessing(true)
-    
     try {
       // Create order in database
-      const orderData = {
-        items,
-        customer: {
-          email: formData.email,
-          name: formData.name,
-          phone: formData.phone,
-        },
-        shippingAddress: {
-          name: formData.name,
-          line1: formData.address,
-          city: formData.city,
-          state: formData.state,
-          postalCode: formData.zip,
-          country: formData.country,
-        },
-        paymentMethod: 'paypal',
-        paypalOrderId: details.orderID,
-        paypalCaptureId: details.captureID,
-        paypalPayerId: details.payerID,
-        total,
-        subtotal,
-        tax,
-        shipping,
-      }
-
-      // Save order to database
-      const response = await fetch('/api/orders', {
+      const orderResponse = await fetch('/api/orders', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items,
+          customer: {
+            email: formData.email,
+            name: formData.name,
+            phone: formData.phone,
+          },
+          shippingAddress: {
+            line1: formData.address,
+            city: formData.city,
+            state: formData.state,
+            postalCode: formData.zip,
+            country: formData.country,
+          },
+          paymentDetails: details,
+          total,
+        }),
       })
 
-      const result = await response.json()
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to save order')
+      if (orderResponse.ok) {
+        clearCart()
+        router.push('/checkout/success')
+      } else {
+        throw new Error('Failed to create order')
       }
-
-      console.log('Order created:', result.order)
-      
-      // Clear cart and redirect
-      clearCart()
-      toast.success(`Payment successful! Order ${result.order.orderNumber} has been placed.`)
-      router.push(`/checkout/success?order=${result.order.orderNumber}`)
     } catch (error) {
-      console.error('Order creation failed:', error)
-      toast.error('Payment successful but order creation failed. Please contact support with your PayPal transaction details.')
+      toast.error('Payment processed but order creation failed. Please contact support.')
     } finally {
       setIsProcessing(false)
     }
@@ -108,175 +90,302 @@ export default function CheckoutPage() {
   const handlePayPalError = (error: any) => {
     console.error('PayPal payment error:', error)
     toast.error('Payment failed. Please try again.')
-    setIsProcessing(false)
   }
 
-  const isFormValid = formData.email && formData.name && formData.address && 
-                      formData.city && formData.state && formData.zip
-
-  if (items.length === 0) {
-    if (isHydrated) {
-      router.push('/cart')
+  // Redirect if cart is empty
+  useEffect(() => {
+    if (isHydrated && items.length === 0) {
+      router.push('/')
     }
-    return null
-  }
+  }, [items, router, isHydrated])
 
-  // Don't render until hydrated to prevent hydration mismatch
-  if (!isHydrated) {
+  if (!isHydrated || items.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-12">
-          CHECKOUT
-        </h1>
-        <div className="text-center text-gray-500">Loading...</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Package size={64} className="text-gray-300 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Your cart is empty</h2>
+          <p className="text-gray-600 mb-6">Add some items to continue with checkout</p>
+          <Link href="/">
+            <Button className="btn-primary">Continue Shopping</Button>
+          </Link>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-center mb-12">
-        CHECKOUT
-      </h1>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Checkout Form */}
-        <div className="lg:col-span-2 space-y-8">
-          {/* Contact Information */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white p-6 rounded-lg shadow-sm border"
-          >
-            <h2 className="text-2xl font-semibold mb-4">Contact Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-gray-700 mb-2">Email *</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 mb-2">Phone</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-gray-700 mb-2">Full Name *</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
-                />
-              </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-2 text-sm text-gray-600 hover:text-black transition-colors">
+              <ArrowLeft size={16} />
+              Back to Shop
+            </Link>
+            <div className="flex items-center gap-2">
+              <Shield size={16} className="text-mf-blue" />
+              <span className="text-sm text-gray-600">Secure Checkout</span>
             </div>
-          </motion.div>
+          </div>
+        </div>
+      </div>
 
-          {/* Shipping Address */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white p-6 rounded-lg shadow-sm border"
-          >
-            <h2 className="text-2xl font-semibold mb-4">Shipping Address</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-gray-700 mb-2">Address *</label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
-                />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+          {/* Order Summary - Mobile First, Desktop Right */}
+          <div className="lg:col-span-5 lg:order-2">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+            >
+              <div className="p-6 border-b border-gray-100">
+                <h2 className="text-lg font-semibold text-black">Order Summary</h2>
+                <p className="text-sm text-gray-600 mt-1">{items.length} item{items.length !== 1 ? 's' : ''}</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-gray-700 mb-2">City *</label>
-                  <input
-                    type="text"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
-                  />
+
+              <div className="p-6 space-y-4">
+                {items.map((item) => (
+                  <div key={`${item.product.id}-${JSON.stringify(item.selectedVariants)}`} className="flex gap-4">
+                    <div className="relative w-16 h-16 bg-gray-100 rounded-md overflow-hidden">
+                      {item.product.images[0] ? (
+                        <Image
+                          src={item.product.images[0]}
+                          alt={item.product.name}
+                          fill
+                          className="object-cover"
+                          sizes="64px"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Package size={24} className="text-gray-400" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-sm text-black line-clamp-2">{item.product.name}</h4>
+                      {item.selectedVariants && Object.keys(item.selectedVariants).length > 0 && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          {Object.entries(item.selectedVariants)
+                            .map(([key, value]) => `${key}: ${value}`)
+                            .join(', ')}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-xs text-gray-500">Qty: {item.quantity}</span>
+                        <span className="font-medium text-sm text-black">{formatPrice(item.product.price * item.quantity)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="border-t border-gray-100 p-6 space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Subtotal</span>
+                  <span className="text-black">{formatPrice(subtotal)}</span>
                 </div>
-                <div>
-                  <label className="block text-gray-700 mb-2">State *</label>
-                  <input
-                    type="text"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
-                  />
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Shipping</span>
+                  <span className="text-black">{shipping === 0 ? 'FREE' : formatPrice(shipping)}</span>
                 </div>
-                <div>
-                  <label className="block text-gray-700 mb-2">ZIP Code *</label>
-                  <input
-                    type="text"
-                    name="zip"
-                    value={formData.zip}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
-                  />
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Tax</span>
+                  <span className="text-black">{formatPrice(tax)}</span>
+                </div>
+                {subtotal < 100 && (
+                  <div className="text-xs text-mf-blue bg-mf-blue/10 p-2 rounded">
+                    Add {formatPrice(100 - subtotal)} more for free shipping
+                  </div>
+                )}
+                <div className="border-t border-gray-200 pt-3">
+                  <div className="flex justify-between text-lg font-bold">
+                    <span className="text-black">Total</span>
+                    <span className="text-black">{formatPrice(total)}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
 
-          {/* Payment Method Selection */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white p-6 rounded-lg shadow-sm border"
-          >
-            <h2 className="text-2xl font-semibold mb-4">Payment Method</h2>
-            
-            <div className="space-y-4 mb-6">
-              <div className="flex items-center space-x-3">
-                <input
-                  type="radio"
-                  id="paypal"
-                  name="paymentMethod"
-                  value="paypal"
-                  checked={paymentMethod === 'paypal'}
-                  onChange={(e) => setPaymentMethod(e.target.value as 'paypal')}
-                  className="w-4 h-4 text-mf-blue"
-                />
-                <label htmlFor="paypal" className="text-gray-700 font-medium">
-                  PayPal (Recommended)
-                </label>
-              </div>
-              <p className="text-sm text-gray-600 ml-7">
-                Pay with PayPal or credit/debit card through PayPal's secure checkout
-              </p>
-            </div>
-
-            {/* PayPal Payment */}
-            {paymentMethod === 'paypal' && (
-              <div>
-                {isFormValid ? (
+          {/* Checkout Form */}
+          <div className="lg:col-span-7 lg:order-1 mt-8 lg:mt-0">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="space-y-8"
+            >
+              {/* Contact Information */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-black mb-4">Contact Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mf-blue focus:border-transparent"
+                      placeholder="your@email.com"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mf-blue focus:border-transparent"
+                      placeholder="John Doe"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mf-blue focus:border-transparent"
+                      placeholder="+1 (555) 123-4567"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Shipping Address */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Truck size={20} className="text-mf-blue" />
+                  <h3 className="text-lg font-semibold text-black">Shipping Address</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="md:col-span-2">
+                    <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
+                      Street Address *
+                    </label>
+                    <input
+                      type="text"
+                      id="address"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mf-blue focus:border-transparent"
+                      placeholder="123 Main Street"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
+                      City *
+                    </label>
+                    <input
+                      type="text"
+                      id="city"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mf-blue focus:border-transparent"
+                      placeholder="New York"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
+                      State *
+                    </label>
+                    <input
+                      type="text"
+                      id="state"
+                      name="state"
+                      value={formData.state}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mf-blue focus:border-transparent"
+                      placeholder="NY"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="zip" className="block text-sm font-medium text-gray-700 mb-1">
+                      ZIP Code *
+                    </label>
+                    <input
+                      type="text"
+                      id="zip"
+                      name="zip"
+                      value={formData.zip}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mf-blue focus:border-transparent"
+                      placeholder="10001"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
+                      Country *
+                    </label>
+                    <select
+                      id="country"
+                      name="country"
+                      value={formData.country}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mf-blue focus:border-transparent"
+                    >
+                      <option value="US">United States</option>
+                      <option value="CA">Canada</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Payment Method */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <CreditCard size={20} className="text-mf-blue" />
+                  <h3 className="text-lg font-semibold text-black">Payment Method</h3>
+                </div>
+
+                {/* Payment Method Selection */}
+                <div className="space-y-3 mb-6">
+                  <label className="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="paypal"
+                      checked={paymentMethod === 'paypal'}
+                      onChange={(e) => setPaymentMethod(e.target.value as 'paypal')}
+                      className="text-mf-blue focus:ring-mf-blue"
+                    />
+                    <span className="ml-3 text-sm font-medium text-gray-900">PayPal</span>
+                    <div className="ml-auto">
+                      <span className="text-xs text-gray-500">Secure payment with PayPal</span>
+                    </div>
+                  </label>
+                </div>
+
+                {/* PayPal Payment */}
+                {paymentMethod === 'paypal' && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 p-3 rounded-md">
+                      <Lock size={16} className="text-mf-blue" />
+                      <span>Your payment information is encrypted and secure</span>
+                    </div>
                     <PayPalProvider
                       items={items}
                       customerEmail={formData.email}
@@ -286,90 +395,35 @@ export default function CheckoutPage() {
                         phone: formData.phone,
                       }}
                       shippingAddress={{
-                        name: formData.name,
-                        address: formData.address,
                         line1: formData.address,
                         city: formData.city,
                         state: formData.state,
-                        zip: formData.zip,
                         postalCode: formData.zip,
                         country: formData.country,
                       }}
                       onSuccess={handlePayPalSuccess}
                       onError={handlePayPalError}
-                      disabled={isProcessing}
+                      disabled={!formData.email || !formData.name || !formData.address || !formData.city || !formData.state || !formData.zip || isProcessing}
                     />
-                    <div className="flex items-center gap-2 text-sm text-gray-500 mt-4">
-                      <Shield size={16} />
-                      <span>Your payment is secured by PayPal's buyer protection</span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-gray-600 text-center">
-                      Please complete the contact and shipping information above to continue with payment.
-                    </p>
                   </div>
                 )}
               </div>
-            )}
-          </motion.div>
-        </div>
 
-        {/* Order Summary */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="bg-white p-6 rounded-lg shadow-sm border h-fit"
-        >
-          <h2 className="text-2xl font-semibold mb-6">Order Summary</h2>
-
-          <div className="space-y-4 mb-6">
-            {items.map((item) => (
-              <div key={`${item.product.id}-${JSON.stringify(item.selectedVariants)}`} className="flex justify-between text-sm">
-                <div>
-                  <p className="text-gray-800">{item.product.name}</p>
-                  {item.selectedVariants && (
-                    <p className="text-gray-500 text-xs">
-                      {Object.entries(item.selectedVariants).map(([key, value]) => `${key}: ${value}`).join(', ')}
+              {/* Security Notice */}
+              <div className="bg-mf-blue/5 border border-mf-blue/20 rounded-lg p-4">
+                <div className="flex items-center gap-3">
+                  <Shield size={20} className="text-mf-blue" />
+                  <div>
+                    <h4 className="font-medium text-black">Secure Checkout</h4>
+                    <p className="text-sm text-gray-600">
+                      Your personal and payment information is always safe. All transactions are encrypted and secure.
                     </p>
-                  )}
-                  <p className="text-gray-500">Qty: {item.quantity}</p>
+                  </div>
                 </div>
-                <p className="text-gray-800 font-medium">{formatPrice(item.product.price * item.quantity)}</p>
               </div>
-            ))}
+            </motion.div>
           </div>
-
-          <div className="border-t pt-4 space-y-3">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Subtotal</span>
-              <span className="font-medium">{formatPrice(subtotal)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Shipping</span>
-              <span className="font-medium">{shipping === 0 ? 'FREE' : formatPrice(shipping)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Tax</span>
-              <span className="font-medium">{formatPrice(tax)}</span>
-            </div>
-            <div className="border-t pt-3">
-              <div className="flex justify-between">
-                <span className="text-xl font-semibold">Total</span>
-                <span className="text-xl font-semibold text-mf-dark-blue">
-                  {formatPrice(total)}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 text-sm text-gray-500">
-            <p>✓ Secure checkout with PayPal</p>
-            <p>✓ Free shipping on orders over $100</p>
-            <p>✓ 30-day return policy</p>
-          </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   )

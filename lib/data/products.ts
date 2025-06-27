@@ -220,5 +220,23 @@ export const products: Product[] = [
     ],
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01')
+  },
+  {
+    id: '16',
+    name: 'MF DOOM Mask Beanie - Green',
+    description: 'Premium knit beanie featuring the iconic MF DOOM mask design with graffiti-style patch. Available in both folded and flat wearing styles. Made with high-quality acrylic blend for warmth and comfort.',
+    price: 34.99,
+    category: 'beanies',
+    images: [
+      '/images/Beanies/mf-doom-mask-beanie-green-folded.jpeg',
+      '/images/Beanies/mf-doom-mask-beanie-green-flat.jpeg'
+    ],
+    stock: 28,
+    featured: true,
+    variants: [
+      { id: '16-style', name: 'Style', type: 'edition', options: ['Folded', 'Flat'] }
+    ],
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01')
   }
 ] 
