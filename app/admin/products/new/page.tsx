@@ -517,7 +517,7 @@ export default function AdminNewProductPage() {
               {/* Upload Area */}
               <div
                 className={`border-2 border-dashed rounded-lg p-4 md:p-8 text-center transition-colors ${
-                  dragOver
+                  dragOver 
                     ? 'border-mf-blue bg-mf-blue/10'
                     : uploadingImages
                     ? 'border-gray-300 bg-gray-50'
@@ -576,7 +576,7 @@ export default function AdminNewProductPage() {
                   </label>
                   <select
                     value={formData.status}
-                    onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
+                          onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
                     className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
                   >
                     <option value="DRAFT">Draft</option>
@@ -620,7 +620,7 @@ export default function AdminNewProductPage() {
                     <p className="font-medium text-sm md:text-base">${formData.price.toFixed(2)}</p>
                   </div>
                 </div>
-
+                
                 <div className="flex items-center space-x-3">
                   <ImageIcon className="w-4 h-4 md:w-5 md:h-5 text-mf-gray" />
                   <div>
@@ -628,7 +628,7 @@ export default function AdminNewProductPage() {
                     <p className="font-medium text-sm md:text-base">{formData.images.length} uploaded</p>
                   </div>
                 </div>
-
+                
                 <div className="flex items-center space-x-3">
                   <Tag className="w-4 h-4 md:w-5 md:h-5 text-mf-gray" />
                   <div>
@@ -659,7 +659,7 @@ export default function AdminNewProductPage() {
                     </>
                   )}
                 </button>
-                <Link 
+                <Link
                   href="/admin/products"
                   className="btn-secondary flex items-center justify-center space-x-2 text-sm w-full"
                 >

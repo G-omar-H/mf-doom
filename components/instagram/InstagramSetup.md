@@ -1,83 +1,184 @@
-# Instagram Integration Setup for @thismfdoom_
+# Instagram Basic Display API Setup for @thismfdoom_
 
-Currently, the Instagram feed is showing placeholder content. To display your actual Instagram posts from [@thismfdoom_](https://www.instagram.com/thismfdoom_), follow these steps:
+**FOCUS**: Setting up the official **Instagram Basic Display API** for reliable, real-time Instagram posts integration.
 
-## Option 1: Instagram Basic Display API (Recommended)
+## 🎯 **Why Instagram Basic Display API?**
 
-### Step 1: Create Facebook Developer Account
+✅ **Official Instagram API** - Direct from Meta/Facebook  
+✅ **FREE** - 200 requests/hour (perfect for your needs)  
+✅ **Reliable** - No third-party dependencies  
+✅ **Real-time** - Fresh posts directly from your @thismfdoom_ account  
+✅ **60-day tokens** - Long-lived access with refresh capability  
+
+---
+
+## 🚀 **Step-by-Step Setup Guide**
+
+### **Step 1: Create Facebook Developer Account**
+
 1. Go to [developers.facebook.com](https://developers.facebook.com)
-2. Click "Get Started" and create a developer account
-3. Verify your account with phone number
+2. Click **"Get Started"**
+3. **Log in** with your Facebook account (the same one linked to your Instagram @thismfdoom_)
+4. **Verify account** with phone number (required)
+5. Accept developer terms
 
-### Step 2: Create a New App
-1. Click "Create App"
-2. Select "Consumer" as app type
-3. Fill in app details:
-   - App Name: "MF DOOM Shop Instagram Feed"
-   - App Contact Email: your email
-   - App Purpose: "Yourself or your own business"
+### **Step 2: Create Your App**
 
-### Step 3: Add Instagram Basic Display
-1. In your app dashboard, click "Add Product"
-2. Find "Instagram Basic Display" and click "Set Up"
-3. Click "Create New App" if prompted
+1. Click **"Create App"**
+2. Select **"Consumer"** as app type
+3. Fill in details:
+   - **App Name**: `MF DOOM Shop Instagram Feed`
+   - **Contact Email**: Your email
+   - **Purpose**: `Yourself or your own business`
+4. Click **"Create App"**
 
-### Step 4: Configure Instagram Basic Display
-1. Go to Instagram Basic Display > Basic Display
-2. Add Instagram Testers:
-   - Click "Add or Remove Instagram Testers"
-   - Add your Instagram account (@thismfdoom_)
-3. Accept the tester invitation in your Instagram app
+### **Step 3: Add Instagram Basic Display**
 
-### Step 5: Get Access Token
-1. In Basic Display settings, find "User Token Generator"
-2. Click "Generate Token" next to your Instagram account
-3. Authorize the app in Instagram
-4. Copy the generated access token
+1. In your app dashboard, click **"Add Product"**
+2. Find **"Instagram Basic Display"** → **"Set Up"**
+3. This adds the Instagram product to your app
 
-### Step 6: Add to Environment Variables
-Add this to your `.env` file:
+### **Step 4: Configure Instagram Settings**
+
+1. Go to **Instagram Basic Display > Basic Display**
+2. Click **"Create New App"** (creates Instagram app linked to Facebook app)
+3. Fill in required fields:
+   - **Display Name**: `MF DOOM Shop`
+   - **Valid OAuth Redirect URIs**: `https://localhost/`
+   - **Deauthorize Callback URL**: `https://localhost/`
+   - **Data Deletion Request URL**: `https://localhost/`
+
+### **Step 5: Add Instagram Tester**
+
+1. Go to **Instagram Basic Display > Roles > Roles**
+2. Click **"Add Instagram Testers"**
+3. Enter your Instagram username: `thismfdoom_`
+4. Click **"Submit"**
+
+### **Step 6: Accept Tester Invitation**
+
+1. Open **Instagram mobile app**
+2. Go to **Settings** → **Apps and Websites** → **Tester Invites**
+3. **Accept** the invitation from your app
+
+### **Step 7: Generate Access Token**
+
+1. Back in Facebook Developer dashboard
+2. Go to **Instagram Basic Display > Basic Display**
+3. Scroll to **"User Token Generator"**
+4. Click **"Generate Token"** next to your Instagram account
+5. **Authorize the app** in popup
+6. **Copy the access token** (save securely!)
+
+### **Step 8: Add to Environment**
+
+Create `.env.local` file in your project root:
+
 ```bash
-INSTAGRAM_ACCESS_TOKEN=your_long_access_token_here
+# Instagram Basic Display API Access Token
+INSTAGRAM_ACCESS_TOKEN=paste_your_token_here
 ```
 
-### Step 7: Deploy to Vercel
-Add the environment variable to your Vercel project:
+### **Step 9: Test the Integration**
+
 ```bash
+# Run the test script
+node scripts/test-instagram.js
+```
+
+---
+
+## 📝 **Environment Setup**
+
+Create **`.env.local`** in your project root:
+
+```bash
+# Instagram Basic Display API
+INSTAGRAM_ACCESS_TOKEN=IGQVJXa1FYc2ZAB...your_actual_token_here
+
+# Your actual token will look like:
+# INSTAGRAM_ACCESS_TOKEN=IGQVJXa1FYc2ZABparsZAO1kkZATZAnRBzR1d2UlBVMFhLaWJLN2RlZAEcxQ1BNZAVZAWVjcxNGRVVmRITFlzZ (example)
+```
+
+---
+
+## 🧪 **Testing Your Setup**
+
+After adding your token to `.env.local`:
+
+```bash
+# Test the Instagram API
+node scripts/test-instagram.js
+```
+
+**Expected successful output:**
+```
+🎉 SUCCESS! Using official Instagram Basic Display API
+📸 Posts found: 6
+👤 Account: @thismfdoom_
+✅ You're getting real, fresh posts directly from Instagram
+```
+
+---
+
+## 🔄 **Token Management**
+
+**Token Lifespan**: 60 days  
+**Refresh**: Tokens can be refreshed before expiry  
+
+**To refresh your token** (before it expires):
+1. Go back to **Facebook Developer > Instagram Basic Display**
+2. Click **"Generate Token"** again
+3. Update your `.env.local` file
+4. Restart your development server
+
+**Set a reminder**: Add calendar reminder for 50 days to refresh token
+
+---
+
+## 🎯 **What This Gives You**
+
+✅ **Real Instagram posts** from @thismfdoom_  
+✅ **Fresh content** updated automatically  
+✅ **Post images, captions, links**  
+✅ **200 API calls/hour** (more than enough)  
+✅ **No trial limitations**  
+✅ **Official Instagram integration**  
+
+---
+
+## 🔧 **Deployment to Vercel**
+
+```bash
+# Add environment variable to Vercel
 vercel env add INSTAGRAM_ACCESS_TOKEN
+
+# When prompted, paste your token
+# Then redeploy
+vercel --prod
 ```
 
-## Option 2: Manual Content Update (Quick Fix)
+---
 
-If you want to quickly update the content while setting up the API:
+## 🆘 **Troubleshooting**
 
-1. Take screenshots of your latest Instagram posts
-2. Save them in `public/images/instagram/` folder
-3. Update the mock data in `app/api/instagram/route.ts` with:
-   - Real captions from your posts
-   - Actual post URLs
-   - Your image paths
+**Token not working?**
+- Check token is correctly copied (no extra spaces)
+- Ensure Instagram account accepted tester invitation
+- Verify `.env.local` file is in project root
 
-## Option 3: Instagram Embed Widgets
+**Need help?**
+- Test script shows current status: `node scripts/test-instagram.js`
+- Check Instagram app settings in Facebook Developer dashboard
+- Ensure @thismfdoom_ account is a tester
 
-Use Instagram's embed code for specific posts:
-1. Go to your Instagram post
-2. Click "..." menu
-3. Select "Embed"
-4. Copy the embed code
-5. Add to a custom component
+---
 
-## Current Status
-- ✅ Instagram feed component created
-- ✅ API endpoint ready
-- ⏳ Waiting for Instagram API setup
-- ⏳ Using placeholder content
+## 📱 **Current Status**
 
-## Notes
-- Instagram access tokens expire every 60 days (short-lived) or 60 days (long-lived)
-- You'll need to refresh tokens periodically
-- Consider using a service like Instagram Feed Pro for easier management
-- The current implementation falls back to mock data if the API is unavailable
+- ✅ **RapidAPI removed** - No more paid dependencies
+- ✅ **Multiple free fallbacks** - RSS, scraping, local data
+- ✅ **Instagram Basic Display ready** - Just needs your token
+- ✅ **Smart fallback system** - Never fails completely
 
-## Need Help?
-If you need assistance with the Instagram API setup, let me know and I can help you through the process step by step. 
+**Ready for your Instagram Basic Display API token!** 

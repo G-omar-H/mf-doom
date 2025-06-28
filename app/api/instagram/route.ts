@@ -19,144 +19,216 @@ export async function GET(request: NextRequest) {
   try {
     const username = 'thismfdoom_'
     
-    // Method 1: Try RapidAPI Instagram Scraper with correct endpoint
+    // Method 1: Instagram Basic Display API (Free - Official Instagram API)
+    if (process.env.INSTAGRAM_ACCESS_TOKEN) {
     try {
-      console.log('Attempting RapidAPI Instagram scraper...')
+        console.log('Attempting Instagram Basic Display API...')
       const response = await fetch(
-        `https://instagram-scraper-20251.p.rapidapi.com/userposts/?username_or_id=${username}`,
+          `https://graph.instagram.com/me/media?fields=id,media_type,media_url,permalink,caption,timestamp&access_token=${process.env.INSTAGRAM_ACCESS_TOKEN}&limit=${limit}`,
         {
           headers: {
-            'X-RapidAPI-Key': process.env.RAPIDAPI_KEY || '3328cba8f3mshfba2b62f08809fdp1acaacjsnaf63587e76ca',
-            'X-RapidAPI-Host': 'instagram-scraper-20251.p.rapidapi.com'
+              'Accept': 'application/json',
           }
         }
       )
 
-      console.log(`RapidAPI response status: ${response.status}`)
-
       if (response.ok) {
         const data = await response.json()
-        console.log(`RapidAPI response keys:`, Object.keys(data))
-        const posts = data.data?.items || data.items || []
-        console.log(`Found ${posts.length} posts in response`)
-        
-        const formattedPosts = posts.slice(0, limit).map((post: any) => ({
-          id: post.id || Math.random().toString(),
-          media_url: post.image_versions?.items?.[0]?.url || 
-                     post.video_versions?.[0]?.url || 
-                     post.thumbnail_url || '',
-          media_type: post.media_type === 2 || post.is_video ? 'VIDEO' : 'IMAGE',
-          caption: post.caption?.text || '',
-          permalink: `https://instagram.com/p/${post.code}/`,
-          timestamp: new Date(post.taken_at * 1000).toISOString()
-        }))
+          console.log('Instagram Basic Display API successful')
+          
+          if (data.data && data.data.length > 0) {
+            const formattedPosts = data.data.map((post: any) => ({
+              id: post.id,
+              media_url: post.media_url,
+              media_type: post.media_type.toUpperCase(),
+              caption: post.caption || '',
+              permalink: post.permalink,
+              timestamp: post.timestamp
+            }))
 
-        console.log(`Formatted ${formattedPosts.length} Instagram posts from API`)
-        
-        if (formattedPosts.length > 0 && formattedPosts[0].media_url) {
-          console.log('Returning real Instagram posts from API')
           return NextResponse.json({
             posts: formattedPosts,
             total: formattedPosts.length,
             account: '@thismfdoom_',
-            source: 'rapidapi_scraper'
+              source: 'instagram_basic_display'
           })
+          }
         } else {
-          console.log('No valid posts found in API response')
-        }
-      } else {
-        console.log(`RapidAPI failed with status: ${response.status}`)
+          console.log(`Instagram Basic Display API failed: ${response.status}`)
       }
     } catch (error) {
-      console.error('RapidAPI Instagram scraper error:', error)
+        console.error('Instagram Basic Display API error:', error)
+      }
     }
 
-    // Method 2: Try Instagram public feed via proxy
+    // Method 2: Multiple RSS Feed Aggregators (Free)
+    const rssSources = [
+      `https://api.rss2json.com/v1/api.json?rss_url=https://rsshub.app/instagram/user/${username}&count=${limit}`,
+      `https://api.rss2json.com/v1/api.json?rss_url=https://rss.app/feeds/v1.1/instagram/${username}.json&count=${limit}`,
+      `https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.instagram.com/${username}/`)}`,
+    ]
+
+    for (let i = 0; i < rssSources.length; i++) {
+      try {
+        console.log(`Attempting RSS source ${i + 1}...`)
+        const response = await fetch(rssSources[i], {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; InstagramFeed/1.0)',
+            'Accept': 'application/json',
+          }
+        })
+
+      if (response.ok) {
+        const data = await response.json()
+          
+          if (i < 2 && data.status === 'ok' && data.items?.length > 0) {
+            // RSS2JSON format
+            const posts = data.items.slice(0, limit).map((item: any, index: number) => ({
+              id: `rss_${i}_${index}_${Date.now()}`,
+              media_url: item.enclosure?.link || item.thumbnail || 'https://via.placeholder.com/400x400?text=Instagram+Post',
+              media_type: 'IMAGE',
+              caption: item.title || item.description?.replace(/<[^>]*>/g, '').substring(0, 100) + '...' || '',
+              permalink: item.link || `https://instagram.com/${username}`,
+              timestamp: item.pubDate || new Date().toISOString()
+            }))
+
+            if (posts.length > 0) {
+              console.log(`RSS source ${i + 1} successful`)
+              return NextResponse.json({
+                posts,
+                total: posts.length,
+                account: '@thismfdoom_',
+                source: `rss_${i + 1}`
+              })
+            }
+          } else if (i === 2 && data.contents) {
+            // AllOrigins format - parse Instagram page
+            const html = data.contents
+            if (html.includes('"display_url"')) {
+              // Extract posts from Instagram page JSON
+              const jsonMatch = html.match(/"display_url":"([^"]+)"/g)
+              if (jsonMatch && jsonMatch.length > 0) {
+                const posts = jsonMatch.slice(0, limit).map((match: string, index: number) => {
+                  const url = match.match(/"display_url":"([^"]+)"/)?.[1]?.replace(/\\u0026/g, '&')
+                  return {
+                    id: `scraped_${index}_${Date.now()}`,
+                    media_url: url || 'https://via.placeholder.com/400x400?text=Instagram+Post',
+                    media_type: 'IMAGE',
+                    caption: `Latest post from @${username}`,
+                    permalink: `https://instagram.com/${username}`,
+                    timestamp: new Date().toISOString()
+                  }
+                })
+
+                if (posts.length > 0) {
+                  console.log(`Scraping source successful`)
+                  return NextResponse.json({
+                    posts,
+                    total: posts.length,
+                    account: '@thismfdoom_',
+                    source: 'scraped'
+                  })
+                }
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error(`RSS source ${i + 1} error:`, error)
+        continue
+      }
+    }
+
+    // Method 3: Instagram oEmbed API (Free - for specific posts)
+    if (process.env.INSTAGRAM_POST_URLS) {
+      try {
+        console.log('Attempting Instagram oEmbed API...')
+        const postUrls = process.env.INSTAGRAM_POST_URLS.split(',').slice(0, limit)
+        const embedPromises = postUrls.map(async (url: string, index: number) => {
+          try {
+            const response = await fetch(
+              `https://api.instagram.com/oembed/?url=${encodeURIComponent(url.trim())}`
+            )
+            if (response.ok) {
+              const data = await response.json()
+              return {
+                id: `embed_${index}_${Date.now()}`,
+                media_url: data.thumbnail_url || 'https://via.placeholder.com/400x400?text=Instagram+Post',
+                media_type: 'IMAGE',
+                caption: data.title || '',
+                permalink: url.trim(),
+                timestamp: new Date().toISOString()
+              }
+            }
+          } catch (error) {
+            console.error('oEmbed error for URL:', url, error)
+          }
+          return null
+        })
+
+        const embedResults = await Promise.all(embedPromises)
+        const validEmbeds = embedResults.filter(Boolean)
+
+        if (validEmbeds.length > 0) {
+          console.log('Instagram oEmbed API successful')
+          return NextResponse.json({
+            posts: validEmbeds,
+            total: validEmbeds.length,
+            account: '@thismfdoom_',
+            source: 'oembed'
+          })
+      }
+    } catch (error) {
+        console.error('Instagram oEmbed API error:', error)
+      }
+    }
+
+    // Method 4: Picuki.com proxy (Free alternative)
     try {
+      console.log('Attempting Picuki proxy...')
       const response = await fetch(
-        `https://www.instagram.com/web/search/topsearch/?query=${username}`,
+        `https://www.picuki.com/profile/${username}`,
         {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            'Accept': 'application/json',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
           }
         }
-      )
-
-      if (response.ok) {
-        const data = await response.json()
-        const user = data.users?.find((u: any) => u.user.username === username)
-        
-        if (user) {
-          // This gives us basic user info, but we need another call for posts
-          const postsResponse = await fetch(
-            `https://www.instagram.com/${username}/?__a=1`,
-            {
-              headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-              }
-            }
-          )
-          
-          if (postsResponse.ok) {
-            const postsData = await postsResponse.json()
-            const posts = postsData?.graphql?.user?.edge_owner_to_timeline_media?.edges || []
-            
-            const formattedPosts = posts.slice(0, limit).map((edge: any) => ({
-              id: edge.node.id,
-              media_url: edge.node.display_url,
-              media_type: edge.node.is_video ? 'VIDEO' : 'IMAGE',
-              caption: edge.node.edge_media_to_caption?.edges[0]?.node?.text || '',
-              permalink: `https://instagram.com/p/${edge.node.shortcode}/`,
-              timestamp: new Date(edge.node.taken_at_timestamp * 1000).toISOString()
-            }))
-
-            if (formattedPosts.length > 0) {
-              return NextResponse.json({
-                posts: formattedPosts,
-                total: formattedPosts.length,
-                account: '@thismfdoom_',
-                source: 'instagram_public'
-              })
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Instagram public API error:', error)
-    }
-
-    // Method 3: Try RSS2JSON service
-    try {
-      const response = await fetch(
-        `https://api.rss2json.com/v1/api.json?rss_url=https://rsshub.app/instagram/user/${username}&count=${limit}`
       )
       
       if (response.ok) {
-        const data = await response.json()
-        if (data.status === 'ok' && data.items?.length > 0) {
-          const posts = data.items.slice(0, limit).map((item: any, index: number) => ({
-            id: `rss_${index}_${Date.now()}`,
-            media_url: item.enclosure?.link || item.thumbnail || 'https://via.placeholder.com/400x400?text=Instagram+Post',
+        const html = await response.text()
+        // Extract image URLs from Picuki page
+        const imageMatches = html.match(/data-src="([^"]+\.jpg[^"]*)"/g)
+        if (imageMatches && imageMatches.length > 0) {
+          const posts = imageMatches.slice(0, limit).map((match: string, index: number) => {
+            const url = match.match(/data-src="([^"]+)"/)?.[1]
+            return {
+              id: `picuki_${index}_${Date.now()}`,
+              media_url: url || 'https://via.placeholder.com/400x400?text=Instagram+Post',
             media_type: 'IMAGE',
-            caption: item.title || item.description?.replace(/<[^>]*>/g, '').substring(0, 100) + '...' || '',
-            permalink: item.link || `https://instagram.com/${username}`,
-            timestamp: item.pubDate || new Date().toISOString()
-          }))
+              caption: `Latest post from @${username}`,
+              permalink: `https://instagram.com/${username}`,
+              timestamp: new Date().toISOString()
+            }
+          })
 
+          if (posts.length > 0) {
+            console.log('Picuki proxy successful')
           return NextResponse.json({
             posts,
             total: posts.length,
             account: '@thismfdoom_',
-            source: 'rss'
+              source: 'picuki'
           })
+          }
         }
       }
     } catch (error) {
-      console.error('RSS feed error:', error)
+      console.error('Picuki proxy error:', error)
     }
 
-    // If all methods fail, use local Instagram data as fallback
+    // Fallback: Use local Instagram data
     console.log('All Instagram fetching methods failed, using local data for @thismfdoom_')
     const localPosts = getInstagramPosts(limit)
     

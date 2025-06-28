@@ -524,7 +524,7 @@ export default function AdminUserDetailPage() {
             <div className="lg:hidden bg-white rounded-lg shadow-sm border border-gray-100 p-4">
               <h3 className="text-base font-semibold mb-3">User Actions</h3>
               <div className="flex flex-col space-y-3">
-                <button
+                <button 
                   onClick={toggleUserStatus}
                   className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg transition-colors text-sm w-full ${
                     user.isActive 
