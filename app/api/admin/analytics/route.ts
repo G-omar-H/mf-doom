@@ -32,15 +32,25 @@ export async function GET(request: NextRequest) {
     const startDate = new Date()
     startDate.setDate(now.getDate() - daysAgo)
 
-    // Efficient parallel data fetching for basic metrics only
+    // Calculate previous period for growth comparison
+    const previousStartDate = new Date()
+    previousStartDate.setDate(startDate.getDate() - daysAgo)
+
+    // Efficient parallel data fetching using real data only
     const [
       totalRevenue,
       totalOrders, 
       totalCustomers,
       completedOrders,
-      topProducts
+      previousRevenue,
+      previousOrders,
+      previousCustomers,
+      topProductsWithItems,
+      categoryData,
+      monthlyOrdersRaw,
+      productCategories
     ] = await Promise.all([
-      // Total revenue (delivered orders only)
+      // Current period revenue (delivered orders only)
       prisma.order.aggregate({
         _sum: { totalAmount: true },
         where: {
@@ -49,12 +59,12 @@ export async function GET(request: NextRequest) {
         }
       }),
 
-      // Total orders count
+      // Current period orders count
       prisma.order.count({
         where: { createdAt: { gte: startDate } }
       }),
 
-      // Total customers (unique users who placed orders)
+      // Current period customers
       prisma.user.count({
         where: {
           role: 'CUSTOMER',
@@ -68,95 +78,192 @@ export async function GET(request: NextRequest) {
           status: 'DELIVERED',
           createdAt: { gte: startDate }
         },
-        select: { totalAmount: true },
-        take: 100 // Limit for performance
+        select: { totalAmount: true }
       }),
 
-      // Top performing products (simplified)
-      prisma.product.findMany({
-        take: 10,
+      // Previous period revenue for growth calculation
+      prisma.order.aggregate({
+        _sum: { totalAmount: true },
         where: {
-          status: 'ACTIVE'
+          status: 'DELIVERED',
+          createdAt: { gte: previousStartDate, lt: startDate }
+        }
+      }),
+
+      // Previous period orders for growth calculation
+      prisma.order.count({
+        where: { createdAt: { gte: previousStartDate, lt: startDate } }
+      }),
+
+      // Previous period customers for growth calculation
+      prisma.user.count({
+        where: {
+          role: 'CUSTOMER',
+          createdAt: { gte: previousStartDate, lt: startDate }
+        }
+      }),
+
+      // Top products with their order items (real data)
+      prisma.product.findMany({
+        where: {
+          orderItems: {
+            some: {
+              order: {
+                status: 'DELIVERED',
+                createdAt: { gte: startDate }
+              }
+            }
+          }
         },
         select: {
           id: true,
           name: true,
           orderItems: {
-            take: 50, // Limit for performance
+            where: {
+              order: {
+                status: 'DELIVERED',
+                createdAt: { gte: startDate }
+              }
+            },
             select: {
               quantity: true,
               totalPrice: true
             }
+          },
+          productViews: {
+            where: {
+              createdAt: { gte: startDate }
+            }
           }
+        }
+      }),
+
+      // Real category sales data
+      prisma.orderItem.groupBy({
+        by: ['productId'],
+        where: {
+          order: {
+            status: 'DELIVERED',
+            createdAt: { gte: startDate }
+          }
+        },
+        _sum: {
+          totalPrice: true,
+          quantity: true
+        }
+      }),
+
+      // Real monthly data (last 6 months)
+      prisma.$queryRaw`
+        SELECT 
+          DATE_TRUNC('month', "createdAt") as month,
+          COUNT(*)::int as order_count,
+          SUM("totalAmount")::float as total_revenue
+        FROM orders 
+        WHERE "status" = 'DELIVERED' 
+        AND "createdAt" >= ${new Date(now.getFullYear(), now.getMonth() - 5, 1)}
+        GROUP BY DATE_TRUNC('month', "createdAt")
+        ORDER BY month DESC
+        LIMIT 6
+      `,
+
+      // Get all products with categories for category grouping
+      prisma.product.findMany({
+        where: {
+          orderItems: {
+            some: {
+              order: {
+                status: 'DELIVERED',
+                createdAt: { gte: startDate }
+              }
+            }
+          }
+        },
+        select: {
+          id: true,
+          category: true
         }
       })
     ])
 
-    // Calculate basic metrics
+    // Calculate real metrics
     const currentRevenue = Number(totalRevenue._sum.totalAmount || 0)
+    const prevRevenue = Number(previousRevenue._sum.totalAmount || 0)
     const averageOrderValue = completedOrders.length > 0 
       ? completedOrders.reduce((sum, order) => sum + Number(order.totalAmount), 0) / completedOrders.length 
       : 0
 
-    // Process top products with limited data
-    const processedTopProducts = topProducts
+    // Calculate real growth percentages
+    const revenueGrowth = prevRevenue > 0 ? ((currentRevenue - prevRevenue) / prevRevenue) * 100 : 0
+    const orderGrowth = previousOrders > 0 ? ((totalOrders - previousOrders) / previousOrders) * 100 : 0
+    const customerGrowth = previousCustomers > 0 ? ((totalCustomers - previousCustomers) / previousCustomers) * 100 : 0
+
+    // Process top products with real data
+    const processedTopProducts = topProductsWithItems
       .map(product => {
         const totalRevenue = product.orderItems.reduce((sum, item) => sum + Number(item.totalPrice), 0)
         const totalOrders = product.orderItems.reduce((sum, item) => sum + item.quantity, 0)
+        const totalViews = product.productViews.length
         
         return {
           id: product.id,
           name: product.name,
           revenue: totalRevenue,
           orders: totalOrders,
-          views: Math.floor(totalRevenue * 0.1) + Math.floor(Math.random() * 50) // Mock views based on revenue
+          views: totalViews
         }
       })
       .filter(product => product.revenue > 0)
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 10)
 
-    // Generate mock monthly data (6 months) - no database calls
-    const monthlyData = []
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    const baseRevenue = currentRevenue / 6 // Distribute current revenue across months
-    
-    for (let i = 5; i >= 0; i--) {
-      const monthDate = new Date()
-      monthDate.setMonth(monthDate.getMonth() - i)
-      
-      // Generate realistic-looking data based on actual revenue
-      const monthRevenue = Math.floor(baseRevenue * (0.7 + Math.random() * 0.6))
-      const monthOrders = Math.floor(monthRevenue / (averageOrderValue || 50))
-      
-      monthlyData.push({
-        month: monthNames[monthDate.getMonth()],
-        revenue: monthRevenue,
-        orders: monthOrders
-      })
-    }
+    // Process real sales by category
+    const categoryTotals: Record<string, { revenue: number, orders: number }> = {}
+    categoryData.forEach(item => {
+      const product = productCategories.find(p => p.id === item.productId)
+      if (product) {
+        const category = product.category
+        if (!categoryTotals[category]) {
+          categoryTotals[category] = { revenue: 0, orders: 0 }
+        }
+        categoryTotals[category].revenue += Number(item._sum.totalPrice || 0)
+        categoryTotals[category].orders += Number(item._sum.quantity || 0)
+      }
+    })
 
-    // Generate mock category data
-    const categories = ['T_SHIRTS', 'HOODIES', 'BEANIES', 'SNEAKERS', 'VINYL', 'ACCESSORIES', 'ART']
-    const salesByCategory = categories.map(category => ({
+    const salesByCategory = Object.entries(categoryTotals).map(([category, data]) => ({
       category,
-      revenue: Math.floor(currentRevenue * (0.1 + Math.random() * 0.2)),
-      orders: Math.floor(totalOrders * (0.1 + Math.random() * 0.2))
+      revenue: data.revenue,
+      orders: data.orders
     }))
+
+    // Process real monthly data
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    const monthlyData = (monthlyOrdersRaw as any[])
+      .map(row => ({
+        month: monthNames[new Date(row.month).getMonth()],
+        revenue: Number(row.total_revenue || 0),
+        orders: Number(row.order_count || 0)
+      }))
+      .reverse()
+
+    // Calculate real conversion rate (basic approximation)
+    const totalViews = processedTopProducts.reduce((sum, product) => sum + product.views, 0)
+    const conversionRate = totalViews > 0 ? (totalOrders / totalViews) * 100 : 0
 
     const analyticsData = {
       totalRevenue: currentRevenue,
       totalOrders,
       totalCustomers,
       averageOrderValue,
-      conversionRate: 2.5, // Static conversion rate
+      conversionRate: Math.max(0, Math.min(100, conversionRate)), // Ensure reasonable range
       topProducts: processedTopProducts,
       salesByCategory,
       revenueByMonth: monthlyData,
       recentMetrics: {
-        revenueGrowth: Math.floor(Math.random() * 20) - 5, // Mock growth between -5% and 15%
-        orderGrowth: Math.floor(Math.random() * 15) - 2,   // Mock growth between -2% and 13%
-        customerGrowth: Math.floor(Math.random() * 25)     // Mock growth between 0% and 25%
+        revenueGrowth: Number(revenueGrowth.toFixed(1)),
+        orderGrowth: Number(orderGrowth.toFixed(1)),
+        customerGrowth: Number(customerGrowth.toFixed(1))
       }
     }
 
