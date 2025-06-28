@@ -110,13 +110,22 @@ export default function ProfilePage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <div className="w-20 h-20 mx-auto mb-6 bg-black rounded-full flex items-center justify-center">
-              <User className="w-10 h-10 text-white" />
+            {/* Enhanced Spinning DOOM Mask */}
+            <div className="w-24 h-24 mx-auto mb-6 relative">
+              <div className="w-full h-full bg-gradient-to-r from-gray-800 to-black rounded-full flex items-center justify-center animate-spin shadow-2xl">
+                <div className="w-20 h-20 bg-gradient-to-r from-gray-300 to-white rounded-full flex items-center justify-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-gray-800 to-black rounded-full flex items-center justify-center">
+                    <div className="w-3 h-3 bg-white rounded-full shadow-lg"></div>
+                  </div>
+                </div>
+              </div>
+              {/* Glowing effect */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-mf-blue to-purple-500 animate-pulse opacity-20 blur-lg"></div>
             </div>
-            <h1 className="text-4xl font-black mb-2">
+            <h1 className="text-4xl font-black mb-2 bg-gradient-to-r from-gray-900 via-black to-gray-900 bg-clip-text text-transparent">
               VILLAIN PROFILE
             </h1>
-            <p className="text-mf-gray">
+            <p className="text-mf-gray text-lg">
               Manage your villain collective membership
             </p>
           </motion.div>
