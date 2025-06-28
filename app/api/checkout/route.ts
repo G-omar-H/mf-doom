@@ -138,8 +138,8 @@ export async function POST(request: NextRequest) {
       ],
       application_context: {
         brand_name: 'MF DOOM Shop',
-        landing_page: 'BILLING',
-        user_action: 'PAY_NOW',
+        landing_page: 'BILLING', // Direct users to billing page for guest checkout
+        user_action: 'PAY_NOW', // Optimizes for immediate payment completion
         return_url: `${request.headers.get('origin')}/checkout/success`,
         cancel_url: `${request.headers.get('origin')}/checkout`,
         shipping_preference: 'SET_PROVIDED_ADDRESS',

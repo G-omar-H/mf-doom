@@ -105,8 +105,8 @@ export const PayPalProvider: React.FC<PayPalProviderProps> = ({
     clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
     currency: 'USD',
     intent: 'capture',
-    'enable-funding': 'venmo,paylater',
-    'disable-funding': 'card', // We can enable this later if needed
+    // Enable multiple funding sources including cards for guest checkout
+    'enable-funding': 'venmo,paylater,card',
     'data-sdk-integration-source': 'developer-studio'
   }
 
@@ -123,7 +123,7 @@ export const PayPalProvider: React.FC<PayPalProviderProps> = ({
             </div>
             <div>
               <h3 className="font-medium text-gray-900">PayPal</h3>
-              <p className="text-sm text-gray-500">Pay securely with PayPal, card, or Pay Later</p>
+              <p className="text-sm text-gray-500">Pay with card (no PayPal account needed) or PayPal</p>
             </div>
           </div>
           <div className="text-sm text-gray-400">Recommended</div>
@@ -158,7 +158,7 @@ export const PayPalProvider: React.FC<PayPalProviderProps> = ({
               layout: 'horizontal',
               color: 'blue',
               shape: 'rect',
-              label: 'checkout',
+              label: 'pay',
               height: 45,
               tagline: false
             }}
@@ -190,9 +190,9 @@ export const PayPalProvider: React.FC<PayPalProviderProps> = ({
             <p className="font-medium text-gray-700 mb-1">Secure Payment</p>
             <ul className="space-y-1">
               <li>✓ Protected by PayPal's buyer protection</li>
-              <li>✓ Pay with PayPal balance, card, or bank account</li>
+              <li>✓ Pay with any credit/debit card - no PayPal account required</li>
+              <li>✓ PayPal balance and bank account options available</li>
               <li>✓ Pay Later options available</li>
-              <li>✓ No account required for card payments</li>
             </ul>
           </div>
         </div>
