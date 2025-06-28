@@ -107,7 +107,10 @@ export const PayPalProvider: React.FC<PayPalProviderProps> = ({
     intent: 'capture',
     // Enable multiple funding sources including cards for guest checkout
     'enable-funding': 'venmo,paylater,card',
-    'data-sdk-integration-source': 'developer-studio'
+    'data-sdk-integration-source': 'developer-studio',
+    // Additional options for guest checkout
+    'buyer-country': 'US',
+    'locale': 'en_US'
   }
 
   return (
