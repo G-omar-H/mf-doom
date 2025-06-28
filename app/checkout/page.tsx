@@ -56,21 +56,21 @@ export default function CheckoutPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          items,
-          customer: {
-            email: formData.email,
-            name: formData.name,
-            phone: formData.phone,
-          },
-          shippingAddress: {
-            line1: formData.address,
-            city: formData.city,
-            state: formData.state,
-            postalCode: formData.zip,
-            country: formData.country,
-          },
+        items,
+        customer: {
+          email: formData.email,
+          name: formData.name,
+          phone: formData.phone,
+        },
+        shippingAddress: {
+          line1: formData.address,
+          city: formData.city,
+          state: formData.state,
+          postalCode: formData.zip,
+          country: formData.country,
+        },
           paymentDetails: details,
-          total,
+        total,
         }),
       })
 
@@ -210,44 +210,44 @@ export default function CheckoutPage() {
             </motion.div>
           </div>
 
-          {/* Checkout Form */}
+        {/* Checkout Form */}
           <div className="lg:col-span-7 lg:order-1 mt-8 lg:mt-0">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
               className="space-y-8"
-            >
+          >
               {/* Contact Information */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-black mb-4">Contact Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                       Email Address *
                     </label>
-                    <input
-                      type="email"
+                <input
+                  type="email"
                       id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mf-blue focus:border-transparent"
                       placeholder="your@email.com"
-                    />
-                  </div>
-                  <div>
+                />
+              </div>
+              <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                       Full Name *
                     </label>
-                    <input
-                      type="text"
+                <input
+                  type="text"
                       id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      required
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mf-blue focus:border-transparent"
                       placeholder="John Doe"
                     />
@@ -264,12 +264,12 @@ export default function CheckoutPage() {
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mf-blue focus:border-transparent"
                       placeholder="+1 (555) 123-4567"
-                    />
-                  </div>
-                </div>
+                />
+              </div>
+            </div>
               </div>
 
-              {/* Shipping Address */}
+          {/* Shipping Address */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Truck size={20} className="text-mf-blue" />
@@ -280,58 +280,58 @@ export default function CheckoutPage() {
                     <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
                       Street Address *
                     </label>
-                    <input
-                      type="text"
+                <input
+                  type="text"
                       id="address"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      required
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  required
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mf-blue focus:border-transparent"
                       placeholder="123 Main Street"
-                    />
-                  </div>
-                  <div>
+                />
+              </div>
+                <div>
                     <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
                       City *
                     </label>
-                    <input
-                      type="text"
+                  <input
+                    type="text"
                       id="city"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      required
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    required
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mf-blue focus:border-transparent"
                       placeholder="New York"
-                    />
-                  </div>
-                  <div>
+                  />
+                </div>
+                <div>
                     <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
                       State *
                     </label>
-                    <input
-                      type="text"
+                  <input
+                    type="text"
                       id="state"
-                      name="state"
-                      value={formData.state}
-                      onChange={handleInputChange}
-                      required
+                    name="state"
+                    value={formData.state}
+                    onChange={handleInputChange}
+                    required
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mf-blue focus:border-transparent"
                       placeholder="NY"
-                    />
-                  </div>
-                  <div>
+                  />
+                </div>
+                <div>
                     <label htmlFor="zip" className="block text-sm font-medium text-gray-700 mb-1">
                       ZIP Code *
                     </label>
-                    <input
-                      type="text"
+                  <input
+                    type="text"
                       id="zip"
-                      name="zip"
-                      value={formData.zip}
-                      onChange={handleInputChange}
-                      required
+                    name="zip"
+                    value={formData.zip}
+                    onChange={handleInputChange}
+                    required
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mf-blue focus:border-transparent"
                       placeholder="10001"
                     />
@@ -359,28 +359,28 @@ export default function CheckoutPage() {
                 <div className="flex items-center gap-2 mb-4">
                   <CreditCard size={20} className="text-mf-blue" />
                   <h3 className="text-lg font-semibold text-black">Payment Method</h3>
-                </div>
+            </div>
 
-                {/* Payment Method Selection */}
+          {/* Payment Method Selection */}
                 <div className="space-y-3 mb-6">
                   <label className="flex items-center p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="paypal"
-                      checked={paymentMethod === 'paypal'}
-                      onChange={(e) => setPaymentMethod(e.target.value as 'paypal')}
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="paypal"
+                  checked={paymentMethod === 'paypal'}
+                  onChange={(e) => setPaymentMethod(e.target.value as 'paypal')}
                       className="text-mf-blue focus:ring-mf-blue"
                     />
                     <span className="ml-3 text-sm font-medium text-gray-900">PayPal</span>
                     <div className="ml-auto">
                       <span className="text-xs text-gray-500">Secure payment with PayPal</span>
                     </div>
-                  </label>
-                </div>
+                </label>
+            </div>
 
-                {/* PayPal Payment */}
-                {paymentMethod === 'paypal' && (
+            {/* PayPal Payment */}
+            {paymentMethod === 'paypal' && (
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 p-3 rounded-md">
                       <Lock size={16} className="text-mf-blue" />
@@ -407,13 +407,13 @@ export default function CheckoutPage() {
                     />
                   </div>
                 )}
-              </div>
+        </div>
 
               {/* Security Notice */}
               <div className="bg-mf-blue/5 border border-mf-blue/20 rounded-lg p-4">
                 <div className="flex items-center gap-3">
                   <Shield size={20} className="text-mf-blue" />
-                  <div>
+                <div>
                     <h4 className="font-medium text-black">Secure Checkout</h4>
                     <p className="text-sm text-gray-600">
                       Your personal and payment information is always safe. All transactions are encrypted and secure.
@@ -423,7 +423,7 @@ export default function CheckoutPage() {
               </div>
             </motion.div>
           </div>
-        </div>
+          </div>
       </div>
     </div>
   )

@@ -135,7 +135,7 @@ export default function Home() {
             <div className="mt-8">
               <Link href="/products" className="btn-primary inline-block">
                 Explore the Collection
-              </Link>
+                  </Link>
             </div>
           </motion.div>
         </motion.div>

@@ -1,33 +1,34 @@
-import type { Metadata, Viewport } from 'next'
+import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import '@/styles/globals.css'
+import './globals.css'
 import { Header } from '@/components/layout/Header'
-import { Footer } from '@/components/layout/Footer'
 import { CartDrawer } from '@/components/layout/CartDrawer'
+import { SessionProvider } from '@/components/providers/SessionProvider'
 import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'MF DOOM Shop - Paying Tribute to the Villain',
-  description: 'Paying tribute to the villain - MF DOOM merchandise store. Shop exclusive apparel, vinyl, accessories, and more inspired by the legendary masked villain.',
-  keywords: 'MF DOOM, merchandise, hip hop, vinyl, apparel, madvillain, operation doomsday',
+  title: 'MF DOOM Shop | Premium Streetwear & Vinyl Collection',
+  description: 'Official MF DOOM merchandise store featuring exclusive streetwear, vinyl records, and collectibles. Just remember ALL CAPS when you spell the man name.',
+  keywords: ['MF DOOM', 'streetwear', 'vinyl', 'hip hop', 'merchandise', 'collectibles'],
   metadataBase: new URL('https://mfdoomshop.com'),
   openGraph: {
-    title: 'MF DOOM Shop - Paying Tribute to the Villain',
-    description: 'Shop exclusive MF DOOM merchandise curated by @thismfdoom_',
-    images: ['/og-image.png'],
+    title: 'MF DOOM Shop - Premium Streetwear Collection',
+    description: 'Official MF DOOM merchandise featuring exclusive streetwear, vinyl records, and collectibles.',
+    url: 'https://mfdoomshop.com',
+    siteName: 'MF DOOM Shop',
+    images: [
+      {
+        url: 'https://mfdoomshop.com/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'MF DOOM Shop - Premium Streetwear Collection',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'MF DOOM Shop',
-    description: 'Paying tribute to the villain - MF DOOM merchandise store',
-  },
-  manifest: '/manifest.json',
-}
-
-export const viewport: Viewport = {
-  themeColor: '#8CD4E6',
 }
 
 export default function RootLayout({
@@ -38,23 +39,31 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Header />
-        <main className="min-h-screen pt-16">
-          {children}
-        </main>
-        <Footer />
-        <CartDrawer />
-        <Toaster
-          position="bottom-right"
-          toastOptions={{
-            style: {
-              background: '#000',
-              color: '#fff',
-              fontSize: '14px',
-              fontWeight: '500',
-            },
-          }}
-        />
+        <SessionProvider>
+          <Header />
+          <main className="min-h-screen pt-16">
+            {children}
+          </main>
+          <CartDrawer />
+          <Toaster 
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#363636',
+                color: '#fff',
+                fontSize: '14px',
+                fontWeight: '500',
+              },
+              success: {
+                style: {
+                  background: '#8CD4E6',
+                  color: '#000',
+                },
+              },
+            }}
+          />
+        </SessionProvider>
       </body>
     </html>
   )
