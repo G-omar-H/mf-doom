@@ -33,5 +33,17 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts 
-/lib/generated/prisma
+next-env.d.ts
+
+# Local database files and exports
+/exports/
+postgres_data/
+pgadmin_data/
+*.sql
+*.dump
+
+# Docker
+docker-compose.override.yml
+
+# Prisma
+prisma/migrations/dev.db*

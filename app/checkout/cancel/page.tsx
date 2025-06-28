@@ -1,11 +1,20 @@
 'use client'
 
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { XCircle, ArrowLeft, ShoppingCart } from 'lucide-react'
+import { XCircle, ArrowLeft, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
 export default function CheckoutCancelPage() {
+  const router = useRouter()
+
+  useEffect(() => {
+    // Optional: Clear any temporary session data here
+    console.log('PayPal payment cancelled')
+  }, [])
+
   return (
     <div className="container mx-auto px-4 py-16">
       <motion.div
@@ -20,7 +29,7 @@ export default function CheckoutCancelPage() {
           transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
           className="inline-block mb-6"
         >
-          <XCircle size={100} className="text-red-500" />
+          <XCircle size={100} className="text-orange-500" />
         </motion.div>
 
         <h1 className="font-metal text-5xl text-doom-gold mb-4">
@@ -28,44 +37,44 @@ export default function CheckoutCancelPage() {
         </h1>
 
         <p className="text-xl text-doom-silver mb-8">
-          No worries! Your cart is still saved and ready when you are.
+          Your PayPal payment was cancelled. No charges were made to your account.
         </p>
 
-        <div className="comic-panel p-8 mb-8">
-          <h2 className="font-metal text-2xl text-doom-gold mb-4">
-            What Happened?
-          </h2>
-          <div className="text-left space-y-3 text-doom-silver">
-            <p>• You cancelled the PayPal payment process</p>
-            <p>• Your cart items are still saved</p>
-            <p>• No charges were made to your account</p>
-            <p>• You can try again whenever you're ready</p>
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        {/* Action Buttons */}
+        <div className="space-y-4 mb-8">
           <Link href="/checkout">
-            <Button size="lg" className="flex items-center gap-2">
-              <ArrowLeft size={18} />
-              Back to Checkout
+            <Button className="w-full bg-doom-gold hover:bg-yellow-600 text-black font-semibold py-3 px-6 rounded-lg transition-colors duration-200">
+              <RefreshCw size={20} className="mr-2" />
+              Try Payment Again
             </Button>
           </Link>
+          
           <Link href="/cart">
-            <Button variant="secondary" size="lg" className="flex items-center gap-2">
-              <ShoppingCart size={18} />
-              View Cart
-            </Button>
-          </Link>
-          <Link href="/products">
-            <Button variant="secondary" size="lg">
-              Continue Shopping
+            <Button variant="secondary" className="w-full border-doom-silver text-doom-silver hover:bg-doom-silver hover:text-black py-3 px-6 rounded-lg transition-colors duration-200">
+              <ArrowLeft size={20} className="mr-2" />
+              Return to Cart
             </Button>
           </Link>
         </div>
 
-        <blockquote className="mt-12 text-doom-silver italic">
-          "Take your time, the villain's lair will wait for you"
-        </blockquote>
+        {/* Information Box */}
+        <div className="bg-gray-50 rounded-lg p-6 text-left">
+          <h3 className="font-medium text-gray-800 mb-3">What happened?</h3>
+          <ul className="text-sm text-gray-600 space-y-2">
+            <li>• You cancelled the payment process on PayPal</li>
+            <li>• Your cart items are still saved and waiting for you</li>
+            <li>• You can try a different payment method or retry PayPal</li>
+            <li>• No charges were made to your account</li>
+          </ul>
+        </div>
+
+        {/* Help Section */}
+        <div className="mt-8 text-sm text-gray-500">
+          <p>Need help? Contact our support team:</p>
+          <p className="font-medium">
+            Email: <a href="mailto:support@mfdoomshop.com" className="text-doom-gold hover:underline">support@mfdoomshop.com</a>
+          </p>
+        </div>
       </motion.div>
     </div>
   )

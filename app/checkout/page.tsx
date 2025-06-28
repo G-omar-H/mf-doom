@@ -51,37 +51,21 @@ export default function CheckoutPage() {
   const handlePayPalSuccess = async (details: any) => {
     setIsProcessing(true)
     try {
-      // Create order in database
-      const orderResponse = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-        items,
-        customer: {
-          email: formData.email,
-          name: formData.name,
-          phone: formData.phone,
-        },
-        shippingAddress: {
-          line1: formData.address,
-          city: formData.city,
-          state: formData.state,
-          postalCode: formData.zip,
-          country: formData.country,
-        },
-          paymentDetails: details,
-        total,
-        }),
-      })
-
-      if (orderResponse.ok) {
+      console.log('✅ PayPal payment successful:', details)
+      
+      // Payment was already captured by the PayPal component
+      // The order should already be created in the database
+      if (details.order) {
+        clearCart()
+        router.push(`/checkout/success?order=${details.order.orderNumber}`)
+      } else {
+        // Fallback for older flow
         clearCart()
         router.push('/checkout/success')
-      } else {
-        throw new Error('Failed to create order')
       }
     } catch (error) {
-      toast.error('Payment processed but order creation failed. Please contact support.')
+      console.error('Post-payment processing error:', error)
+      toast.error('Payment successful but there was an issue. Please contact support.')
     } finally {
       setIsProcessing(false)
     }
@@ -89,7 +73,8 @@ export default function CheckoutPage() {
 
   const handlePayPalError = (error: any) => {
     console.error('PayPal payment error:', error)
-    toast.error('Payment failed. Please try again.')
+    setIsProcessing(false)
+    toast.error('Payment failed. Please try again or contact support if the issue persists.')
   }
 
   // Redirect if cart is empty

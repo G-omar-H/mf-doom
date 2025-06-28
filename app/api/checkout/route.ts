@@ -10,21 +10,42 @@ const PAYPAL_BASE_URL = process.env.PAYPAL_ENVIRONMENT === 'production'
 // Store checkout sessions in memory (use Redis in production)
 const checkoutSessions = new Map()
 
-// Get PayPal access token
-async function getPayPalAccessToken() {
-  const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString('base64')
-  
-  const response = await fetch(`${PAYPAL_BASE_URL}/v1/oauth2/token`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Basic ${auth}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: 'grant_type=client_credentials',
+// Enhanced error logging for production
+const logError = (context: string, error: any, details?: any) => {
+  console.error(`[PayPal ${context}]`, {
+    error: error.message || error,
+    details,
+    timestamp: new Date().toISOString(),
+    environment: process.env.PAYPAL_ENVIRONMENT
   })
+}
 
-  const data = await response.json()
-  return data.access_token
+// Get PayPal access token with better error handling
+async function getPayPalAccessToken() {
+  try {
+    const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString('base64')
+    
+    const response = await fetch(`${PAYPAL_BASE_URL}/v1/oauth2/token`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
+      },
+      body: 'grant_type=client_credentials',
+    })
+
+    const data = await response.json()
+    
+    if (!response.ok) {
+      throw new Error(`PayPal token request failed: ${data.error_description || data.error}`)
+    }
+    
+    return data.access_token
+  } catch (error) {
+    logError('Token Request', error)
+    throw error
+  }
 }
 
 // Create PayPal order
@@ -32,18 +53,38 @@ export async function POST(request: NextRequest) {
   try {
     const { items, customerEmail, shippingAddress, customerData } = await request.json()
 
-    // Calculate totals
-    const itemTotal = items.reduce((sum: number, item: any) => 
-      sum + (item.product.price * item.quantity), 0
-    )
+    // Validate required data
+    if (!items || items.length === 0) {
+      return NextResponse.json(
+        { error: 'No items provided' },
+        { status: 400 }
+      )
+    }
+
+    // Calculate totals with validation
+    const itemTotal = items.reduce((sum: number, item: any) => {
+      if (!item.product?.price || !item.quantity) {
+        throw new Error('Invalid item data')
+      }
+      return sum + (item.product.price * item.quantity)
+    }, 0)
+    
     const shippingTotal = itemTotal > 100 ? 0 : 10 // Free shipping over $100
     const taxTotal = itemTotal * 0.08 // 8% tax
     const total = itemTotal + shippingTotal + taxTotal
 
+    // Validate minimum order amount
+    if (total < 0.01) {
+      return NextResponse.json(
+        { error: 'Order total must be at least $0.01' },
+        { status: 400 }
+      )
+    }
+
     // Get PayPal access token
     const accessToken = await getPayPalAccessToken()
 
-    // Create PayPal order
+    // Create enhanced PayPal order
     const orderData = {
       intent: 'CAPTURE',
       purchase_units: [
@@ -68,27 +109,28 @@ export async function POST(request: NextRequest) {
             },
           },
           items: items.map((item: any) => ({
-            name: item.product.name,
+            name: item.product.name.substring(0, 127), // PayPal limit
             quantity: item.quantity.toString(),
             description: item.selectedVariants 
-              ? Object.entries(item.selectedVariants).map(([k, v]) => `${k}: ${v}`).join(', ')
-              : item.product.description.substring(0, 127),
+              ? Object.entries(item.selectedVariants).map(([k, v]) => `${k}: ${v}`).join(', ').substring(0, 127)
+              : item.product.description?.substring(0, 127) || '',
             unit_amount: {
               currency_code: 'USD',
               value: item.product.price.toFixed(2),
             },
             category: 'PHYSICAL_GOODS',
+            sku: item.product.id?.toString() || `${item.product.slug}-${Date.now()}`,
           })),
           shipping: shippingAddress ? {
             name: {
-              full_name: shippingAddress.name || customerData?.name || 'Customer',
+              full_name: (shippingAddress.name || customerData?.name || 'Customer').substring(0, 300),
             },
             address: {
-              address_line_1: shippingAddress.line1 || shippingAddress.address,
-              address_line_2: shippingAddress.line2 || '',
-              admin_area_2: shippingAddress.city,
-              admin_area_1: shippingAddress.state,
-              postal_code: shippingAddress.postalCode || shippingAddress.zip,
+              address_line_1: (shippingAddress.line1 || shippingAddress.address).substring(0, 300),
+              address_line_2: (shippingAddress.line2 || '').substring(0, 300),
+              admin_area_2: shippingAddress.city.substring(0, 120),
+              admin_area_1: shippingAddress.state.substring(0, 120),
+              postal_code: (shippingAddress.postalCode || shippingAddress.zip).substring(0, 60),
               country_code: shippingAddress.country || 'US',
             },
           } : undefined,
@@ -99,7 +141,8 @@ export async function POST(request: NextRequest) {
         landing_page: 'BILLING',
         user_action: 'PAY_NOW',
         return_url: `${request.headers.get('origin')}/checkout/success`,
-        cancel_url: `${request.headers.get('origin')}/checkout/cancel`,
+        cancel_url: `${request.headers.get('origin')}/checkout`,
+        shipping_preference: 'SET_PROVIDED_ADDRESS',
       },
     }
 
@@ -108,6 +151,7 @@ export async function POST(request: NextRequest) {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
+        'PayPal-Request-Id': `DOOM-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, // Idempotency
       },
       body: JSON.stringify(orderData),
     })
@@ -131,21 +175,25 @@ export async function POST(request: NextRequest) {
       }
       
       checkoutSessions.set(paypalOrder.id, sessionData)
-      console.log('Stored checkout session for order:', paypalOrder.id)
+      console.log('✅ PayPal order created successfully:', paypalOrder.id)
 
       return NextResponse.json({ 
         orderId: paypalOrder.id,
-        approvalUrl: paypalOrder.links.find((link: any) => link.rel === 'approve')?.href
+        approvalUrl: paypalOrder.links?.find((link: any) => link.rel === 'approve')?.href,
+        status: paypalOrder.status
       })
     } else {
-      console.error('PayPal order creation failed:', paypalOrder)
+      logError('Order Creation', paypalOrder)
       return NextResponse.json(
-        { error: 'Failed to create PayPal order' },
+        { 
+          error: 'Failed to create PayPal order',
+          details: process.env.NODE_ENV === 'development' ? paypalOrder : undefined
+        },
         { status: 500 }
       )
     }
   } catch (error) {
-    console.error('PayPal error:', error)
+    logError('Order Creation Request', error)
     return NextResponse.json(
       { error: 'Failed to create checkout session' },
       { status: 500 }
@@ -158,6 +206,13 @@ export async function PUT(request: NextRequest) {
   try {
     const { orderId } = await request.json()
 
+    if (!orderId) {
+      return NextResponse.json(
+        { error: 'Order ID is required' },
+        { status: 400 }
+      )
+    }
+
     // Get PayPal access token
     const accessToken = await getPayPalAccessToken()
 
@@ -167,17 +222,18 @@ export async function PUT(request: NextRequest) {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
+        'PayPal-Request-Id': `CAPTURE-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       },
     })
 
     const captureData = await captureResponse.json()
 
-    if (captureResponse.ok) {
+    if (captureResponse.ok && captureData.status === 'COMPLETED') {
       // Get stored checkout session data
       const sessionData = checkoutSessions.get(orderId)
       
       if (!sessionData) {
-        console.error('No checkout session found for order:', orderId)
+        logError('Session Not Found', `No session data for order ${orderId}`)
         return NextResponse.json({ 
           ...captureData,
           warning: 'Payment captured but order creation failed - session not found' 
@@ -237,33 +293,23 @@ export async function PUT(request: NextRequest) {
               orderItems: {
                 create: sessionData.items.map((item: any) => ({
                   productId: item.product.id,
-                  variantSelection: item.selectedVariants || {},
-                  quantity: item.quantity,
-                  unitPrice: Number(item.product.price),
-                  totalPrice: Number(item.product.price * item.quantity),
-                  productSnapshot: {
-                    name: item.product.name,
-                    description: item.product.description,
-                    images: item.product.images,
-                    category: item.product.category,
-                    price: item.product.price,
-                  },
+                  productName: item.product.name,
+                  productPrice: Number(item.product.price),
+                  quantity: Number(item.quantity),
+                  variants: item.selectedVariants || {},
                 })),
               },
             },
-            include: {
-              orderItems: true,
-            },
           })
 
-          console.log('Order created in database:', dbOrder.orderNumber)
+          console.log('✅ Order created in database:', dbOrder.orderNumber)
           
-          // Clean up checkout session
+          // Clean up session data
           checkoutSessions.delete(orderId)
           
         } catch (dbError) {
-          console.error('Database order creation failed:', dbError)
-          // Don't fail the payment capture if DB fails
+          logError('Database Order Creation', dbError, { orderId, sessionData })
+          // Don't fail the payment - just log the error
         }
       }
 
@@ -278,14 +324,17 @@ export async function PUT(request: NextRequest) {
       })
       
     } else {
-      console.error('PayPal capture failed:', captureData)
+      logError('Payment Capture Failed', captureData)
       return NextResponse.json(
-        { error: 'Failed to capture payment' },
+        { 
+          error: 'Failed to capture payment',
+          details: process.env.NODE_ENV === 'development' ? captureData : undefined
+        },
         { status: 400 }
       )
     }
   } catch (error) {
-    console.error('PayPal capture error:', error)
+    logError('Payment Capture Request', error)
     return NextResponse.json(
       { error: 'Failed to capture payment' },
       { status: 500 }

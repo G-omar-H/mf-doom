@@ -4,6 +4,35 @@ A fully functional e-commerce website inspired by the legendary rapper MF DOOM. 
 
 ![MF DOOM Shop](https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&h=400&fit=crop)
 
+## 🚀 Quick Start - Local Development
+
+### Option 1: Automated Setup (Recommended)
+```bash
+npm install
+npm run db:setup-local
+npm run dev
+```
+
+### Option 2: Manual Setup
+```bash
+npm install
+npm run db:docker:up
+npm run db:migrate
+npm run db:seed
+npm run dev
+```
+
+**Access URLs:**
+- 🌐 App: http://localhost:3000
+- 🗄️ Prisma Studio: http://localhost:5555 (`npm run db:studio`)
+- 🔧 PgAdmin: http://localhost:8080 (`npm run pgadmin`)
+
+**Test Accounts:**
+- Admin: `admin@mfdoomshop.local` / `doom_admin_123`
+- Customer: `test@customer.local` / `password123`
+
+📖 **Full Setup Guide:** [LOCAL_DATABASE.md](./LOCAL_DATABASE.md)
+
 ## 🎭 Features
 
 ### Core E-Commerce Functionality

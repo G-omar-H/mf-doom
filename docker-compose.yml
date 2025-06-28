@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: mf-doom-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mf_doom_dev
+      POSTGRES_USER: doom_user
+      POSTGRES_PASSWORD: doom_password_local
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./prisma/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U doom_user -d mf_doom_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Optional: Database administration tool
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: mf-doom-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@mfdoom.local
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  pgadmin_data: 

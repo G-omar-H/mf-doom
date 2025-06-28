@@ -10,7 +10,20 @@
     "lint": "next lint",
     "migrate": "npx ts-node scripts/migrate-products.ts",
     "rebuild-products": "npx tsx scripts/analyze-and-create-products.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "db:docker:up": "docker-compose up -d postgres",
+    "db:docker:down": "docker-compose down",
+    "db:docker:logs": "docker-compose logs -f postgres",
+    "db:setup": "npm run db:migrate && npm run db:seed",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "prisma migrate reset --force",
+    "db:studio": "prisma studio",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:export": "tsx scripts/export-supabase-data.ts",
+    "db:setup-local": "chmod +x scripts/setup-local-db.sh && ./scripts/setup-local-db.sh",
+    "pgadmin": "docker-compose up -d pgadmin"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
@@ -26,7 +39,6 @@
     "lucide-react": "^0.294.0",
     "next": "14.0.4",
     "next-auth": "^4.24.11",
-    "paypal-rest-sdk": "^1.8.1",
     "prisma": "^6.9.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -39,7 +51,6 @@
   "devDependencies": {
     "@types/canvas-confetti": "^1.6.4",
     "@types/node": "^20.10.5",
-    "@types/paypal-rest-sdk": "^1.7.9",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.16",

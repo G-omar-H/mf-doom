@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js'
 import { CartItem } from '@/types'
 
 interface PayPalProviderProps {
@@ -24,15 +25,16 @@ export const PayPalProvider: React.FC<PayPalProviderProps> = ({
 }) => {
   const [isProcessing, setIsProcessing] = useState(false)
 
-  const handlePayPalPayment = async () => {
-    if (disabled || isProcessing) return
-    
-    setIsProcessing(true)
-    
+  // Calculate totals
+  const itemTotal = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
+  const shippingTotal = itemTotal > 100 ? 0 : 10 // Free shipping over $100
+  const taxTotal = itemTotal * 0.08 // 8% tax
+  const total = itemTotal + shippingTotal + taxTotal
+
+  const createOrder = async () => {
     try {
-      console.log('Creating PayPal order for redirect...')
+      console.log('Creating PayPal order...')
       
-      // Create order via API
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -45,28 +47,74 @@ export const PayPalProvider: React.FC<PayPalProviderProps> = ({
       })
       
       const data = await response.json()
-      console.log('PayPal order response:', data)
       
-      if (response.ok && data.approvalUrl) {
-        console.log('Redirecting to PayPal:', data.approvalUrl)
-        // Redirect to PayPal for payment
-        window.location.href = data.approvalUrl
+      if (response.ok && data.orderId) {
+        console.log('PayPal order created:', data.orderId)
+        return data.orderId
       } else {
         throw new Error(data.error || 'Failed to create PayPal order')
       }
       
     } catch (err) {
-      console.error('PayPal payment error:', err)
-      setIsProcessing(false)
+      console.error('PayPal order creation error:', err)
       onError(err)
+      throw err
     }
+  }
+
+  const onApprove = async (data: { orderID: string; payerID?: string }) => {
+    try {
+      setIsProcessing(true)
+      console.log('Capturing PayPal payment...', data.orderID)
+      
+      const response = await fetch('/api/checkout', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: data.orderID }),
+      })
+      
+      const captureData = await response.json()
+      
+      if (response.ok) {
+        console.log('Payment captured successfully:', captureData)
+        onSuccess(captureData)
+      } else {
+        throw new Error(captureData.error || 'Failed to capture payment')
+      }
+      
+    } catch (err) {
+      console.error('PayPal capture error:', err)
+      onError(err)
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const onCancel = () => {
+    console.log('PayPal payment cancelled')
+    setIsProcessing(false)
+  }
+
+  const onErrorHandler = (err: unknown) => {
+    console.error('PayPal payment error:', err)
+    setIsProcessing(false)
+    onError(err)
+  }
+
+  const initialOptions = {
+    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
+    currency: 'USD',
+    intent: 'capture',
+    'enable-funding': 'venmo,paylater',
+    'disable-funding': 'card', // We can enable this later if needed
+    'data-sdk-integration-source': 'developer-studio'
   }
 
   return (
     <div className="space-y-4">
-      {/* Primary PayPal Payment Button */}
+      {/* PayPal Integration */}
       <div className="bg-white border border-gray-200 rounded-lg p-4">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
               <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -75,35 +123,59 @@ export const PayPalProvider: React.FC<PayPalProviderProps> = ({
             </div>
             <div>
               <h3 className="font-medium text-gray-900">PayPal</h3>
-              <p className="text-sm text-gray-500">Pay securely with PayPal or card</p>
+              <p className="text-sm text-gray-500">Pay securely with PayPal, card, or Pay Later</p>
             </div>
           </div>
           <div className="text-sm text-gray-400">Recommended</div>
         </div>
+
+        {/* Order Summary */}
+        <div className="bg-gray-50 rounded-lg p-3 mb-4 text-sm">
+          <div className="flex justify-between items-center mb-1">
+            <span>Subtotal:</span>
+            <span>${itemTotal.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between items-center mb-1">
+            <span>Shipping:</span>
+            <span>{shippingTotal === 0 ? 'FREE' : `$${shippingTotal.toFixed(2)}`}</span>
+          </div>
+          <div className="flex justify-between items-center mb-1">
+            <span>Tax:</span>
+            <span>${taxTotal.toFixed(2)}</span>
+          </div>
+          <div className="border-t pt-1 mt-2">
+            <div className="flex justify-between items-center font-semibold">
+              <span>Total:</span>
+              <span>${total.toFixed(2)} USD</span>
+            </div>
+          </div>
+        </div>
         
-        <button
-          onClick={handlePayPalPayment}
-          disabled={disabled || isProcessing}
-          className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
-            disabled || isProcessing
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow-md'
-          }`}
-        >
-          {isProcessing ? (
-            <div className="flex items-center justify-center space-x-2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              <span>Redirecting to PayPal...</span>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center space-x-2">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.704.704 0 0 0-.692.59l-1.475 9.35a.641.641 0 0 0 .633.74h5.42a.704.704 0 0 0 .692-.59l.29-1.855.018-.111a.704.704 0 0 1 .692-.59h.43c3.506 0 6.266-1.424 7.064-5.54.334-1.72.16-3.154-.676-4.074-.27-.297-.6-.543-.98-.734z"/>
-              </svg>
-              <span>Continue with PayPal</span>
-            </div>
-          )}
-        </button>
+        {/* PayPal Buttons */}
+        <PayPalScriptProvider options={initialOptions}>
+          <PayPalButtons
+            style={{
+              layout: 'horizontal',
+              color: 'blue',
+              shape: 'rect',
+              label: 'checkout',
+              height: 45,
+              tagline: false
+            }}
+            disabled={disabled || isProcessing}
+            createOrder={createOrder}
+            onApprove={onApprove}
+            onError={onErrorHandler}
+            onCancel={onCancel}
+          />
+        </PayPalScriptProvider>
+
+        {isProcessing && (
+          <div className="mt-3 flex items-center justify-center space-x-2 text-sm text-gray-600">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+            <span>Processing payment...</span>
+          </div>
+        )}
       </div>
 
       {/* Payment Security Info */}
@@ -119,6 +191,7 @@ export const PayPalProvider: React.FC<PayPalProviderProps> = ({
             <ul className="space-y-1">
               <li>✓ Protected by PayPal's buyer protection</li>
               <li>✓ Pay with PayPal balance, card, or bank account</li>
+              <li>✓ Pay Later options available</li>
               <li>✓ No account required for card payments</li>
             </ul>
           </div>
