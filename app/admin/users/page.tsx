@@ -185,71 +185,71 @@ export default function AdminUsersPage() {
   const totalRevenue = users.reduce((sum, user) => sum + user.totalSpent, 0)
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
+      <div className="mb-6 md:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
           <div>
-            <h1 className="text-3xl font-black">USER MANAGEMENT</h1>
-            <p className="text-mf-gray mt-1">Manage villain collective members and access</p>
+            <h1 className="text-2xl md:text-3xl font-black">USER MANAGEMENT</h1>
+            <p className="text-mf-gray mt-1 text-sm md:text-base">Manage villain collective members and access</p>
           </div>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-mf-blue/10 rounded-lg flex items-center justify-center">
-              <Users className="w-6 h-6 text-mf-blue" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+        <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-3 md:p-6">
+          <div className="flex items-center space-x-2 md:space-x-3">
+            <div className="w-8 h-8 md:w-12 md:h-12 bg-mf-blue/10 rounded-lg flex items-center justify-center">
+              <Users className="w-4 h-4 md:w-6 md:h-6 text-mf-blue" />
             </div>
             <div>
-              <p className="text-sm text-mf-gray">Total Users</p>
-              <p className="text-2xl font-bold">{totalUsers}</p>
+              <p className="text-xs md:text-sm text-mf-gray">Total Users</p>
+              <p className="text-lg md:text-2xl font-bold">{totalUsers}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Shield className="w-6 h-6 text-purple-600" />
+        <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-3 md:p-6">
+          <div className="flex items-center space-x-2 md:space-x-3">
+            <div className="w-8 h-8 md:w-12 md:h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+              <Shield className="w-4 h-4 md:w-6 md:h-6 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm text-mf-gray">Administrators</p>
-              <p className="text-2xl font-bold">{adminUsers}</p>
+              <p className="text-xs md:text-sm text-mf-gray">Administrators</p>
+              <p className="text-lg md:text-2xl font-bold">{adminUsers}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <UserCheck className="w-6 h-6 text-green-600" />
+        <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-3 md:p-6">
+          <div className="flex items-center space-x-2 md:space-x-3">
+            <div className="w-8 h-8 md:w-12 md:h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <UserCheck className="w-4 h-4 md:w-6 md:h-6 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-mf-gray">Active Users</p>
-              <p className="text-2xl font-bold">{activeUsers}</p>
+              <p className="text-xs md:text-sm text-mf-gray">Active Users</p>
+              <p className="text-lg md:text-2xl font-bold">{activeUsers}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <ShoppingBag className="w-6 h-6 text-yellow-600" />
+        <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-3 md:p-6">
+          <div className="flex items-center space-x-2 md:space-x-3">
+            <div className="w-8 h-8 md:w-12 md:h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <ShoppingBag className="w-4 h-4 md:w-6 md:h-6 text-yellow-600" />
             </div>
             <div>
-              <p className="text-sm text-mf-gray">Total Revenue</p>
-              <p className="text-2xl font-bold">${totalRevenue.toFixed(2)}</p>
+              <p className="text-xs md:text-sm text-mf-gray">Total Revenue</p>
+              <p className="text-lg md:text-2xl font-bold">${totalRevenue.toFixed(2)}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Filters & Search */}
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="bg-white rounded-lg md:rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mf-gray w-5 h-5" />
             <input
@@ -257,14 +257,14 @@ export default function AdminUsersPage() {
               placeholder="Search users..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+              className="w-full pl-12 pr-4 py-2 md:py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
             />
           </div>
 
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+            className="px-3 md:px-4 py-2 md:py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
           >
             <option value="ALL">All Roles</option>
             <option value="ADMIN">Administrators</option>
@@ -274,21 +274,21 @@ export default function AdminUsersPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+            className="px-3 md:px-4 py-2 md:py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
           >
             <option value="ALL">All Status</option>
             <option value="ACTIVE">Active</option>
             <option value="INACTIVE">Inactive</option>
           </select>
 
-          <div className="flex items-center justify-center bg-mf-light-gray rounded-lg px-4 py-3">
-            <span className="font-semibold">{filteredUsers.length} Users</span>
+          <div className="flex items-center justify-center bg-mf-light-gray rounded-lg px-3 md:px-4 py-2 md:py-3">
+            <span className="font-semibold text-sm md:text-base">{filteredUsers.length} Users</span>
           </div>
         </div>
       </div>
 
-      {/* Users Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      {/* Users - Desktop Table View */}
+      <div className="hidden lg:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-mf-light-gray">
@@ -423,6 +423,132 @@ export default function AdminUsersPage() {
             <Users className="w-12 h-12 text-mf-gray mx-auto mb-4" />
             <p className="text-mf-gray text-lg mb-2">No users found</p>
             <p className="text-sm text-mf-gray">Try adjusting your search or filter criteria</p>
+          </div>
+        )}
+      </div>
+
+      {/* Users - Mobile Card View */}
+      <div className="lg:hidden">
+        {filteredUsers.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-100 text-center py-12">
+            <Users className="w-12 h-12 text-mf-gray mx-auto mb-4" />
+            <p className="text-mf-gray text-lg mb-2">No users found</p>
+            <p className="text-sm text-mf-gray">Try adjusting your search or filter criteria</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredUsers.map((user) => (
+              <motion.div
+                key={user.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white rounded-lg shadow-sm border border-gray-100 p-4"
+              >
+                {/* User Header */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      user.role === 'ADMIN' ? 'bg-purple-100' : 'bg-mf-blue/10'
+                    }`}>
+                      {user.role === 'ADMIN' ? (
+                        <Crown className="w-4 h-4 text-purple-600" />
+                      ) : (
+                        <User className="w-4 h-4 text-mf-blue" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm">{user.name}</p>
+                      <p className="text-xs text-mf-gray">{user.email}</p>
+                      {user.phone && (
+                        <p className="text-xs text-mf-gray">{user.phone}</p>
+                      )}
+                    </div>
+                  </div>
+                  {user.id === session?.user?.id && (
+                    <span className="text-xs text-mf-gray px-2 py-1 bg-mf-light-gray rounded">
+                      You
+                    </span>
+                  )}
+                </div>
+
+                {/* Status Badges */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
+                    {user.role}
+                  </span>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(user.isActive)}`}>
+                    {user.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+
+                {/* User Stats */}
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div className="text-center bg-mf-light-gray rounded-lg p-2">
+                    <p className="text-xs text-mf-gray">Orders</p>
+                    <p className="font-semibold">{user.orderCount}</p>
+                  </div>
+                  <div className="text-center bg-mf-light-gray rounded-lg p-2">
+                    <p className="text-xs text-mf-gray">Total Spent</p>
+                    <p className="font-semibold">${user.totalSpent.toFixed(2)}</p>
+                  </div>
+                </div>
+
+                {/* Additional Info & Actions */}
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-mf-gray">
+                    <p>Last Order: {user.lastOrderDate 
+                      ? new Date(user.lastOrderDate).toLocaleDateString()
+                      : 'Never'
+                    }</p>
+                    <p>Joined: {new Date(user.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  
+                  {user.id !== session?.user?.id && (
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => changeUserRole(user.id, user.role === 'ADMIN' ? 'CUSTOMER' : 'ADMIN')}
+                        className={`p-2 rounded-lg transition-colors ${
+                          user.role === 'ADMIN' 
+                            ? 'hover:bg-blue-100 text-blue-600' 
+                            : 'hover:bg-purple-100 text-purple-600'
+                        }`}
+                        title={user.role === 'ADMIN' ? 'Make Customer' : 'Make Admin'}
+                      >
+                        {user.role === 'ADMIN' ? (
+                          <User className="w-4 h-4" />
+                        ) : (
+                          <Crown className="w-4 h-4" />
+                        )}
+                      </button>
+                      
+                      <button
+                        onClick={() => toggleUserStatus(user.id, user.isActive)}
+                        className={`p-2 rounded-lg transition-colors ${
+                          user.isActive 
+                            ? 'hover:bg-red-100 text-red-600' 
+                            : 'hover:bg-green-100 text-green-600'
+                        }`}
+                        title={user.isActive ? 'Deactivate User' : 'Activate User'}
+                      >
+                        {user.isActive ? (
+                          <UserX className="w-4 h-4" />
+                        ) : (
+                          <UserCheck className="w-4 h-4" />
+                        )}
+                      </button>
+
+                      <button
+                        onClick={() => deleteUser(user.id)}
+                        className="p-2 hover:bg-red-100 text-red-600 rounded-lg transition-colors"
+                        title="Delete User"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            ))}
           </div>
         )}
       </div>
