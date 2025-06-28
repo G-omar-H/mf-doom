@@ -306,11 +306,11 @@ export default function AdminProductEditPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+      <div className="mb-6 md:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+          <div className="flex items-center space-x-3 md:space-x-4">
             <Link 
               href={`/admin/products/${params.id}`}
               className="p-2 hover:bg-mf-light-gray rounded-lg transition-colors"
@@ -318,32 +318,35 @@ export default function AdminProductEditPage() {
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-3xl font-black">Edit Product</h1>
-              <p className="text-mf-gray mt-1">Update product information and settings</p>
+              <h1 className="text-xl md:text-3xl font-black">Edit Product</h1>
+              <p className="text-mf-gray mt-1 text-sm md:text-base">Update product information and settings</p>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-wrap items-center gap-2 md:gap-4">
             <Link 
               href={`/admin/products/${params.id}`}
-              className="btn-secondary flex items-center space-x-2"
+              className="btn-secondary flex items-center space-x-2 text-sm md:text-base"
             >
               <X className="w-4 h-4" />
-              <span>Cancel</span>
+              <span className="hidden sm:inline">Cancel</span>
+              <span className="sm:hidden">Cancel</span>
             </Link>
             <button
               onClick={handleSubmit}
               disabled={saving || uploadingImages}
-              className="btn-primary flex items-center space-x-2 disabled:opacity-50"
+              className="btn-primary flex items-center space-x-2 disabled:opacity-50 text-sm md:text-base"
             >
               {saving ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Saving...</span>
+                  <span className="hidden sm:inline">Saving...</span>
+                  <span className="sm:hidden">Saving</span>
                 </>
               ) : (
                 <>
                   <Save className="w-4 h-4" />
-                  <span>Save Changes</span>
+                  <span className="hidden sm:inline">Save Changes</span>
+                  <span className="sm:hidden">Save</span>
                 </>
               )}
             </button>
@@ -352,56 +355,56 @@ export default function AdminProductEditPage() {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           {/* Main Form */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6 md:space-y-8">
             {/* Basic Information */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold mb-6">Basic Information</h3>
+            <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+              <h3 className="text-base md:text-lg font-semibold mb-4 md:mb-6">Basic Information</h3>
               
-              <div className="space-y-6">
+              <div className="space-y-4 md:space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                     Product Name *
                   </label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
                     placeholder="Enter product name"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                     Description *
                   </label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
                     rows={4}
                     placeholder="Enter product description"
                     required
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                       Price *
                     </label>
                     <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mf-gray w-5 h-5" />
+                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mf-gray w-4 h-4 md:w-5 md:h-5" />
                       <input
                         type="number"
                         step="0.01"
                         min="0"
                         value={formData.price}
                         onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
-                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+                        className="w-full pl-10 md:pl-12 pr-3 md:pr-4 py-2 md:py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
                         placeholder="0.00"
                         required
                       />
@@ -409,11 +412,11 @@ export default function AdminProductEditPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                       Compare At Price
                     </label>
                     <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mf-gray w-5 h-5" />
+                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mf-gray w-4 h-4 md:w-5 md:h-5" />
                       <input
                         type="number"
                         step="0.01"
@@ -423,7 +426,7 @@ export default function AdminProductEditPage() {
                           ...prev, 
                           compareAtPrice: e.target.value ? parseFloat(e.target.value) : null 
                         }))}
-                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+                        className="w-full pl-10 md:pl-12 pr-3 md:pr-4 py-2 md:py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
                         placeholder="0.00"
                       />
                     </div>
@@ -431,13 +434,13 @@ export default function AdminProductEditPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                     Category *
                   </label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
                     required
                   >
                     {categories.map(category => (
@@ -451,34 +454,34 @@ export default function AdminProductEditPage() {
             </div>
 
             {/* Tags */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold mb-6">Product Tags</h3>
+            <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+              <h3 className="text-base md:text-lg font-semibold mb-4 md:mb-6">Product Tags</h3>
               
-              <div className="space-y-4">
+              <div className="space-y-3 md:space-y-4">
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={newTag}
                     onChange={(e) => setNewTag(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                    className="flex-1 px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+                    className="flex-1 px-3 md:px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
                     placeholder="Add a tag"
                   />
                   <button
                     type="button"
                     onClick={addTag}
-                    className="px-4 py-2 bg-mf-blue text-white rounded-lg hover:bg-mf-dark-blue transition-colors"
+                    className="px-3 md:px-4 py-2 bg-mf-blue text-white rounded-lg hover:bg-mf-dark-blue transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
 
                 {formData.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1 md:gap-2">
                     {formData.tags.map((tag, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center space-x-2 bg-mf-light-gray px-3 py-1 rounded-full text-sm"
+                        className="inline-flex items-center space-x-1 md:space-x-2 bg-mf-light-gray px-2 md:px-3 py-1 rounded-full text-xs md:text-sm"
                       >
                         <span>{tag}</span>
                         <button
@@ -496,12 +499,12 @@ export default function AdminProductEditPage() {
             </div>
 
             {/* Product Images */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold mb-6">Product Images</h3>
+            <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+              <h3 className="text-base md:text-lg font-semibold mb-4 md:mb-6">Product Images</h3>
               
               {/* Current Images Grid */}
               {formData.images.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-3 md:gap-4 mb-4 md:mb-6">
                   {formData.images.map((image, index) => (
                     <motion.div 
                       key={index} 
@@ -520,37 +523,32 @@ export default function AdminProductEditPage() {
                         
                         {/* Image Controls Overlay */}
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
-                          <div className="opacity-0 group-hover:opacity-100 flex space-x-2 transition-opacity">
+                          <div className="opacity-0 group-hover:opacity-100 flex space-x-1 md:space-x-2 transition-opacity">
                             <button
                               type="button"
                               onClick={() => replaceImage(index)}
-                              className="p-2 bg-mf-blue text-white rounded-full hover:bg-mf-dark-blue transition-colors"
+                              className="p-1 md:p-2 bg-mf-blue text-white rounded-full hover:bg-mf-dark-blue transition-colors"
                               title="Replace Image"
                             >
-                              <RotateCcw className="w-4 h-4" />
+                              <RotateCcw className="w-3 h-3 md:w-4 md:h-4" />
                             </button>
                             <button
                               type="button"
                               onClick={() => removeImage(image)}
-                              className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
+                              className="p-1 md:p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
                               title="Delete Image"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3 h-3 md:w-4 md:h-4" />
                             </button>
                           </div>
                         </div>
 
-                        {/* Primary Image Badge */}
+                        {/* First Image Badge */}
                         {index === 0 && (
-                          <div className="absolute top-2 left-2 bg-mf-blue text-white px-2 py-1 rounded text-xs font-semibold">
-                            Primary
+                          <div className="absolute top-1 md:top-2 left-1 md:left-2 bg-mf-blue text-white px-1 md:px-2 py-0.5 md:py-1 rounded text-xs font-medium">
+                            Main
                           </div>
                         )}
-
-                        {/* Image Number */}
-                        <div className="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
-                          {index + 1}
-                        </div>
                       </div>
                     </motion.div>
                   ))}
@@ -559,9 +557,11 @@ export default function AdminProductEditPage() {
 
               {/* Upload Area */}
               <div
-                className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-all ${
-                  dragOver 
-                    ? 'border-mf-blue bg-mf-blue/5' 
+                className={`border-2 border-dashed rounded-lg p-4 md:p-8 text-center transition-colors ${
+                  dragOver
+                    ? 'border-mf-blue bg-mf-blue/10'
+                    : uploadingImages
+                    ? 'border-gray-300 bg-gray-50'
                     : 'border-gray-300 hover:border-mf-blue hover:bg-mf-blue/5'
                 }`}
                 onDragOver={handleDragOver}
@@ -571,208 +571,141 @@ export default function AdminProductEditPage() {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  multiple
                   accept="image/*"
+                  multiple
                   onChange={handleFileSelect}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  className="hidden"
                 />
                 
                 {uploadingImages ? (
-                  <div className="flex flex-col items-center">
-                    <Loader2 className="w-12 h-12 text-mf-blue animate-spin mb-4" />
-                    <p className="text-mf-blue font-medium">Uploading images...</p>
-                    <p className="text-sm text-mf-gray">Please wait</p>
+                  <div className="flex flex-col items-center space-y-2">
+                    <Loader2 className="w-8 h-8 md:w-12 md:h-12 text-mf-blue animate-spin" />
+                    <p className="text-mf-gray text-sm md:text-base">Uploading images...</p>
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center">
-                    <div className="w-16 h-16 bg-mf-blue/10 rounded-full flex items-center justify-center mb-4">
-                      <Upload className="w-8 h-8 text-mf-blue" />
-                    </div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                      {formData.images.length === 0 ? 'Add Product Images' : 'Add More Images'}
-                    </h4>
-                    <p className="text-mf-gray mb-4">
-                      Drag and drop images here, or click to browse
-                    </p>
-                    <div className="flex items-center space-x-4 text-sm text-mf-gray">
-                      <span className="flex items-center">
-                        <FileImage className="w-4 h-4 mr-1" />
-                        PNG, JPG, JPEG
-                      </span>
-                      <span>•</span>
-                      <span>Max 10MB each</span>
+                  <div className="flex flex-col items-center space-y-2 md:space-y-4">
+                    <ImageIcon className="w-8 h-8 md:w-12 md:h-12 text-mf-gray" />
+                    <div>
+                      <p className="text-mf-gray text-sm md:text-base mb-1 md:mb-2">
+                        Drag and drop images here, or 
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="text-mf-blue hover:underline ml-1"
+                        >
+                          browse
+                        </button>
+                      </p>
+                      <p className="text-xs text-mf-gray">PNG, JPG, GIF up to 10MB each</p>
                     </div>
                   </div>
                 )}
               </div>
-
-              {formData.images.length > 0 && (
-                <div className="mt-4 text-sm text-mf-gray">
-                  <p>💡 <strong>Tips:</strong></p>
-                  <ul className="list-disc list-inside space-y-1 mt-2">
-                    <li>First image will be used as the primary product image</li>
-                    <li>Hover over images to replace or delete them</li>
-                    <li>Drag and drop to reorder images</li>
-                    <li>Use high-quality images for better customer experience</li>
-                  </ul>
-                </div>
-              )}
             </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
+          {/* Settings Sidebar */}
+          <div className="space-y-4 md:space-y-6">
             {/* Status & Visibility */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold mb-6">Status & Visibility</h3>
+            <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+              <h3 className="text-base md:text-lg font-semibold mb-4">Status & Visibility</h3>
               
-              <div className="space-y-6">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Product Status
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+                    Status
                   </label>
-                  <div className="space-y-2">
-                    {['DRAFT', 'ACTIVE', 'ARCHIVED'].map(status => (
-                      <label key={status} className="flex items-center">
-                        <input
-                          type="radio"
-                          value={status}
-                          checked={formData.status === status}
-                          onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
-                          className="mr-3"
-                        />
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          status === 'ACTIVE' ? 'bg-green-100 text-green-800' :
-                          status === 'DRAFT' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {status}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
+                  >
+                    <option value="DRAFT">Draft</option>
+                    <option value="ACTIVE">Active</option>
+                    <option value="ARCHIVED">Archived</option>
+                  </select>
                 </div>
 
-                <div>
-                  <label className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Featured Product</span>
-                    <button
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, featured: !prev.featured }))}
-                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                        formData.featured 
-                          ? 'bg-yellow-600 text-white hover:bg-yellow-700' 
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }`}
-                    >
-                      {formData.featured ? (
-                        <>
-                          <Star className="w-4 h-4 fill-current" />
-                          <span>Featured</span>
-                        </>
-                      ) : (
-                        <>
-                          <Star className="w-4 h-4" />
-                          <span>Not Featured</span>
-                        </>
-                      )}
-                    </button>
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    id="featured"
+                    checked={formData.featured}
+                    onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
+                    className="w-4 h-4 text-mf-blue bg-gray-100 border-gray-300 rounded focus:ring-mf-blue focus:ring-2"
+                  />
+                  <label htmlFor="featured" className="text-xs md:text-sm font-medium text-gray-700">
+                    Featured Product
                   </label>
-                  <p className="text-xs text-mf-gray mt-1">
-                    Featured products appear prominently on the homepage
-                  </p>
                 </div>
               </div>
             </div>
 
-            {/* Product Info */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold mb-4">Product Info</h3>
+            {/* Product Details */}
+            <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+              <h3 className="text-base md:text-lg font-semibold mb-4">Product Details</h3>
               
-              <div className="space-y-4 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-mf-gray">Product ID</span>
-                  <span className="font-mono text-xs">{params.id}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-mf-gray">Images</span>
-                  <span className="font-semibold">{formData.images.length}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-mf-gray">Category</span>
-                  <span>{formData.category.replace('_', ' ')}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-mf-gray">Status</span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    formData.status === 'ACTIVE' ? 'bg-green-100 text-green-800' :
-                    formData.status === 'DRAFT' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
-                    {formData.status}
-                  </span>
-                </div>
-                {formData.featured && (
-                  <div className="flex justify-between">
-                    <span className="text-mf-gray">Featured</span>
-                    <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium flex items-center">
-                      <Star className="w-3 h-3 mr-1 fill-current" />
-                      Yes
-                    </span>
+              <div className="space-y-3 md:space-y-4">
+                <div className="flex items-center space-x-3">
+                  <Package className="w-4 h-4 md:w-5 md:h-5 text-mf-gray" />
+                  <div>
+                    <p className="text-xs md:text-sm text-mf-gray">Category</p>
+                    <p className="font-medium text-sm md:text-base">{formData.category.replace('_', ' ')}</p>
                   </div>
-                )}
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <DollarSign className="w-4 h-4 md:w-5 md:h-5 text-mf-gray" />
+                  <div>
+                    <p className="text-xs md:text-sm text-mf-gray">Price</p>
+                    <p className="font-medium text-sm md:text-base">${formData.price.toFixed(2)}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <ImageIcon className="w-4 h-4 md:w-5 md:h-5 text-mf-gray" />
+                  <div>
+                    <p className="text-xs md:text-sm text-mf-gray">Images</p>
+                    <p className="font-medium text-sm md:text-base">{formData.images.length} uploaded</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <Tag className="w-4 h-4 md:w-5 md:h-5 text-mf-gray" />
+                  <div>
+                    <p className="text-xs md:text-sm text-mf-gray">Tags</p>
+                    <p className="font-medium text-sm md:text-base">{formData.tags.length} added</p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Quick Actions */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
-              
-              <div className="space-y-3">
+            {/* Save Actions - Mobile */}
+            <div className="lg:hidden bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+              <div className="flex flex-col space-y-3">
                 <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ 
-                    ...prev, 
-                    status: prev.status === 'ACTIVE' ? 'DRAFT' : 'ACTIVE' 
-                  }))}
-                  className={`w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                    formData.status === 'ACTIVE' 
-                      ? 'bg-yellow-600 text-white hover:bg-yellow-700' 
-                      : 'bg-green-600 text-white hover:bg-green-700'
-                  }`}
+                  onClick={handleSubmit}
+                  disabled={saving || uploadingImages}
+                  className="btn-primary flex items-center justify-center space-x-2 disabled:opacity-50 text-sm w-full"
                 >
-                  {formData.status === 'ACTIVE' ? (
+                  {saving ? (
                     <>
-                      <ToggleLeft className="w-4 h-4" />
-                      <span>Set to Draft</span>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Saving Changes...</span>
                     </>
                   ) : (
                     <>
-                      <ToggleRight className="w-4 h-4" />
-                      <span>Activate</span>
+                      <Save className="w-4 h-4" />
+                      <span>Save Changes</span>
                     </>
                   )}
                 </button>
-
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, featured: !prev.featured }))}
-                  className={`w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                    formData.featured 
-                      ? 'bg-gray-600 text-white hover:bg-gray-700' 
-                      : 'bg-yellow-600 text-white hover:bg-yellow-700'
-                  }`}
-                >
-                  <Star className="w-4 h-4" />
-                  <span>{formData.featured ? 'Unfeature' : 'Feature'}</span>
-                </button>
-
-                <Link
+                <Link 
                   href={`/admin/products/${params.id}`}
-                  className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-mf-blue text-white rounded-lg hover:bg-mf-dark-blue transition-colors"
+                  className="btn-secondary flex items-center justify-center space-x-2 text-sm w-full"
                 >
-                  <Package className="w-4 h-4" />
-                  <span>View Product</span>
+                  <X className="w-4 h-4" />
+                  <span>Cancel</span>
                 </Link>
               </div>
             </div>

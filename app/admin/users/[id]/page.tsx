@@ -232,11 +232,11 @@ export default function AdminUserDetailPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+      <div className="mb-6 md:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+          <div className="flex items-center space-x-3 md:space-x-4">
             <Link 
               href="/admin/users"
               className="p-2 hover:bg-mf-light-gray rounded-lg transition-colors"
@@ -244,15 +244,15 @@ export default function AdminUserDetailPage() {
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-3xl font-black">{user.name}</h1>
-              <p className="text-mf-gray mt-1">User Profile & Activity</p>
+              <h1 className="text-xl md:text-3xl font-black">{user.name}</h1>
+              <p className="text-mf-gray mt-1 text-sm md:text-base">User Profile & Activity</p>
             </div>
           </div>
           {user.id !== session?.user?.id && (
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-wrap items-center gap-2 md:gap-4">
               <button
                 onClick={() => changeUserRole(user.role === 'ADMIN' ? 'CUSTOMER' : 'ADMIN')}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                className={`flex items-center space-x-2 px-3 md:px-4 py-2 rounded-lg transition-colors text-sm md:text-base ${
                   user.role === 'ADMIN' 
                     ? 'bg-blue-600 text-white hover:bg-blue-700' 
                     : 'bg-purple-600 text-white hover:bg-purple-700'
@@ -261,59 +261,62 @@ export default function AdminUserDetailPage() {
                 {user.role === 'ADMIN' ? (
                   <>
                     <User className="w-4 h-4" />
-                    <span>Make Customer</span>
+                    <span className="hidden sm:inline">Make Customer</span>
+                    <span className="sm:hidden">Customer</span>
                   </>
                 ) : (
                   <>
                     <Crown className="w-4 h-4" />
-                    <span>Make Admin</span>
+                    <span className="hidden sm:inline">Make Admin</span>
+                    <span className="sm:hidden">Admin</span>
                   </>
                 )}
               </button>
               <button
                 onClick={deleteUser}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2"
+                className="bg-red-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2 text-sm md:text-base"
               >
                 <Trash2 className="w-4 h-4" />
-                <span>Delete User</span>
+                <span className="hidden sm:inline">Delete User</span>
+                <span className="sm:hidden">Delete</span>
               </button>
             </div>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         {/* Main Content */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-6 md:space-y-8">
           {/* User Information */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <div className="flex items-start justify-between mb-6">
-              <div className="flex items-center space-x-4">
-                <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
+          <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-4 sm:space-y-0 mb-4 md:mb-6">
+              <div className="flex items-center space-x-3 md:space-x-4">
+                <div className={`w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center ${
                   user.role === 'ADMIN' ? 'bg-purple-100' : 'bg-mf-blue/10'
                 }`}>
                   {user.role === 'ADMIN' ? (
-                    <Crown className="w-8 h-8 text-purple-600" />
+                    <Crown className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
                   ) : (
-                    <User className="w-8 h-8 text-mf-blue" />
+                    <User className="w-6 h-6 md:w-8 md:h-8 text-mf-blue" />
                   )}
                 </div>
                 <div>
-                  <div className="flex items-center space-x-3 mb-2">
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getRoleColor(user.role)}`}>
+                  <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-2">
+                    <span className={`px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium ${getRoleColor(user.role)}`}>
                       {user.role}
                     </span>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(user.isActive)}`}>
+                    <span className={`px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium ${getStatusColor(user.isActive)}`}>
                       {user.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </div>
-                  <h2 className="text-2xl font-bold">{user.name}</h2>
+                  <h2 className="text-xl md:text-2xl font-bold">{user.name}</h2>
                 </div>
               </div>
               {user.id !== session?.user?.id && (
                 <button
                   onClick={toggleUserStatus}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                  className={`flex items-center justify-center space-x-2 px-3 md:px-4 py-2 rounded-lg transition-colors text-sm md:text-base ${
                     user.isActive 
                       ? 'bg-yellow-600 text-white hover:bg-yellow-700' 
                       : 'bg-green-600 text-white hover:bg-green-700'
@@ -334,38 +337,38 @@ export default function AdminUserDetailPage() {
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div className="space-y-3 md:space-y-4">
                 <div className="flex items-center space-x-3">
-                  <Mail className="w-5 h-5 text-mf-gray" />
+                  <Mail className="w-4 h-4 md:w-5 md:h-5 text-mf-gray flex-shrink-0" />
                   <div>
-                    <p className="text-sm text-mf-gray">Email</p>
-                    <p className="font-medium">{user.email}</p>
+                    <p className="text-xs md:text-sm text-mf-gray">Email</p>
+                    <p className="font-medium text-sm md:text-base break-all">{user.email}</p>
                   </div>
                 </div>
                 {user.phone && (
                   <div className="flex items-center space-x-3">
-                    <Phone className="w-5 h-5 text-mf-gray" />
+                    <Phone className="w-4 h-4 md:w-5 md:h-5 text-mf-gray flex-shrink-0" />
                     <div>
-                      <p className="text-sm text-mf-gray">Phone</p>
-                      <p className="font-medium">{user.phone}</p>
+                      <p className="text-xs md:text-sm text-mf-gray">Phone</p>
+                      <p className="font-medium text-sm md:text-base">{user.phone}</p>
                     </div>
                   </div>
                 )}
               </div>
-              <div className="space-y-4">
+              <div className="space-y-3 md:space-y-4">
                 <div className="flex items-center space-x-3">
-                  <Calendar className="w-5 h-5 text-mf-gray" />
+                  <Calendar className="w-4 h-4 md:w-5 md:h-5 text-mf-gray flex-shrink-0" />
                   <div>
-                    <p className="text-sm text-mf-gray">Member Since</p>
-                    <p className="font-medium">{new Date(user.createdAt).toLocaleDateString()}</p>
+                    <p className="text-xs md:text-sm text-mf-gray">Member Since</p>
+                    <p className="font-medium text-sm md:text-base">{new Date(user.createdAt).toLocaleDateString()}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <MapPin className="w-5 h-5 text-mf-gray" />
+                  <MapPin className="w-4 h-4 md:w-5 md:h-5 text-mf-gray flex-shrink-0" />
                   <div>
-                    <p className="text-sm text-mf-gray">Addresses</p>
-                    <p className="font-medium">{user.addressCount} saved</p>
+                    <p className="text-xs md:text-sm text-mf-gray">Addresses</p>
+                    <p className="font-medium text-sm md:text-base">{user.addressCount} saved</p>
                   </div>
                 </div>
               </div>
@@ -373,16 +376,16 @@ export default function AdminUserDetailPage() {
           </div>
 
           {/* Recent Orders */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold mb-4">Recent Orders</h3>
+          <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Recent Orders</h3>
             {user.orders.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-3 md:space-y-4">
                 {user.orders.slice(0, 10).map((order) => (
-                  <div key={order.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-center space-x-4">
+                  <div key={order.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 p-3 md:p-4 border border-gray-200 rounded-lg">
+                    <div className="flex items-center space-x-3 md:space-x-4">
                       <div>
-                        <p className="font-semibold">{order.orderNumber}</p>
-                        <p className="text-sm text-mf-gray">
+                        <p className="font-semibold text-sm md:text-base">{order.orderNumber}</p>
+                        <p className="text-xs md:text-sm text-mf-gray">
                           {new Date(order.createdAt).toLocaleDateString()}
                         </p>
                       </div>
@@ -390,11 +393,11 @@ export default function AdminUserDetailPage() {
                         {order.status}
                       </span>
                     </div>
-                    <div className="text-right">
-                      <p className="font-semibold">${order.totalAmount.toFixed(2)}</p>
+                    <div className="text-left sm:text-right">
+                      <p className="font-semibold text-sm md:text-base">${order.totalAmount.toFixed(2)}</p>
                       <Link 
                         href={`/admin/orders/${order.id}`}
-                        className="text-sm text-mf-blue hover:text-mf-dark-blue"
+                        className="text-xs md:text-sm text-mf-blue hover:text-mf-dark-blue"
                       >
                         View Details
                       </Link>
@@ -403,40 +406,40 @@ export default function AdminUserDetailPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <ShoppingBag className="w-12 h-12 text-mf-gray mx-auto mb-4" />
-                <p className="text-mf-gray">No orders yet</p>
+              <div className="text-center py-6 md:py-8">
+                <ShoppingBag className="w-10 h-10 md:w-12 md:h-12 text-mf-gray mx-auto mb-3 md:mb-4" />
+                <p className="text-mf-gray text-sm md:text-base">No orders yet</p>
               </div>
             )}
           </div>
 
           {/* Reviews */}
           {user.reviews.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold mb-4">Recent Reviews</h3>
-              <div className="space-y-4">
+            <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+              <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Recent Reviews</h3>
+              <div className="space-y-3 md:space-y-4">
                 {user.reviews.slice(0, 5).map((review) => (
-                  <div key={review.id} className="border-b border-gray-200 pb-4 last:border-b-0">
-                    <div className="flex items-center justify-between mb-2">
+                  <div key={review.id} className="border-b border-gray-200 pb-3 md:pb-4 last:border-b-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 space-y-2 sm:space-y-0">
                       <div className="flex items-center space-x-2">
                         <div className="flex items-center">
                           {[...Array(5)].map((_, i) => (
                             <Star 
                               key={i} 
-                              className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                              className={`w-3 h-3 md:w-4 md:h-4 ${i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
                             />
                           ))}
                         </div>
-                        <span className="font-medium">{review.product.name}</span>
+                        <span className="font-medium text-sm md:text-base">{review.product.name}</span>
                       </div>
-                      <span className="text-sm text-mf-gray">
+                      <span className="text-xs md:text-sm text-mf-gray">
                         {new Date(review.createdAt).toLocaleDateString()}
                       </span>
                     </div>
                     {review.title && (
-                      <h5 className="font-medium mb-1">{review.title}</h5>
+                      <h5 className="font-medium mb-1 text-sm md:text-base">{review.title}</h5>
                     )}
-                    <p className="text-mf-gray text-sm">{review.content}</p>
+                    <p className="text-mf-gray text-xs md:text-sm">{review.content}</p>
                   </div>
                 ))}
               </div>
@@ -445,18 +448,18 @@ export default function AdminUserDetailPage() {
 
           {/* Addresses */}
           {user.addresses.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold mb-4">Saved Addresses</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+              <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Saved Addresses</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                 {user.addresses.map((address) => (
-                  <div key={address.id} className="border border-gray-200 rounded-lg p-4">
+                  <div key={address.id} className="border border-gray-200 rounded-lg p-3 md:p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium">{address.firstName} {address.lastName}</span>
+                      <span className="font-medium text-sm md:text-base">{address.firstName} {address.lastName}</span>
                       <span className="text-xs bg-mf-light-gray px-2 py-1 rounded">
                         {address.type}
                       </span>
                     </div>
-                    <div className="text-sm text-mf-gray space-y-1">
+                    <div className="text-xs md:text-sm text-mf-gray space-y-1">
                       <p>{address.line1}</p>
                       <p>{address.city}, {address.state}</p>
                       <p>{address.country}</p>
@@ -469,94 +472,61 @@ export default function AdminUserDetailPage() {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           {/* User Statistics */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold mb-4">User Statistics</h3>
-            <div className="space-y-4">
+          <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">User Statistics</h3>
+            <div className="space-y-3 md:space-y-4">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <DollarSign className="w-5 h-5 text-green-600" />
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                  <DollarSign className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-mf-gray">Total Spent</p>
-                  <p className="text-2xl font-bold">${user.totalSpent.toFixed(2)}</p>
+                  <p className="text-xs md:text-sm text-mf-gray">Total Spent</p>
+                  <p className="text-lg md:text-2xl font-bold">${user.totalSpent.toFixed(2)}</p>
                 </div>
               </div>
 
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <ShoppingBag className="w-5 h-5 text-blue-600" />
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <ShoppingBag className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-mf-gray">Total Orders</p>
-                  <p className="text-2xl font-bold">{user.orderCount}</p>
+                  <p className="text-xs md:text-sm text-mf-gray">Total Orders</p>
+                  <p className="text-lg md:text-2xl font-bold">{user.orderCount}</p>
                 </div>
               </div>
 
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Package className="w-5 h-5 text-purple-600" />
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <Package className="w-4 h-4 md:w-5 md:h-5 text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-mf-gray">Completed Orders</p>
-                  <p className="text-2xl font-bold">{user.completedOrderCount}</p>
+                  <p className="text-xs md:text-sm text-mf-gray">Completed Orders</p>
+                  <p className="text-lg md:text-2xl font-bold">{user.completedOrderCount}</p>
                 </div>
               </div>
 
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                  <Star className="w-5 h-5 text-yellow-600" />
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                  <Star className="w-4 h-4 md:w-5 md:h-5 text-yellow-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-mf-gray">Reviews Written</p>
-                  <p className="text-2xl font-bold">{user.reviewCount}</p>
+                  <p className="text-xs md:text-sm text-mf-gray">Reviews</p>
+                  <p className="text-lg md:text-2xl font-bold">{user.reviewCount}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Customer Lifetime Value */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold mb-4">Customer Value</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span>Average Order Value</span>
-                <span className="font-semibold">
-                  ${user.orderCount > 0 ? (user.totalSpent / user.orderCount).toFixed(2) : '0.00'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Completion Rate</span>
-                <span className="font-semibold">
-                  {user.orderCount > 0 ? ((user.completedOrderCount / user.orderCount) * 100).toFixed(1) : '0'}%
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Review Rate</span>
-                <span className="font-semibold">
-                  {user.completedOrderCount > 0 ? ((user.reviewCount / user.completedOrderCount) * 100).toFixed(1) : '0'}%
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Account Actions */}
+          {/* User Actions - Mobile */}
           {user.id !== session?.user?.id && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold mb-4">Account Actions</h3>
-              <div className="space-y-3">
-                <button className="w-full btn-secondary flex items-center justify-center space-x-2">
-                  <Mail className="w-4 h-4" />
-                  <span>Send Email</span>
-                </button>
-                <button className="w-full btn-secondary flex items-center justify-center space-x-2">
-                  <Edit className="w-4 h-4" />
-                  <span>Edit Profile</span>
-                </button>
-                <button 
+            <div className="lg:hidden bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+              <h3 className="text-base font-semibold mb-3">User Actions</h3>
+              <div className="flex flex-col space-y-3">
+                <button
                   onClick={toggleUserStatus}
-                  className={`w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                  className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg transition-colors text-sm w-full ${
                     user.isActive 
                       ? 'bg-yellow-600 text-white hover:bg-yellow-700' 
                       : 'bg-green-600 text-white hover:bg-green-700'
@@ -565,14 +535,41 @@ export default function AdminUserDetailPage() {
                   {user.isActive ? (
                     <>
                       <UserX className="w-4 h-4" />
-                      <span>Deactivate Account</span>
+                      <span>Deactivate User</span>
                     </>
                   ) : (
                     <>
                       <UserCheck className="w-4 h-4" />
-                      <span>Activate Account</span>
+                      <span>Activate User</span>
                     </>
                   )}
+                </button>
+                <button
+                  onClick={() => changeUserRole(user.role === 'ADMIN' ? 'CUSTOMER' : 'ADMIN')}
+                  className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg transition-colors text-sm w-full ${
+                    user.role === 'ADMIN' 
+                      ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                      : 'bg-purple-600 text-white hover:bg-purple-700'
+                  }`}
+                >
+                  {user.role === 'ADMIN' ? (
+                    <>
+                      <User className="w-4 h-4" />
+                      <span>Make Customer</span>
+                    </>
+                  ) : (
+                    <>
+                      <Crown className="w-4 h-4" />
+                      <span>Make Admin</span>
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={deleteUser}
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center space-x-2 text-sm w-full"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>Delete User</span>
                 </button>
               </div>
             </div>

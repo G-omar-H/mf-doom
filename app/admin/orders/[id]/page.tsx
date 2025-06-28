@@ -204,11 +204,11 @@ export default function AdminOrderDetailPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+      <div className="mb-6 md:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+          <div className="flex items-center space-x-3 md:space-x-4">
             <Link 
               href="/admin/orders"
               className="p-2 hover:bg-mf-light-gray rounded-lg transition-colors"
@@ -216,72 +216,74 @@ export default function AdminOrderDetailPage() {
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-3xl font-black">Order {order.orderNumber}</h1>
-              <p className="text-mf-gray mt-1">Order Details & Management</p>
+              <h1 className="text-xl md:text-3xl font-black">Order {order.orderNumber}</h1>
+              <p className="text-mf-gray mt-1 text-sm md:text-base">Order Details & Management</p>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <button className="btn-secondary flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-2 md:gap-4">
+            <button className="btn-secondary flex items-center space-x-2 text-sm md:text-base">
               <Printer className="w-4 h-4" />
-              <span>Print</span>
+              <span className="hidden sm:inline">Print</span>
+              <span className="sm:hidden">Print</span>
             </button>
-            <button className="btn-secondary flex items-center space-x-2">
+            <button className="btn-secondary flex items-center space-x-2 text-sm md:text-base">
               <Send className="w-4 h-4" />
-              <span>Email Customer</span>
+              <span className="hidden sm:inline">Email Customer</span>
+              <span className="sm:hidden">Email</span>
             </button>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         {/* Main Order Details */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-6 md:space-y-8">
           {/* Order Status */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold mb-4">Order Status</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Order Status</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
               <div className="text-center">
                 <div className="flex items-center justify-center mb-2">
-                  <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
+                  <span className={`inline-flex items-center space-x-1 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium ${getStatusColor(order.status)}`}>
                     {getStatusIcon(order.status)}
                     <span>{order.status}</span>
                   </span>
                 </div>
-                <p className="text-sm text-mf-gray">Order Status</p>
+                <p className="text-xs md:text-sm text-mf-gray">Order Status</p>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center mb-2">
-                  <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium ${
+                  <span className={`inline-flex items-center space-x-1 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium ${
                     order.paymentStatus === 'PAID' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
                   }`}>
                     <CreditCard className="w-4 h-4" />
                     <span>{order.paymentStatus}</span>
                   </span>
                 </div>
-                <p className="text-sm text-mf-gray">Payment Status</p>
+                <p className="text-xs md:text-sm text-mf-gray">Payment Status</p>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center mb-2">
-                  <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium ${
+                  <span className={`inline-flex items-center space-x-1 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium ${
                     order.fulfillmentStatus === 'DELIVERED' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
                   }`}>
                     <Truck className="w-4 h-4" />
                     <span>{order.fulfillmentStatus}</span>
                   </span>
                 </div>
-                <p className="text-sm text-mf-gray">Fulfillment Status</p>
+                <p className="text-xs md:text-sm text-mf-gray">Fulfillment Status</p>
               </div>
             </div>
 
             {/* Status Update Actions */}
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <p className="text-sm font-medium text-mf-gray mb-3">Update Order Status:</p>
-              <div className="flex flex-wrap gap-2">
+            <div className="mt-4 md:mt-6 pt-4 md:pt-6 border-t border-gray-200">
+              <p className="text-xs md:text-sm font-medium text-mf-gray mb-2 md:mb-3">Update Order Status:</p>
+              <div className="flex flex-wrap gap-1 md:gap-2">
                 {['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED'].map((status) => (
                   <button
                     key={status}
                     onClick={() => updateOrderStatus(status)}
-                    className={`px-3 py-1 text-sm rounded transition-colors ${
+                    className={`px-2 md:px-3 py-1 text-xs md:text-sm rounded transition-colors ${
                       order.status === status
                         ? 'bg-mf-blue text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -296,12 +298,12 @@ export default function AdminOrderDetailPage() {
           </div>
 
           {/* Order Items */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold mb-4">Order Items</h3>
-            <div className="space-y-4">
+          <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Order Items</h3>
+            <div className="space-y-3 md:space-y-4">
               {order.orderItems.map((item) => (
-                <div key={item.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
-                  <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-mf-light-gray">
+                <div key={item.id} className="flex items-center space-x-3 md:space-x-4 p-3 md:p-4 border border-gray-200 rounded-lg">
+                  <div className="relative w-12 h-12 md:w-16 md:h-16 rounded-lg overflow-hidden bg-mf-light-gray flex-shrink-0">
                     {item.product.images.length > 0 ? (
                       <Image
                         src={item.product.images[0]}
@@ -311,24 +313,24 @@ export default function AdminOrderDetailPage() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Package className="w-6 h-6 text-mf-gray" />
+                        <Package className="w-4 h-4 md:w-6 md:h-6 text-mf-gray" />
                       </div>
                     )}
                   </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold">{item.product.name}</h4>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-sm md:text-base truncate">{item.product.name}</h4>
                     {item.variantSelection && (
-                      <p className="text-sm text-mf-gray">
+                      <p className="text-xs md:text-sm text-mf-gray">
                         {Object.entries(item.variantSelection).map(([key, value]) => 
                           `${key}: ${value}`
                         ).join(', ')}
                       </p>
                     )}
-                    <p className="text-sm text-mf-gray">Quantity: {item.quantity}</p>
+                    <p className="text-xs md:text-sm text-mf-gray">Quantity: {item.quantity}</p>
                   </div>
-                  <div className="text-right">
-                    <p className="font-semibold">${item.totalPrice.toFixed(2)}</p>
-                    <p className="text-sm text-mf-gray">${item.unitPrice.toFixed(2)} each</p>
+                  <div className="text-right flex-shrink-0">
+                    <p className="font-semibold text-sm md:text-base">${item.totalPrice.toFixed(2)}</p>
+                    <p className="text-xs md:text-sm text-mf-gray">${item.unitPrice.toFixed(2)} each</p>
                   </div>
                 </div>
               ))}
@@ -336,15 +338,15 @@ export default function AdminOrderDetailPage() {
           </div>
 
           {/* Shipping Information */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold mb-4">Shipping Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Shipping Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <div>
-                <h4 className="font-medium mb-2 flex items-center">
+                <h4 className="font-medium mb-2 flex items-center text-sm md:text-base">
                   <MapPin className="w-4 h-4 mr-2" />
                   Shipping Address
                 </h4>
-                <div className="text-sm text-mf-gray space-y-1">
+                <div className="text-xs md:text-sm text-mf-gray space-y-1">
                   <p>{order.shippingAddress.firstName} {order.shippingAddress.lastName}</p>
                   <p>{order.shippingAddress.line1}</p>
                   {order.shippingAddress.line2 && <p>{order.shippingAddress.line2}</p>}
@@ -354,11 +356,11 @@ export default function AdminOrderDetailPage() {
                 </div>
               </div>
               <div>
-                <h4 className="font-medium mb-2 flex items-center">
+                <h4 className="font-medium mb-2 flex items-center text-sm md:text-base">
                   <CreditCard className="w-4 h-4 mr-2" />
                   Billing Address
                 </h4>
-                <div className="text-sm text-mf-gray space-y-1">
+                <div className="text-xs md:text-sm text-mf-gray space-y-1">
                   <p>{order.billingAddress.firstName} {order.billingAddress.lastName}</p>
                   <p>{order.billingAddress.line1}</p>
                   {order.billingAddress.line2 && <p>{order.billingAddress.line2}</p>}
@@ -369,38 +371,38 @@ export default function AdminOrderDetailPage() {
             </div>
 
             {/* Tracking & Notes */}
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="mt-4 md:mt-6 pt-4 md:pt-6 border-t border-gray-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                     Tracking Number
                   </label>
                   <input
                     type="text"
                     value={trackingNumber}
                     onChange={(e) => setTrackingNumber(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none text-sm md:text-base"
                     placeholder="Enter tracking number"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                     Shipping Method
                   </label>
-                  <p className="px-3 py-2 bg-mf-light-gray rounded-lg">
+                  <p className="px-3 py-2 bg-mf-light-gray rounded-lg text-sm md:text-base">
                     {order.shippingMethod || 'Standard Shipping'}
                   </p>
                 </div>
               </div>
               
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="mt-3 md:mt-4">
+                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                   Internal Notes
                 </label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none text-sm md:text-base"
                   rows={3}
                   placeholder="Add internal notes about this order"
                 />
@@ -408,7 +410,7 @@ export default function AdminOrderDetailPage() {
 
               <button
                 onClick={updateTrackingAndNotes}
-                className="mt-4 bg-mf-blue text-white px-4 py-2 rounded-lg hover:bg-mf-dark-blue transition-colors"
+                className="mt-3 md:mt-4 bg-mf-blue text-white px-4 py-2 rounded-lg hover:bg-mf-dark-blue transition-colors text-sm md:text-base"
               >
                 Update Details
               </button>
@@ -417,32 +419,32 @@ export default function AdminOrderDetailPage() {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           {/* Customer Information */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold mb-4">Customer Information</h3>
-            <div className="space-y-3">
+          <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Customer Information</h3>
+            <div className="space-y-2 md:space-y-3">
               <div className="flex items-center space-x-3">
-                <User className="w-4 h-4 text-mf-gray" />
-                <span className="font-medium">{order.customerName}</span>
+                <User className="w-4 h-4 text-mf-gray flex-shrink-0" />
+                <span className="font-medium text-sm md:text-base">{order.customerName}</span>
               </div>
               <div className="flex items-center space-x-3">
-                <Mail className="w-4 h-4 text-mf-gray" />
-                <span className="text-sm">{order.customerEmail}</span>
+                <Mail className="w-4 h-4 text-mf-gray flex-shrink-0" />
+                <span className="text-xs md:text-sm break-all">{order.customerEmail}</span>
               </div>
               {order.customerPhone && (
                 <div className="flex items-center space-x-3">
-                  <Phone className="w-4 h-4 text-mf-gray" />
-                  <span className="text-sm">{order.customerPhone}</span>
+                  <Phone className="w-4 h-4 text-mf-gray flex-shrink-0" />
+                  <span className="text-xs md:text-sm">{order.customerPhone}</span>
                 </div>
               )}
             </div>
           </div>
 
           {/* Order Summary */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
-            <div className="space-y-3">
+          <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Order Summary</h3>
+            <div className="space-y-2 md:space-y-3 text-sm md:text-base">
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span>${order.subtotal.toFixed(2)}</span>
@@ -461,7 +463,7 @@ export default function AdminOrderDetailPage() {
                   <span>-${order.discountAmount.toFixed(2)}</span>
                 </div>
               )}
-              <div className="border-t border-gray-200 pt-3 flex justify-between font-semibold text-lg">
+              <div className="border-t border-gray-200 pt-2 md:pt-3 flex justify-between font-semibold text-base md:text-lg">
                 <span>Total</span>
                 <span>${order.totalAmount.toFixed(2)}</span>
               </div>
@@ -469,42 +471,42 @@ export default function AdminOrderDetailPage() {
           </div>
 
           {/* Payment Information */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold mb-4">Payment Information</h3>
-            <div className="space-y-3">
+          <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Payment Information</h3>
+            <div className="space-y-2 md:space-y-3 text-sm md:text-base">
               <div className="flex justify-between">
                 <span>Method</span>
                 <span className="font-medium">{order.paymentMethod}</span>
               </div>
               {order.paypalOrderId && (
-                <div className="text-sm">
+                <div className="text-xs md:text-sm">
                   <p className="text-mf-gray">PayPal Order ID:</p>
-                  <p className="font-mono text-xs">{order.paypalOrderId}</p>
+                  <p className="font-mono text-xs break-all">{order.paypalOrderId}</p>
                 </div>
               )}
               {order.paypalCaptureId && (
-                <div className="text-sm">
+                <div className="text-xs md:text-sm">
                   <p className="text-mf-gray">PayPal Capture ID:</p>
-                  <p className="font-mono text-xs">{order.paypalCaptureId}</p>
+                  <p className="font-mono text-xs break-all">{order.paypalCaptureId}</p>
                 </div>
               )}
             </div>
           </div>
 
           {/* Order Timeline */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold mb-4">Order Timeline</h3>
-            <div className="space-y-3 text-sm">
+          <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Order Timeline</h3>
+            <div className="space-y-2 md:space-y-3 text-xs md:text-sm">
               <div className="flex items-center space-x-3">
-                <Calendar className="w-4 h-4 text-mf-gray" />
+                <Calendar className="w-4 h-4 text-mf-gray flex-shrink-0" />
                 <div>
-                  <p className="font-medium">Order Placed</p>
+                  <p className="font-medium">Order Created</p>
                   <p className="text-mf-gray">{new Date(order.createdAt).toLocaleString()}</p>
                 </div>
               </div>
               {order.shippedAt && (
                 <div className="flex items-center space-x-3">
-                  <Truck className="w-4 h-4 text-mf-gray" />
+                  <Truck className="w-4 h-4 text-mf-gray flex-shrink-0" />
                   <div>
                     <p className="font-medium">Shipped</p>
                     <p className="text-mf-gray">{new Date(order.shippedAt).toLocaleString()}</p>
@@ -513,7 +515,7 @@ export default function AdminOrderDetailPage() {
               )}
               {order.deliveredAt && (
                 <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-4 h-4 text-green-600" />
+                  <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
                   <div>
                     <p className="font-medium">Delivered</p>
                     <p className="text-mf-gray">{new Date(order.deliveredAt).toLocaleString()}</p>
@@ -522,14 +524,6 @@ export default function AdminOrderDetailPage() {
               )}
             </div>
           </div>
-
-          {/* Customer Notes */}
-          {order.customerNotes && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold mb-4">Customer Notes</h3>
-              <p className="text-sm text-mf-gray">{order.customerNotes}</p>
-            </div>
-          )}
         </div>
       </div>
     </div>
