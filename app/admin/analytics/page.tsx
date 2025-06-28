@@ -94,6 +94,7 @@ export default function AdminAnalyticsPage() {
   const router = useRouter()
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [timeRange, setTimeRange] = useState('30d')
 
   useEffect(() => {
@@ -107,13 +108,20 @@ export default function AdminAnalyticsPage() {
 
   const fetchAnalytics = async () => {
     try {
+      setLoading(true)
+      setError(null)
       const response = await fetch(`/api/admin/analytics?range=${timeRange}`)
-      if (response.ok) {
-        const data = await response.json()
-        setAnalytics(data)
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`)
       }
+      
+      const data = await response.json()
+      setAnalytics(data)
     } catch (error) {
       console.error('Error fetching analytics:', error)
+      setError(error instanceof Error ? error.message : 'Unknown error occurred')
     } finally {
       setLoading(false)
     }
@@ -132,8 +140,21 @@ export default function AdminAnalyticsPage() {
       <div className="p-6">
         <div className="text-center py-12">
           <BarChart3 className="w-16 h-16 text-mf-gray mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-mf-gray mb-2">Analytics Unavailable</h3>
-          <p className="text-mf-gray">Unable to load analytics data at this time.</p>
+          <h3 className="text-xl font-semibold text-mf-gray mb-2">
+            {error ? 'Analytics Error' : 'Analytics Unavailable'}
+          </h3>
+          <p className="text-mf-gray mb-4">
+            {error || 'Unable to load analytics data at this time.'}
+          </p>
+          {error && (
+            <button 
+              onClick={fetchAnalytics}
+              className="btn-primary"
+              disabled={loading}
+            >
+              {loading ? 'Retrying...' : 'Retry'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -163,47 +184,48 @@ export default function AdminAnalyticsPage() {
   }))
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
+      <div className="mb-6 md:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
           <div>
-            <h1 className="text-3xl font-black">ANALYTICS DASHBOARD</h1>
-            <p className="text-mf-gray mt-1">Track villain collective performance and insights</p>
+            <h1 className="text-2xl md:text-3xl font-black">ANALYTICS DASHBOARD</h1>
+            <p className="text-mf-gray mt-1 text-sm md:text-base">Track villain collective performance and insights</p>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-wrap items-center gap-2 md:gap-4">
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
-              className="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+              className="px-3 md:px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
             >
               <option value="7d">Last 7 days</option>
               <option value="30d">Last 30 days</option>
               <option value="90d">Last 90 days</option>
               <option value="1y">Last year</option>
             </select>
-            <button className="btn-secondary flex items-center space-x-2">
+            <button className="btn-secondary flex items-center space-x-2 text-sm md:text-base">
               <Download className="w-4 h-4" />
-              <span>Export Report</span>
+              <span className="hidden sm:inline">Export Report</span>
+              <span className="sm:hidden">Export</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6 mb-6 md:mb-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+          className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-3 md:p-6"
         >
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-green-600" />
+          <div className="flex items-center space-x-2 md:space-x-3">
+            <div className="w-8 h-8 md:w-12 md:h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <DollarSign className="w-4 h-4 md:w-6 md:h-6 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-mf-gray">Total Revenue</p>
-              <p className="text-2xl font-bold">${analytics.totalRevenue.toLocaleString()}</p>
+              <p className="text-xs md:text-sm text-mf-gray">Total Revenue</p>
+              <p className="text-lg md:text-2xl font-bold">${analytics.totalRevenue.toLocaleString()}</p>
               <div className="flex items-center text-xs mt-1">
                 {analytics.recentMetrics.revenueGrowth >= 0 ? (
                   <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
@@ -222,15 +244,15 @@ export default function AdminAnalyticsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+          className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-3 md:p-6"
         >
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <ShoppingBag className="w-6 h-6 text-blue-600" />
+          <div className="flex items-center space-x-2 md:space-x-3">
+            <div className="w-8 h-8 md:w-12 md:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <ShoppingBag className="w-4 h-4 md:w-6 md:h-6 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm text-mf-gray">Total Orders</p>
-              <p className="text-2xl font-bold">{analytics.totalOrders.toLocaleString()}</p>
+              <p className="text-xs md:text-sm text-mf-gray">Total Orders</p>
+              <p className="text-lg md:text-2xl font-bold">{analytics.totalOrders.toLocaleString()}</p>
               <div className="flex items-center text-xs mt-1">
                 {analytics.recentMetrics.orderGrowth >= 0 ? (
                   <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
@@ -249,15 +271,15 @@ export default function AdminAnalyticsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+          className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-3 md:p-6"
         >
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Users className="w-6 h-6 text-purple-600" />
+          <div className="flex items-center space-x-2 md:space-x-3">
+            <div className="w-8 h-8 md:w-12 md:h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+              <Users className="w-4 h-4 md:w-6 md:h-6 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm text-mf-gray">Customers</p>
-              <p className="text-2xl font-bold">{analytics.totalCustomers.toLocaleString()}</p>
+              <p className="text-xs md:text-sm text-mf-gray">Customers</p>
+              <p className="text-lg md:text-2xl font-bold">{analytics.totalCustomers.toLocaleString()}</p>
               <div className="flex items-center text-xs mt-1">
                 {analytics.recentMetrics.customerGrowth >= 0 ? (
                   <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
@@ -276,15 +298,15 @@ export default function AdminAnalyticsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+          className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-3 md:p-6"
         >
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-yellow-600" />
+          <div className="flex items-center space-x-2 md:space-x-3">
+            <div className="w-8 h-8 md:w-12 md:h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-4 h-4 md:w-6 md:h-6 text-yellow-600" />
             </div>
             <div>
-              <p className="text-sm text-mf-gray">Avg Order Value</p>
-              <p className="text-2xl font-bold">${analytics.averageOrderValue.toFixed(2)}</p>
+              <p className="text-xs md:text-sm text-mf-gray">Avg Order Value</p>
+              <p className="text-lg md:text-2xl font-bold">${analytics.averageOrderValue.toFixed(2)}</p>
               <p className="text-xs text-mf-gray mt-1">Per transaction</p>
             </div>
           </div>
@@ -294,15 +316,15 @@ export default function AdminAnalyticsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+          className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-3 md:p-6"
         >
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-mf-blue/10 rounded-lg flex items-center justify-center">
-              <Star className="w-6 h-6 text-mf-blue" />
+          <div className="flex items-center space-x-2 md:space-x-3">
+            <div className="w-8 h-8 md:w-12 md:h-12 bg-mf-blue/10 rounded-lg flex items-center justify-center">
+              <Star className="w-4 h-4 md:w-6 md:h-6 text-mf-blue" />
             </div>
             <div>
-              <p className="text-sm text-mf-gray">Conversion Rate</p>
-              <p className="text-2xl font-bold">{analytics.conversionRate.toFixed(1)}%</p>
+              <p className="text-xs md:text-sm text-mf-gray">Conversion Rate</p>
+              <p className="text-lg md:text-2xl font-bold">{analytics.conversionRate.toFixed(1)}%</p>
               <p className="text-xs text-mf-gray mt-1">Visitor to customer</p>
             </div>
           </div>
@@ -310,19 +332,19 @@ export default function AdminAnalyticsPage() {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
         {/* Revenue Over Time Chart */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+          className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6"
         >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold">Revenue Over Time</h3>
-            <LineChart className="w-5 h-5 text-mf-blue" />
+          <div className="flex items-center justify-between mb-4 md:mb-6">
+            <h3 className="text-base md:text-lg font-semibold">Revenue Over Time</h3>
+            <LineChart className="w-4 h-4 md:w-5 md:h-5 text-mf-blue" />
           </div>
-          <div className="h-80">
+          <div className="h-64 md:h-80">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={revenueAreaData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -365,13 +387,13 @@ export default function AdminAnalyticsPage() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.6 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+          className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6"
         >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold">Sales by Category</h3>
-            <PieChart className="w-5 h-5 text-mf-blue" />
+          <div className="flex items-center justify-between mb-4 md:mb-6">
+            <h3 className="text-base md:text-lg font-semibold">Sales by Category</h3>
+            <PieChart className="w-4 h-4 md:w-5 md:h-5 text-mf-blue" />
           </div>
-          <div className="h-80">
+          <div className="h-64 md:h-80">
             <ResponsiveContainer width="100%" height="100%">
               <RechartsPieChart>
                 <Pie
@@ -402,13 +424,13 @@ export default function AdminAnalyticsPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
-        className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8"
+        className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 mb-6 md:mb-8"
       >
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold">Top Products Performance</h3>
-          <BarChart3 className="w-5 h-5 text-mf-blue" />
+        <div className="flex items-center justify-between mb-4 md:mb-6">
+          <h3 className="text-base md:text-lg font-semibold">Top Products Performance</h3>
+          <BarChart3 className="w-4 h-4 md:w-5 md:h-5 text-mf-blue" />
         </div>
-        <div className="h-96">
+        <div className="h-80 md:h-96">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={topProductsBarData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -449,11 +471,11 @@ export default function AdminAnalyticsPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
-        className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8"
+        className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 mb-6 md:mb-8"
       >
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold">Top Performing Products</h3>
-          <TrendingUp className="w-5 h-5 text-mf-gray" />
+        <div className="flex items-center justify-between mb-4 md:mb-6">
+          <h3 className="text-base md:text-lg font-semibold">Top Performing Products</h3>
+          <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-mf-gray" />
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">

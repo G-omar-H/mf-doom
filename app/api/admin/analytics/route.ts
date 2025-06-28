@@ -15,9 +15,10 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Check if database is available
     if (!prisma) {
       return NextResponse.json(
-        { error: 'Database not available' },
+        { error: 'Database connection not available' },
         { status: 503 }
       )
     }
@@ -324,8 +325,31 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Analytics API error:', error)
+    
+    // Provide more specific error messages
+    if (error instanceof Error) {
+      if (error.message.includes('connect')) {
+        return NextResponse.json(
+          { error: 'Database connection failed. Please check your database configuration.' },
+          { status: 503 }
+        )
+      }
+      if (error.message.includes('timeout')) {
+        return NextResponse.json(
+          { error: 'Request timeout. The analytics query is taking too long.' },
+          { status: 504 }
+        )
+      }
+      if (error.name === 'PrismaClientKnownRequestError') {
+        return NextResponse.json(
+          { error: 'Database query error. Please try again later.' },
+          { status: 500 }
+        )
+      }
+    }
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error while generating analytics' },
       { status: 500 }
     )
   }
