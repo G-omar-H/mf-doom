@@ -19,7 +19,9 @@ import {
   Mail,
   Phone,
   User,
-  MapPin
+  MapPin,
+  Plus,
+  Shield
 } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
@@ -344,130 +346,104 @@ export default function AdminOrdersPage() {
       <div className="hidden lg:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-mf-light-gray">
+            <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-4 text-left">
-                  <input
-                    type="checkbox"
-                    checked={selectedOrders.length === filteredOrders.length && filteredOrders.length > 0}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedOrders(filteredOrders.map(o => o.id))
-                      } else {
-                        setSelectedOrders([])
-                      }
-                    }}
-                    className="w-4 h-4"
-                  />
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Order
                 </th>
-                <th className="px-6 py-4 text-left font-semibold">Order</th>
-                <th className="px-6 py-4 text-left font-semibold">Customer</th>
-                <th className="px-6 py-4 text-left font-semibold">Status</th>
-                <th className="px-6 py-4 text-left font-semibold">Payment</th>
-                <th className="px-6 py-4 text-left font-semibold">Total</th>
-                <th className="px-6 py-4 text-left font-semibold">Date</th>
-                <th className="px-6 py-4 text-left font-semibold">Actions</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Customer
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  PayPal Protection
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Total
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="relative px-4 py-3">
+                  <span className="sr-only">Actions</span>
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredOrders.map((order) => (
-                <motion.tr
-                  key={order.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="hover:bg-mf-blue/5 transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <input
-                      type="checkbox"
-                      checked={selectedOrders.includes(order.id)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedOrders([...selectedOrders, order.id])
-                        } else {
-                          setSelectedOrders(selectedOrders.filter(id => id !== order.id))
-                        }
-                      }}
-                      className="w-4 h-4"
-                    />
-                  </td>
-                  <td className="px-6 py-4">
+              {filteredOrders.map((order: any) => (
+                <tr key={order.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-4">
                     <div>
-                      <p className="font-semibold">{order.orderNumber}</p>
-                      <p className="text-sm text-mf-gray">{order.orderItems.length} items</p>
+                      <div className="text-sm font-medium text-gray-900">
+                        {order.orderNumber}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {order.orderItems?.length || 0} items
+                      </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  
+                  <td className="px-4 py-4">
                     <div>
-                      <p className="font-semibold">{order.customerName}</p>
-                      <p className="text-sm text-mf-gray">{order.customerEmail}</p>
+                      <div className="text-sm font-medium text-gray-900">
+                        {order.user?.name || 'Guest'}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {order.user?.email || order.guestEmail}
+                      </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
-                      {getStatusIcon(order.status)}
-                      <span>{order.status}</span>
+                  
+                  <td className="px-4 py-4">
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(order.status)}`}>
+                      {order.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      order.paymentStatus === 'PAID' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {order.paymentStatus}
-                    </span>
+                  
+                  <td className="px-4 py-4">
+                    {order.paymentMethod === 'paypal' ? (
+                      <div className="flex items-center gap-2">
+                        {order.trackingNumber ? (
+                          <>
+                            <CheckCircle className="text-green-500" size={16} />
+                            <span className="text-xs text-green-700 font-medium">Protected</span>
+                          </>
+                        ) : (
+                          <>
+                            <AlertCircle className="text-amber-500" size={16} />
+                            <span className="text-xs text-amber-700 font-medium">Needs Tracking</span>
+                          </>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-gray-500">N/A</span>
+                    )}
                   </td>
-                  <td className="px-6 py-4">
-                    <span className="font-semibold">${order.totalAmount.toFixed(2)}</span>
+                  
+                  <td className="px-4 py-4">
+                    <div className="text-sm font-medium text-gray-900">
+                      ${Number(order.totalAmount).toFixed(2)}
+                    </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm">
+                  
+                  <td className="px-4 py-4">
+                    <div className="text-sm text-gray-900">
                       {new Date(order.createdAt).toLocaleDateString()}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-2">
-                      <Link
-                        href={`/admin/orders/${order.id}`}
-                        className="p-2 hover:bg-mf-blue/10 text-mf-blue rounded-lg transition-colors"
-                        title="View Details"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Link>
-                      
-                      {order.status !== 'DELIVERED' && (
-                        <div className="flex items-center space-x-1">
-                          {order.status === 'PENDING' && (
-                            <button
-                              onClick={() => updateOrderStatus(order.id, 'CONFIRMED')}
-                              className="p-2 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors"
-                              title="Confirm Order"
-                            >
-                              <CheckCircle className="w-4 h-4" />
-                            </button>
-                          )}
-                          {(order.status === 'CONFIRMED' || order.status === 'PENDING') && (
-                            <button
-                              onClick={() => updateOrderStatus(order.id, 'PROCESSING')}
-                              className="p-2 hover:bg-purple-100 text-purple-600 rounded-lg transition-colors"
-                              title="Start Processing"
-                            >
-                              <Package className="w-4 h-4" />
-                            </button>
-                          )}
-                          {order.status === 'PROCESSING' && (
-                            <button
-                              onClick={() => updateOrderStatus(order.id, 'SHIPPED')}
-                              className="p-2 hover:bg-indigo-100 text-indigo-600 rounded-lg transition-colors"
-                              title="Mark as Shipped"
-                            >
-                              <Truck className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
-                      )}
                     </div>
                   </td>
-                </motion.tr>
+                  
+                  <td className="px-4 py-4 text-right">
+                    <Link 
+                      href={`/admin/orders/${order.id}`}
+                      className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm font-medium"
+                    >
+                      <Eye size={14} />
+                      View
+                    </Link>
+                  </td>
+                </tr>
               ))}
             </tbody>
           </table>

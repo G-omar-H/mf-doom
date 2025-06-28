@@ -20,7 +20,9 @@ import {
   DollarSign,
   Edit,
   Printer,
-  Send
+  Send,
+  Shield,
+  ExternalLink
 } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
@@ -76,8 +78,17 @@ export default function AdminOrderDetailPage() {
   const params = useParams()
   const [order, setOrder] = useState<OrderDetail | null>(null)
   const [loading, setLoading] = useState(true)
-  const [trackingNumber, setTrackingNumber] = useState('')
-  const [notes, setNotes] = useState('')
+  const [updating, setUpdating] = useState(false)
+  const [showEditDialog, setShowEditDialog] = useState(false)
+  
+  // Tracking form state
+  const [showTrackingForm, setShowTrackingForm] = useState(false)
+  const [trackingData, setTrackingData] = useState({
+    trackingNumber: '',
+    carrier: 'USPS',
+    notes: ''
+  })
+  const [sendingTracking, setSendingTracking] = useState(false)
 
   useEffect(() => {
     if (status === 'loading') return
@@ -96,8 +107,19 @@ export default function AdminOrderDetailPage() {
       if (response.ok) {
         const data = await response.json()
         setOrder(data.order)
-        setTrackingNumber(data.order.trackingNumber || '')
-        setNotes(data.order.notes || '')
+        // Initialize tracking form with existing data if available
+        if (data.order.trackingNumber) {
+          setTrackingData(prev => ({
+            ...prev,
+            trackingNumber: data.order.trackingNumber
+          }))
+        }
+        if (data.order.notes) {
+          setTrackingData(prev => ({
+            ...prev,
+            notes: data.order.notes
+          }))
+        }
       } else {
         toast.error('Order not found')
         router.push('/admin/orders')
@@ -108,6 +130,42 @@ export default function AdminOrderDetailPage() {
       router.push('/admin/orders')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleSendTracking = async () => {
+    if (!trackingData.trackingNumber.trim()) {
+      toast.error('Please enter a tracking number')
+      return
+    }
+
+    setSendingTracking(true)
+    try {
+      const response = await fetch('/api/paypal/tracking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: params.id,
+          trackingNumber: trackingData.trackingNumber,
+          carrier: trackingData.carrier
+        })
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        toast.success('🛡️ Tracking sent to PayPal! You\'re now protected from disputes')
+        setShowTrackingForm(false)
+        setTrackingData({ trackingNumber: '', carrier: 'USPS', notes: '' })
+        fetchOrder() // Refresh order data
+      } else {
+        toast.error(data.error || 'Failed to send tracking to PayPal')
+      }
+    } catch (error) {
+      console.error('Tracking error:', error)
+      toast.error('Failed to send tracking information')
+    } finally {
+      setSendingTracking(false)
     }
   }
 
@@ -140,8 +198,8 @@ export default function AdminOrderDetailPage() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          trackingNumber: trackingNumber || null,
-          notes: notes || null
+          trackingNumber: trackingData.trackingNumber || null,
+          notes: trackingData.notes || null
         }),
       })
 
@@ -379,8 +437,8 @@ export default function AdminOrderDetailPage() {
                   </label>
                   <input
                     type="text"
-                    value={trackingNumber}
-                    onChange={(e) => setTrackingNumber(e.target.value)}
+                    value={trackingData.trackingNumber}
+                    onChange={(e) => setTrackingData({...trackingData, trackingNumber: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none text-sm md:text-base"
                     placeholder="Enter tracking number"
                   />
@@ -400,8 +458,8 @@ export default function AdminOrderDetailPage() {
                   Internal Notes
                 </label>
                 <textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
+                  value={trackingData.notes || ''}
+                  onChange={(e) => setTrackingData({...trackingData, notes: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none text-sm md:text-base"
                   rows={3}
                   placeholder="Add internal notes about this order"
@@ -492,6 +550,101 @@ export default function AdminOrderDetailPage() {
               )}
             </div>
           </div>
+
+          {/* PayPal Seller Protection */}
+          {order.paymentMethod === 'paypal' && (
+            <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+              <div className="flex items-center gap-2 mb-3 md:mb-4">
+                <Shield className="text-blue-600" size={20} />
+                <h3 className="text-base md:text-lg font-semibold">PayPal Seller Protection</h3>
+              </div>
+              
+              {order.trackingNumber ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <CheckCircle className="text-green-600" size={16} />
+                    <span className="text-sm font-medium text-green-800">Protected from disputes</span>
+                  </div>
+                  <div className="text-sm">
+                    <p className="text-mf-gray">Tracking Number:</p>
+                    <p className="font-mono text-sm break-all">{order.trackingNumber}</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <AlertCircle className="text-amber-600" size={16} />
+                    <span className="text-sm font-medium text-amber-800">Add tracking to avoid disputes</span>
+                  </div>
+                  
+                  {!showTrackingForm ? (
+                    <button
+                      onClick={() => setShowTrackingForm(true)}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      Add Tracking Number
+                    </button>
+                  ) : (
+                    <div className="space-y-3 border border-gray-200 rounded-lg p-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Tracking Number *
+                        </label>
+                        <input
+                          type="text"
+                          value={trackingData.trackingNumber}
+                          onChange={(e) => setTrackingData({...trackingData, trackingNumber: e.target.value})}
+                          placeholder="Enter tracking number"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Shipping Carrier *
+                        </label>
+                        <select
+                          value={trackingData.carrier}
+                          onChange={(e) => setTrackingData({...trackingData, carrier: e.target.value})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="USPS">USPS</option>
+                          <option value="UPS">UPS</option>
+                          <option value="FEDEX">FedEx</option>
+                          <option value="DHL">DHL</option>
+                          <option value="ARAMEX">Aramex</option>
+                          <option value="CHRONOPOST">Chronopost</option>
+                          <option value="OTHER">Other</option>
+                        </select>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleSendTracking}
+                          disabled={sendingTracking || !trackingData.trackingNumber.trim()}
+                          className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors"
+                        >
+                          {sendingTracking ? 'Sending...' : 'Send to PayPal'}
+                        </button>
+                        <button
+                          onClick={() => setShowTrackingForm(false)}
+                          className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      
+                      <div className="text-xs text-gray-500">
+                        <p>✅ Automatically updates PayPal with delivery proof</p>
+                        <p>✅ Protects you from "Item Not Received" disputes</p>
+                        <p>✅ Qualifies for PayPal Seller Protection</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Order Timeline */}
           <div className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
