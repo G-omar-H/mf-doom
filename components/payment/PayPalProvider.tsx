@@ -107,6 +107,8 @@ export const PayPalProvider: React.FC<PayPalProviderProps> = ({
     intent: 'capture',
     // Enable multiple funding sources including cards for guest checkout
     'enable-funding': 'venmo,paylater,card',
+    // Add components to enable Pay Later messaging
+    components: 'buttons,messages,funding-eligibility',
     'data-sdk-integration-source': 'developer-studio'
   }
 
@@ -155,10 +157,10 @@ export const PayPalProvider: React.FC<PayPalProviderProps> = ({
         <PayPalScriptProvider options={initialOptions}>
           <PayPalButtons
             style={{
-              layout: 'horizontal',
+              layout: 'vertical',
               color: 'blue',
               shape: 'rect',
-              label: 'pay',
+              label: 'paypal',
               height: 45,
               tagline: false
             }}
