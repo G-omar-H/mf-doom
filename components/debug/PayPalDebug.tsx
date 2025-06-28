@@ -24,7 +24,7 @@ export const PayPalDebug: React.FC = () => {
         return
       }
 
-      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD&intent=capture&enable-funding=venmo,paylater,card&buyer-country=US&locale=en_US`
+      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD&intent=capture&enable-funding=venmo,paylater,card`
       
       script.onload = () => {
         setSdkStatus('success')
@@ -92,6 +92,16 @@ export const PayPalDebug: React.FC = () => {
             <li>Ensure domain exactly matches PayPal app settings</li>
             <li>Try with and without 'www' prefix</li>
           </ul>
+        </div>
+
+        <div className="p-4 bg-green-50 rounded-lg">
+          <h3 className="font-semibold mb-2">✅ Production Environment Fix Applied</h3>
+          <p className="text-sm text-green-800 mb-2">
+            Removed <code>buyer-country</code> and <code>locale</code> parameters that are forbidden in production.
+          </p>
+          <p className="text-xs text-green-700">
+            These parameters work in sandbox but cause "disallowed in production env" errors in live mode.
+          </p>
         </div>
       </div>
     </div>
