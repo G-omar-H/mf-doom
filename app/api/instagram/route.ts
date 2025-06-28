@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     try {
         console.log('Attempting Instagram Basic Display API...')
       const response = await fetch(
-          `https://graph.instagram.com/me/media?fields=id,media_type,media_url,permalink,caption,timestamp&access_token=${process.env.INSTAGRAM_ACCESS_TOKEN}&limit=${limit}`,
+          `https://graph.instagram.com/me/media?fields=id,media_type,media_url,thumbnail_url,permalink,caption,timestamp&access_token=${process.env.INSTAGRAM_ACCESS_TOKEN}&limit=${limit}`,
         {
           headers: {
               'Accept': 'application/json',
@@ -37,14 +37,23 @@ export async function GET(request: NextRequest) {
           console.log('Instagram Basic Display API successful')
           
           if (data.data && data.data.length > 0) {
-            const formattedPosts = data.data.map((post: any) => ({
-              id: post.id,
-              media_url: post.media_url,
-              media_type: post.media_type.toUpperCase(),
-              caption: post.caption || '',
-              permalink: post.permalink,
-              timestamp: post.timestamp
-            }))
+            const formattedPosts = data.data.map((post: any) => {
+              // For videos, use thumbnail_url if available, otherwise use media_url
+              const displayUrl = post.media_type === 'VIDEO' && post.thumbnail_url 
+                ? post.thumbnail_url 
+                : post.media_url
+              
+              return {
+                id: post.id,
+                media_url: displayUrl,
+                media_type: post.media_type.toUpperCase(),
+                caption: post.caption || '',
+                permalink: post.permalink,
+                timestamp: post.timestamp
+              }
+            })
+            // Filter out videos that don't have thumbnail_url and still have .mp4 URLs
+            .filter((post: any) => !post.media_url.includes('.mp4'))
 
           return NextResponse.json({
             posts: formattedPosts,
