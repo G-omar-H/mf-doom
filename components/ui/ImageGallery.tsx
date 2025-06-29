@@ -16,8 +16,12 @@ export default function ImageGallery({ images, productName, currentImage, onImag
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalImageIndex, setModalImageIndex] = useState(0)
   const [imageLoadError, setImageLoadError] = useState<Record<number, boolean>>({})
+  const [showMagnifier, setShowMagnifier] = useState(false)
+  const [magnifierPosition, setMagnifierPosition] = useState({ x: 0, y: 0 })
+  const [magnifierSize] = useState(200)
   const touchStartX = useRef<number>(0)
   const touchEndX = useRef<number>(0)
+  const mainImageRef = useRef<HTMLDivElement>(null)
 
   const hasImages = images && images.length > 0
 
@@ -84,6 +88,27 @@ export default function ImageGallery({ images, productName, currentImage, onImag
     setImageLoadError(prev => ({ ...prev, [index]: true }))
   }
 
+  // Magnifier handlers for desktop
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!mainImageRef.current) return
+
+    const rect = mainImageRef.current.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+
+    setMagnifierPosition({ x, y })
+  }
+
+  const handleMouseEnter = () => {
+    if (window.innerWidth >= 768) { // Only on desktop
+      setShowMagnifier(true)
+    }
+  }
+
+  const handleMouseLeave = () => {
+    setShowMagnifier(false)
+  }
+
   // Touch handlers for swipe navigation
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.targetTouches[0].clientX
@@ -117,8 +142,12 @@ export default function ImageGallery({ images, productName, currentImage, onImag
       {/* Main Image */}
       <div className="bg-white rounded-lg overflow-hidden shadow-sm mb-4">
         <div 
+          ref={mainImageRef}
           className="relative h-64 sm:h-80 md:h-96 lg:h-[600px] bg-gray-50 cursor-pointer group"
           onClick={() => hasImages && !imageLoadError[currentImage] && openModal(currentImage)}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -134,10 +163,31 @@ export default function ImageGallery({ images, productName, currentImage, onImag
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 50vw"
                 priority
               />
-              {/* Zoom overlay */}
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center">
-                <ZoomIn className="text-white opacity-0 group-hover:opacity-80 transition-opacity duration-300" size={48} />
+              
+              {/* Desktop Magnifier */}
+              {showMagnifier && !imageLoadError[currentImage] && (
+                <div
+                  className="absolute pointer-events-none z-10 border-2 border-white shadow-2xl rounded-full bg-white overflow-hidden hidden md:block"
+                  style={{
+                    width: magnifierSize,
+                    height: magnifierSize,
+                    left: magnifierPosition.x - magnifierSize / 2,
+                    top: magnifierPosition.y - magnifierSize / 2,
+                    backgroundImage: `url(${images[currentImage]})`,
+                    backgroundSize: '300% 300%',
+                    backgroundPosition: `${((magnifierPosition.x / (mainImageRef.current?.offsetWidth || 1)) * 100)}% ${((magnifierPosition.y / (mainImageRef.current?.offsetHeight || 1)) * 100)}%`,
+                    backgroundRepeat: 'no-repeat',
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/10" />
+                </div>
+              )}
+              
+              {/* Zoom overlay - hidden on desktop when magnifier is active */}
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center md:group-hover:bg-opacity-5">
+                <ZoomIn className={`text-white transition-opacity duration-300 ${showMagnifier ? 'opacity-0 md:opacity-0' : 'opacity-0 group-hover:opacity-80'}`} size={48} />
               </div>
+              
               {/* Mobile navigation hints */}
               {images.length > 1 && (
                 <>
@@ -211,14 +261,14 @@ export default function ImageGallery({ images, productName, currentImage, onImag
         </div>
       )}
 
-      {/* Modal */}
+      {/* Enhanced Modal for Desktop */}
       <AnimatePresence>
         {isModalOpen && hasImages && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
             onClick={closeModal}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -227,17 +277,17 @@ export default function ImageGallery({ images, productName, currentImage, onImag
             {/* Close Button */}
             <button
               onClick={closeModal}
-              className="absolute top-4 right-4 z-60 text-white hover:text-gray-300 transition-colors p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70 touch-manipulation"
+              className="absolute top-4 right-4 z-60 text-white hover:text-gray-300 transition-colors p-2 rounded-full bg-black/50 hover:bg-black/70 touch-manipulation backdrop-blur-sm"
             >
               <X size={24} />
             </button>
 
             {/* Image Counter */}
-            <div className="absolute top-4 left-4 z-60 text-white bg-black bg-opacity-50 px-3 py-1 rounded-full text-sm">
+            <div className="absolute top-4 left-4 z-60 text-white bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full text-sm">
               {modalImageIndex + 1} / {images.length}
             </div>
 
-            {/* Navigation Buttons - Hidden on mobile, swipe instead */}
+            {/* Navigation Buttons - Enhanced for desktop */}
             {images.length > 1 && (
               <>
                 <button
@@ -245,7 +295,7 @@ export default function ImageGallery({ images, productName, currentImage, onImag
                     e.stopPropagation()
                     setModalImageIndex((prev) => (prev - 1 + images.length) % images.length)
                   }}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-60 text-white hover:text-gray-300 transition-colors p-3 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70 hidden sm:block touch-manipulation"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-60 text-white hover:text-gray-300 transition-all p-3 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm hidden sm:block touch-manipulation hover:scale-110"
                 >
                   <ChevronLeft size={24} />
                 </button>
@@ -254,45 +304,46 @@ export default function ImageGallery({ images, productName, currentImage, onImag
                     e.stopPropagation()
                     setModalImageIndex((prev) => (prev + 1) % images.length)
                   }}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-60 text-white hover:text-gray-300 transition-colors p-3 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70 hidden sm:block touch-manipulation"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-60 text-white hover:text-gray-300 transition-all p-3 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm hidden sm:block touch-manipulation hover:scale-110"
                 >
                   <ChevronRight size={24} />
                 </button>
               </>
             )}
 
-            {/* Main Modal Image */}
+            {/* Main Modal Image - Improved positioning for desktop */}
             <motion.div
               key={modalImageIndex}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="relative max-w-full max-h-full"
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative max-w-full max-h-full flex items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="relative max-w-[90vw] max-h-[80vh] w-auto h-auto">
+              {/* Desktop: Better constrained size and centering */}
+              <div className="relative max-w-[85vw] max-h-[85vh] md:max-w-[80vw] md:max-h-[80vh] w-auto h-auto flex items-center justify-center">
                 <Image
                   src={images[modalImageIndex]}
                   alt={`${productName} ${modalImageIndex + 1}`}
                   width={1200}
                   height={1200}
-                  className="object-contain max-w-full max-h-full w-auto h-auto"
+                  className="object-contain max-w-full max-h-full w-auto h-auto rounded-lg shadow-2xl"
                   onError={() => handleImageError(modalImageIndex)}
                 />
               </div>
             </motion.div>
 
-            {/* Touch gestures hint for mobile */}
+            {/* Enhanced UI hints */}
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-xs opacity-70 text-center max-w-xs">
               {images.length > 1 && (
                 <p className="sm:hidden">Swipe left/right to navigate • Tap to close</p>
               )}
-              <p className="hidden sm:block">Use arrow keys or click buttons to navigate • Press ESC to close</p>
+              <p className="hidden sm:block">Use arrow keys or click buttons to navigate • Press ESC or click outside to close</p>
             </div>
 
-            {/* Mobile swipe indicators */}
+            {/* Mobile swipe indicators - Enhanced */}
             {images.length > 1 && (
-              <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2">
+              <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2 bg-black/30 backdrop-blur-sm rounded-full px-3 py-2">
                 {images.map((_, index) => (
                   <button
                     key={index}
@@ -300,8 +351,8 @@ export default function ImageGallery({ images, productName, currentImage, onImag
                       e.stopPropagation()
                       setModalImageIndex(index)
                     }}
-                    className={`w-2 h-2 rounded-full transition-all touch-manipulation ${
-                      index === modalImageIndex ? 'bg-white' : 'bg-white bg-opacity-50'
+                    className={`w-2 h-2 rounded-full transition-all touch-manipulation hover:scale-125 ${
+                      index === modalImageIndex ? 'bg-white' : 'bg-white/50 hover:bg-white/70'
                     }`}
                   />
                 ))}
