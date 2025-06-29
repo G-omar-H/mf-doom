@@ -222,18 +222,18 @@ export default function VisitorInsightsWidget({
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-xl shadow-2xl border border-gray-700 overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-gray-800 to-gray-900 p-6 border-b border-gray-700">
-        <div className="flex items-center justify-between">
+      <div className="bg-gradient-to-r from-gray-800 to-gray-900 p-4 md:p-6 border-b border-gray-700">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
               <Globe2 className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-white tracking-wide">VILLAIN COLLECTIVE INSIGHTS</h2>
-              <p className="text-gray-300 text-sm">Real-time visitor analytics & geographic intelligence</p>
+              <h2 className="text-lg md:text-xl font-black text-white tracking-wide">VILLAIN COLLECTIVE INSIGHTS</h2>
+              <p className="text-gray-300 text-xs md:text-sm">Real-time visitor analytics & geographic intelligence</p>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-between sm:justify-end space-x-2 sm:space-x-2">
             <div className="flex items-center space-x-1 text-xs text-gray-400">
               <Activity className="w-3 h-3 animate-pulse text-green-400" />
               <span>Live</span>

@@ -224,7 +224,7 @@ export default function AdminAnalyticsPage() {
 
         {/* Tab Navigation */}
         <div className="mt-6 bg-white rounded-xl border border-gray-200 p-1">
-          <div className="flex space-x-1">
+          <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
             {[
               { id: 'overview', label: 'Overview', icon: BarChart3 },
               { id: 'business', label: 'Business Metrics', icon: DollarSign },
@@ -233,14 +233,17 @@ export default function AdminAnalyticsPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 font-medium text-sm ${
+                className={`flex items-center space-x-2 px-3 md:px-4 py-2 rounded-lg transition-all duration-200 font-medium text-xs md:text-sm whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'bg-gray-900 text-white shadow-lg'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
-                <span>{tab.label}</span>
+                <span className="hidden sm:inline md:hidden lg:inline">{tab.label}</span>
+                <span className="sm:hidden md:inline lg:hidden">
+                  {tab.id === 'overview' ? 'Overview' : tab.id === 'business' ? 'Business' : 'Visitors'}
+                </span>
               </button>
             ))}
           </div>
@@ -514,8 +517,8 @@ export default function AdminAnalyticsPage() {
                     <th className="px-4 py-3 text-left font-semibold text-gray-900">Rank</th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-900">Product</th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-900">Revenue</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-900">Orders</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-900">Views</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-900 hidden md:table-cell">Orders</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-900 hidden lg:table-cell">Views</th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-900">Conversion</th>
                   </tr>
                 </thead>
@@ -528,19 +531,24 @@ export default function AdminAnalyticsPage() {
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="font-medium text-gray-900">{product.name}</span>
+                        <div>
+                          <span className="font-medium text-gray-900 text-sm md:text-base">{product.name}</span>
+                          <div className="md:hidden text-xs text-gray-500 mt-1">
+                            {product.orders} orders • {product.views.toLocaleString()} views
+                          </div>
+                        </div>
                       </td>
-                      <td className="px-4 py-3 font-semibold text-green-600">
+                      <td className="px-4 py-3 font-semibold text-green-600 text-sm md:text-base">
                         ${product.revenue.toLocaleString()}
                       </td>
-                      <td className="px-4 py-3 text-gray-700">{product.orders}</td>
-                      <td className="px-4 py-3 text-gray-700">{product.views.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-gray-700 hidden md:table-cell">{product.orders}</td>
+                      <td className="px-4 py-3 text-gray-700 hidden lg:table-cell">{product.views.toLocaleString()}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center space-x-2">
-                          <span className="text-green-600 font-medium">
+                          <span className="text-green-600 font-medium text-sm">
                             {product.views > 0 ? ((product.orders / product.views) * 100).toFixed(1) : 0}%
                           </span>
-                          <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div className="w-12 md:w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
                             <div 
                               className="h-full bg-green-500 rounded-full transition-all duration-300"
                               style={{ 
