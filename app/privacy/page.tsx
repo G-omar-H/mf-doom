@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { ArrowLeft, Shield, Lock, Eye, Database, Mail, Globe } from 'lucide-react'
 
 export const metadata = {
-  title: 'Privacy Policy | thismfdoom',
-  description: 'Privacy Policy for thismfdoom - How we collect, use, and protect your personal information.',
+  title: 'Privacy Policy | THISMFDOOM',
+  description: 'Privacy Policy for THISMFDOOM - How we collect, use, and protect your personal information.',
 }
 
 export default function PrivacyPolicyPage() {
@@ -38,7 +38,7 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-xl font-bold text-gray-900 m-0">Your Privacy Matters</h2>
             </div>
             <p className="text-gray-700 m-0">
-              At thismfdoom, we respect your privacy and are committed to protecting your personal information. 
+              At THISMFDOOM, we respect your privacy and are committed to protecting your personal information. 
               This policy explains how we collect, use, and safeguard your data when you visit our website or make a purchase.
             </p>
           </div>

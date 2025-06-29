@@ -75,7 +75,7 @@ export const Header: React.FC = () => {
               }}
               className="font-bold text-xl"
             >
-              MF DOOM
+              THISMFDOOM
             </motion.div>
           </Link>
 

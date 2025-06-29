@@ -44,12 +44,12 @@ export async function GET(request: NextRequest) {
                 : post.media_url
               
               return {
-                id: post.id,
+              id: post.id,
                 media_url: displayUrl,
-                media_type: post.media_type.toUpperCase(),
-                caption: post.caption || '',
-                permalink: post.permalink,
-                timestamp: post.timestamp
+              media_type: post.media_type.toUpperCase(),
+              caption: post.caption || '',
+              permalink: post.permalink,
+              timestamp: post.timestamp
               }
             })
             // Filter out videos that don't have thumbnail_url and still have .mp4 URLs
