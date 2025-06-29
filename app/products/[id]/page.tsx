@@ -49,7 +49,7 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center px-4">
         <LoadingSpinner size={64} text="Loading product details..." />
       </div>
     )
@@ -58,7 +58,7 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
-        <h1 className="font-metal text-4xl text-doom-red mb-4">Product Not Found</h1>
+        <h1 className="font-metal text-2xl sm:text-4xl text-doom-red mb-4 break-words">Product Not Found</h1>
         <Link href="/products">
           <Button>Back to Products</Button>
         </Link>
@@ -93,161 +93,166 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Link href="/products" className="inline-flex items-center text-mf-gray hover:text-mf-dark-blue mb-8">
-        <ArrowLeft size={20} className="mr-2" />
-        Back to Products
-      </Link>
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-4 sm:py-8">
+        <Link href="/products" className="inline-flex items-center text-mf-gray hover:text-mf-dark-blue mb-4 sm:mb-8 touch-manipulation">
+          <ArrowLeft size={20} className="mr-2" />
+          <span className="text-sm sm:text-base">Back to Products</span>
+        </Link>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        {/* Images */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="bg-white rounded-lg overflow-hidden shadow-sm">
-            <div className="relative h-96 md:h-[600px] bg-mf-light-gray">
-              {hasImages && !imageError ? (
-                <Image
-                  src={product.images[selectedImage]}
-                  alt={product.name}
-                  fill
-                  className="object-cover"
-                  onError={() => setImageError(true)}
-                />
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-                  <Package size={96} className="text-gray-400 mb-4" />
-                  <span className="text-lg text-gray-500 text-center px-4">{product.name}</span>
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {hasImages && product.images.length > 1 && (
-            <div className="flex gap-4 mt-4">
-              {product.images.map((image: string, index: number) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={`relative w-20 h-20 rounded-lg overflow-hidden ${
-                    selectedImage === index ? 'ring-2 ring-mf-dark-blue' : ''
-                  }`}
-                >
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
+          {/* Images */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full"
+          >
+            <div className="bg-white rounded-lg overflow-hidden shadow-sm">
+              <div className="relative h-64 sm:h-80 md:h-96 lg:h-[600px] bg-mf-light-gray">
+                {hasImages && !imageError ? (
                   <Image
-                    src={image}
-                    alt={`${product.name} ${index + 1}`}
+                    src={product.images[selectedImage]}
+                    alt={product.name}
                     fill
                     className="object-cover"
+                    onError={() => setImageError(true)}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 50vw"
                   />
-                </button>
-              ))}
-            </div>
-          )}
-        </motion.div>
-
-        {/* Product Info */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="space-y-6"
-        >
-          <div>
-            <h1 className="font-bold text-4xl md:text-5xl text-black mb-4">
-              {product.name}
-            </h1>
-            <p className="text-lg text-mf-gray">{product.description}</p>
-          </div>
-
-          <div className="font-bold text-3xl text-black">
-            {formatPrice(product.price)}
-          </div>
-
-          {/* Variants */}
-          {product.variants && product.variants.length > 0 && (
-            <div className="space-y-4">
-              {product.variants.map((variant: any) => (
-                <div key={variant.type}>
-                  <label className="block text-mf-gray mb-2 font-semibold capitalize">
-                    {variant.type}
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {variant.options.map((option: string) => (
-                      <button
-                        key={option}
-                        onClick={() => setSelectedVariants({
-                          ...selectedVariants,
-                          [variant.type]: option
-                        })}
-                        className={`px-4 py-2 border rounded-lg transition-all ${
-                          selectedVariants[variant.type] === option
-                            ? 'border-mf-dark-blue bg-mf-dark-blue text-white'
-                            : 'border-gray-300 text-mf-gray hover:border-mf-dark-blue'
-                        }`}
-                      >
-                        {option}
-                      </button>
-                    ))}
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 p-4">
+                    <Package size={48} className="text-gray-400 mb-4 sm:w-24 sm:h-24" />
+                    <span className="text-sm sm:text-lg text-gray-500 text-center break-words max-w-full">{product.name}</span>
                   </div>
-                </div>
-              ))}
+                )}
+              </div>
             </div>
-          )}
-
-          {/* Quantity */}
-          <div>
-            <label className="block text-mf-gray mb-2 font-semibold">
-              Quantity
-            </label>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-10 h-10 border rounded-lg text-mf-gray hover:border-mf-dark-blue hover:text-mf-dark-blue"
-              >
-                -
-              </button>
-              <span className="w-12 text-center font-semibold">{quantity}</span>
-              <button
-                onClick={() => setQuantity(quantity + 1)}
-                className="w-10 h-10 border rounded-lg text-mf-gray hover:border-mf-dark-blue hover:text-mf-dark-blue"
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          {/* Stock Status */}
-          <div className="text-sm">
-            {product.stock > 0 ? (
-              <span className="text-green-600">✓ In Stock ({product.stock} available)</span>
-            ) : (
-              <span className="text-red-600">Out of Stock</span>
+            
+            {hasImages && product.images.length > 1 && (
+              <div className="flex gap-2 sm:gap-4 mt-4 overflow-x-auto pb-2">
+                {product.images.map((image: string, index: number) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImage(index)}
+                    className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden flex-shrink-0 ${
+                      selectedImage === index ? 'ring-2 ring-mf-dark-blue' : ''
+                    }`}
+                  >
+                    <Image
+                      src={image}
+                      alt={`${product.name} ${index + 1}`}
+                      fill
+                      className="object-cover"
+                      sizes="80px"
+                    />
+                  </button>
+                ))}
+              </div>
             )}
-          </div>
+          </motion.div>
 
-          {/* Add to Cart */}
-          <Button
-            size="lg"
-            onClick={handleAddToCart}
-            disabled={product.stock === 0}
-            className="w-full flex items-center justify-center gap-3"
+          {/* Product Info */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-4 sm:space-y-6 w-full min-w-0"
           >
-            <ShoppingCart size={20} />
-            {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
-          </Button>
+            <div className="w-full min-w-0">
+              <h1 className="font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-black mb-3 sm:mb-4 break-words hyphens-auto leading-tight">
+                {product.name}
+              </h1>
+              <p className="text-sm sm:text-base lg:text-lg text-mf-gray break-words">{product.description}</p>
+            </div>
 
-          {/* Additional Info */}
-          <div className="border-t pt-6 space-y-2 text-sm">
-            <p className="text-mf-gray">
-              <span className="font-semibold">Category:</span> {product.category}
-            </p>
-            <p className="text-mf-gray">
-              <span className="font-semibold">SKU:</span> {product.sku || `DOOM-${product.id.toUpperCase()}`}
-            </p>
-          </div>
-        </motion.div>
+            <div className="font-bold text-xl sm:text-2xl lg:text-3xl text-black">
+              {formatPrice(product.price)}
+            </div>
+
+            {/* Variants */}
+            {product.variants && product.variants.length > 0 && (
+              <div className="space-y-3 sm:space-y-4">
+                {product.variants.map((variant: any) => (
+                  <div key={variant.type} className="w-full min-w-0">
+                    <label className="block text-mf-gray mb-2 font-semibold capitalize text-sm sm:text-base">
+                      {variant.type}
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {variant.options.map((option: string) => (
+                        <button
+                          key={option}
+                          onClick={() => setSelectedVariants({
+                            ...selectedVariants,
+                            [variant.type]: option
+                          })}
+                          className={`px-3 sm:px-4 py-2 border rounded-lg transition-all text-sm sm:text-base break-words max-w-full ${
+                            selectedVariants[variant.type] === option
+                              ? 'border-mf-dark-blue bg-mf-dark-blue text-white'
+                              : 'border-gray-300 text-mf-gray hover:border-mf-dark-blue'
+                          }`}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Quantity */}
+            <div>
+              <label className="block text-mf-gray mb-2 font-semibold text-sm sm:text-base">
+                Quantity
+              </label>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="w-10 h-10 border rounded-lg text-mf-gray hover:border-mf-dark-blue hover:text-mf-dark-blue touch-manipulation"
+                >
+                  -
+                </button>
+                <span className="w-12 text-center font-semibold text-sm sm:text-base">{quantity}</span>
+                <button
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="w-10 h-10 border rounded-lg text-mf-gray hover:border-mf-dark-blue hover:text-mf-dark-blue touch-manipulation"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            {/* Stock Status */}
+            <div className="text-xs sm:text-sm">
+              {product.stock > 0 ? (
+                <span className="text-green-600">✓ In Stock ({product.stock} available)</span>
+              ) : (
+                <span className="text-red-600">Out of Stock</span>
+              )}
+            </div>
+
+            {/* Add to Cart */}
+            <Button
+              size="lg"
+              onClick={handleAddToCart}
+              disabled={product.stock === 0}
+              className="w-full flex items-center justify-center gap-3 touch-manipulation"
+            >
+              <ShoppingCart size={20} />
+              <span className="break-words">{product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}</span>
+            </Button>
+
+            {/* Additional Info */}
+            <div className="border-t pt-4 sm:pt-6 space-y-2 text-xs sm:text-sm">
+              <p className="text-mf-gray break-words">
+                <span className="font-semibold">Category:</span> {product.category}
+              </p>
+              <p className="text-mf-gray break-words">
+                <span className="font-semibold">SKU:</span> {product.sku || `DOOM-${product.id.toUpperCase()}`}
+              </p>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </div>
   )
