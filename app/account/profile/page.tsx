@@ -15,7 +15,10 @@ import {
   Settings,
   LogOut,
   Save,
-  X
+  X,
+  Check,
+  AlertCircle,
+  Send
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Image from 'next/image'
@@ -24,6 +27,7 @@ interface UserProfile {
   name: string
   email: string
   phone?: string
+  emailVerified?: boolean
 }
 
 export default function ProfilePage() {
@@ -31,11 +35,30 @@ export default function ProfilePage() {
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [sendingVerification, setSendingVerification] = useState(false)
   const [profile, setProfile] = useState<UserProfile>({
     name: '',
     email: '',
-    phone: ''
+    phone: '',
+    emailVerified: false
   })
+
+  // Phone number validation
+  const [phoneCountry, setPhoneCountry] = useState('+1')
+  const [phoneNumber, setPhoneNumber] = useState('')
+
+  const countryCodes = [
+    { code: '+1', country: 'US/CA', flag: '🇺🇸' },
+    { code: '+44', country: 'UK', flag: '🇬🇧' },
+    { code: '+33', country: 'FR', flag: '🇫🇷' },
+    { code: '+49', country: 'DE', flag: '🇩🇪' },
+    { code: '+34', country: 'ES', flag: '🇪🇸' },
+    { code: '+39', country: 'IT', flag: '🇮🇹' },
+    { code: '+81', country: 'JP', flag: '🇯🇵' },
+    { code: '+86', country: 'CN', flag: '🇨🇳' },
+    { code: '+91', country: 'IN', flag: '🇮🇳' },
+    { code: '+61', country: 'AU', flag: '🇦🇺' },
+  ]
 
   useEffect(() => {
     if (status === 'loading') return
@@ -48,33 +71,122 @@ export default function ProfilePage() {
     setProfile({
       name: session.user.name || '',
       email: session.user.email || '',
-      phone: session.user.phone || ''
+      phone: session.user.phone || '',
+      emailVerified: false // Will be fetched from API
     })
+
+    // Parse existing phone number
+    if (session.user.phone) {
+      const phone = session.user.phone
+      const countryCode = countryCodes.find(cc => phone.startsWith(cc.code))
+      if (countryCode) {
+        setPhoneCountry(countryCode.code)
+        setPhoneNumber(phone.substring(countryCode.code.length).trim())
+      } else {
+        setPhoneNumber(phone)
+      }
+    }
+
+    // Fetch complete profile data including emailVerified status
+    fetchProfile()
   }, [session, status, router])
+
+  const fetchProfile = async () => {
+    try {
+      const response = await fetch('/api/user/profile')
+      if (response.ok) {
+        const data = await response.json()
+        setProfile(prev => ({
+          ...prev,
+          emailVerified: data.user.emailVerified || false
+        }))
+      }
+    } catch (error) {
+      console.error('Failed to fetch profile:', error)
+    }
+  }
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  const validatePhone = (phone: string) => {
+    const phoneRegex = /^[\d\s\-\(\)]+$/
+    return phoneRegex.test(phone) && phone.replace(/\D/g, '').length >= 7
+  }
 
   const handleSaveProfile = async () => {
     setLoading(true)
 
     try {
+      // Validate email
+      if (!validateEmail(profile.email)) {
+        toast.error('Please enter a valid email address')
+        setLoading(false)
+        return
+      }
+
+      // Validate phone if provided
+      const fullPhone = phoneNumber ? `${phoneCountry}${phoneNumber}` : ''
+      if (phoneNumber && !validatePhone(phoneNumber)) {
+        toast.error('Please enter a valid phone number')
+        setLoading(false)
+        return
+      }
+
       const response = await fetch('/api/user/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(profile),
+        body: JSON.stringify({
+          ...profile,
+          phone: fullPhone
+        }),
       })
 
+      const data = await response.json()
+
       if (response.ok) {
-        toast.success('Profile updated successfully!')
+        if (data.emailChanged) {
+          toast.success('Profile updated! Please check your email to verify your new email address.')
+        } else {
+          toast.success('Profile updated successfully!')
+        }
         await update() // Refresh session
+        await fetchProfile() // Refresh profile data including emailVerified
         setIsEditing(false)
       } else {
-        toast.error('Failed to update profile')
+        toast.error(data.error || 'Failed to update profile')
       }
     } catch (error) {
       toast.error('Something went wrong')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleSendVerification = async () => {
+    setSendingVerification(true)
+
+    try {
+      const response = await fetch('/api/user/verify-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (response.ok) {
+        toast.success('Verification email sent! Check your inbox.')
+      } else {
+        toast.error('Failed to send verification email')
+      }
+    } catch (error) {
+      toast.error('Something went wrong')
+    } finally {
+      setSendingVerification(false)
     }
   }
 
@@ -124,7 +236,7 @@ export default function ProfilePage() {
             <div className="w-24 h-24 mx-auto mb-6 relative">
               <Image
                 src="/icons/mfdoomcask.gif"
-                alt="MF DOOM Mask"
+                alt="THISMFDOOM Mask"
                 width={96}
                 height={96}
                 className="w-full h-full"
@@ -166,7 +278,20 @@ export default function ProfilePage() {
                       disabled={loading}
                       className="flex items-center space-x-2 bg-mf-blue text-white px-4 py-2 rounded-lg hover:bg-mf-dark-blue transition-colors disabled:opacity-70"
                     >
-                      <Save className="w-4 h-4" />
+                      {loading ? (
+                        <div style={{ width: 16, height: 16 }}>
+                          <Image
+                            src="/icons/mfdoomcask.gif"
+                            alt="Saving..."
+                            width={16}
+                            height={16}
+                            className="w-full h-full"
+                            unoptimized
+                          />
+                        </div>
+                      ) : (
+                        <Save className="w-4 h-4" />
+                      )}
                       <span>{loading ? 'Saving...' : 'Save'}</span>
                     </button>
                     <button
@@ -175,7 +300,8 @@ export default function ProfilePage() {
                         setProfile({
                           name: session.user.name || '',
                           email: session.user.email || '',
-                          phone: session.user.phone || ''
+                          phone: session.user.phone || '',
+                          emailVerified: false
                         })
                       }}
                       className="flex items-center space-x-2 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
@@ -217,14 +343,67 @@ export default function ProfilePage() {
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Email Address
                   </label>
-                  <div className="flex items-center space-x-3 py-3 px-4 bg-mf-light-gray rounded-lg">
-                    <Mail className="w-5 h-5 text-mf-gray" />
-                    <span className="font-medium">{profile.email}</span>
-                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Verified</span>
-                  </div>
-                  <p className="text-xs text-mf-gray mt-1">
-                    Email cannot be changed. Contact support if needed.
-                  </p>
+                  {isEditing ? (
+                    <div className="space-y-2">
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mf-gray w-5 h-5" />
+                        <input
+                          type="email"
+                          value={profile.email}
+                          onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
+                          className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+                          placeholder="Enter your email address"
+                        />
+                      </div>
+                      {profile.email !== session?.user?.email && (
+                        <p className="text-xs text-amber-600 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          Changing email will require verification
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-3 py-3 px-4 bg-mf-light-gray rounded-lg">
+                        <Mail className="w-5 h-5 text-mf-gray" />
+                        <span className="font-medium flex-1">{profile.email}</span>
+                        {profile.emailVerified ? (
+                          <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded flex items-center gap-1">
+                            <Check className="w-3 h-3" />
+                            Verified
+                          </span>
+                        ) : (
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded flex items-center gap-1">
+                              <AlertCircle className="w-3 h-3" />
+                              Unverified
+                            </span>
+                            <button
+                              onClick={handleSendVerification}
+                              disabled={sendingVerification}
+                              className="text-xs bg-mf-blue text-white px-2 py-1 rounded hover:bg-mf-dark-blue transition-colors disabled:opacity-70 flex items-center gap-1"
+                            >
+                              {sendingVerification ? (
+                                <div style={{ width: 12, height: 12 }}>
+                                  <Image
+                                    src="/icons/mfdoomcask.gif"
+                                    alt="Sending..."
+                                    width={12}
+                                    height={12}
+                                    className="w-full h-full"
+                                    unoptimized
+                                  />
+                                </div>
+                              ) : (
+                                <Send className="w-3 h-3" />
+                              )}
+                              Verify
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Phone */}
@@ -233,15 +412,28 @@ export default function ProfilePage() {
                     Phone Number
                   </label>
                   {isEditing ? (
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mf-gray w-5 h-5" />
-                      <input
-                        type="tel"
-                        value={profile.phone}
-                        onChange={(e) => setProfile(prev => ({ ...prev, phone: e.target.value }))}
-                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
-                        placeholder="Enter your phone number"
-                      />
+                    <div className="flex space-x-2">
+                      <select
+                        value={phoneCountry}
+                        onChange={(e) => setPhoneCountry(e.target.value)}
+                        className="px-3 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+                      >
+                        {countryCodes.map((country) => (
+                          <option key={country.code} value={country.code}>
+                            {country.flag} {country.code} ({country.country})
+                          </option>
+                        ))}
+                      </select>
+                      <div className="relative flex-1">
+                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mf-gray w-5 h-5" />
+                        <input
+                          type="tel"
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                          className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+                          placeholder="Enter phone number"
+                        />
+                      </div>
                     </div>
                   ) : (
                     <div className="flex items-center space-x-3 py-3 px-4 bg-mf-light-gray rounded-lg">
@@ -249,6 +441,9 @@ export default function ProfilePage() {
                       <span className="font-medium">{profile.phone || 'Not provided'}</span>
                     </div>
                   )}
+                  <p className="text-xs text-mf-gray mt-1">
+                    Used for order updates and security notifications
+                  </p>
                 </div>
               </div>
             </motion.div>

@@ -1,35 +1,63 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
+import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 
 export async function PUT(request: NextRequest) {
   try {
-    // Check authentication
     const session = await getServerSession(authOptions)
     
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     if (!prisma) {
-      return NextResponse.json(
-        { error: 'Database not available' },
-        { status: 503 }
-      )
+      return NextResponse.json({ error: 'Database not available' }, { status: 503 })
     }
 
-    const { name, phone } = await request.json()
+    const { name, email, phone } = await request.json()
 
-    // Validation
-    if (!name) {
-      return NextResponse.json(
-        { error: 'Name is required' },
-        { status: 400 }
-      )
+    // Validate input
+    if (!name || !email) {
+      return NextResponse.json({ error: 'Name and email are required' }, { status: 400 })
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return NextResponse.json({ error: 'Invalid email format' }, { status: 400 })
+    }
+
+    // Validate phone if provided
+    if (phone) {
+      const phoneRegex = /^\+\d{1,4}\d{7,}$/
+      if (!phoneRegex.test(phone)) {
+        return NextResponse.json({ error: 'Invalid phone format' }, { status: 400 })
+      }
+    }
+
+    const currentUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { email: true, emailVerified: true }
+    })
+
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    // Check if email is being changed
+    let emailChanged = false
+    if (email !== currentUser.email) {
+      emailChanged = true
+      
+      // Check if email is already taken by another user
+      const existingUser = await prisma.user.findUnique({
+        where: { email }
+      })
+      
+      if (existingUser && existingUser.id !== session.user.id) {
+        return NextResponse.json({ error: 'Email already in use' }, { status: 400 })
+      }
     }
 
     // Update user profile
@@ -37,21 +65,26 @@ export async function PUT(request: NextRequest) {
       where: { id: session.user.id },
       data: {
         name,
+        email,
         phone: phone || null,
+        // Reset email verification if email changed
+        emailVerified: emailChanged ? null : currentUser.emailVerified
       },
       select: {
         id: true,
         name: true,
         email: true,
         phone: true,
-        role: true,
-        updatedAt: true,
+        emailVerified: true
       }
     })
 
-    return NextResponse.json({
-      message: 'Profile updated successfully',
-      user: updatedUser
+    return NextResponse.json({ 
+      user: updatedUser,
+      emailChanged,
+      message: emailChanged 
+        ? 'Profile updated. Email verification reset - please verify your new email address.' 
+        : 'Profile updated successfully.'
     })
 
   } catch (error) {
@@ -65,24 +98,16 @@ export async function PUT(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication
     const session = await getServerSession(authOptions)
     
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     if (!prisma) {
-      return NextResponse.json(
-        { error: 'Database not available' },
-        { status: 503 }
-      )
+      return NextResponse.json({ error: 'Database not available' }, { status: 503 })
     }
 
-    // Get user profile
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: {
@@ -90,17 +115,12 @@ export async function GET(request: NextRequest) {
         name: true,
         email: true,
         phone: true,
-        role: true,
-        avatar: true,
-        createdAt: true,
+        emailVerified: true
       }
     })
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     return NextResponse.json({ user })
