@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { 
+  generateVerificationToken, 
+  storeVerificationToken, 
+  sendVerificationEmail 
+} from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,18 +33,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email already verified' }, { status: 400 })
     }
 
-    // TODO: Implement actual email sending with THISMFDOOM branding
-    // For now, we'll just log the verification attempt
-    console.log(`Verification email would be sent to ${user.email} for user ${user.name}`)
+    // Generate verification token
+    const token = generateVerificationToken()
     
-    // In a real implementation, you would:
-    // 1. Generate a verification token
-    // 2. Store it in the database (would need to add fields to User model)
-    // 3. Send an email with THISMFDOOM branding
-    // 4. Create a verification endpoint to handle the token
+    // Store token with user data
+    storeVerificationToken(token, {
+      email: user.email,
+      userId: session.user.id,
+      type: 'verification'
+    })
+
+    // Send THISMFDOOM branded verification email
+    const emailResult = await sendVerificationEmail(
+      user.email,
+      token,
+      user.name,
+      'verification'
+    )
+
+    if (!emailResult.success) {
+      return NextResponse.json({ 
+        error: 'Failed to send verification email',
+        details: emailResult.error 
+      }, { status: 500 })
+    }
 
     return NextResponse.json({ 
-      message: 'Verification email sent successfully',
+      message: 'Verification email sent successfully! Check your inbox and remember ALL CAPS.',
       email: user.email
     })
 

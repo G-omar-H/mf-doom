@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { 
+  generateVerificationToken, 
+  storeVerificationToken, 
+  sendVerificationEmail 
+} from '@/lib/email'
 
 export async function PUT(request: NextRequest) {
   try {
@@ -38,7 +43,7 @@ export async function PUT(request: NextRequest) {
 
     const currentUser = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { email: true, emailVerified: true }
+      select: { email: true, emailVerified: true, name: true }
     })
 
     if (!currentUser) {
@@ -58,18 +63,48 @@ export async function PUT(request: NextRequest) {
       if (existingUser && existingUser.id !== session.user.id) {
         return NextResponse.json({ error: 'Email already in use' }, { status: 400 })
       }
+
+      // Generate verification token for email change
+      const token = generateVerificationToken()
+      
+      // Store token for email change verification
+      storeVerificationToken(token, {
+        email: currentUser.email, // Current email
+        userId: session.user.id,
+        type: 'email_change',
+        pendingEmail: email // New email to verify
+      })
+
+      // Send verification email to the NEW email address
+      const emailResult = await sendVerificationEmail(
+        email, // Send to new email
+        token,
+        name,
+        'email_change'
+      )
+
+      if (!emailResult.success) {
+        return NextResponse.json({ 
+          error: 'Failed to send verification email to new address',
+          details: emailResult.error 
+        }, { status: 500 })
+      }
     }
 
-    // Update user profile
+    // Update user profile (but don't change email until verified if it changed)
+    const updateData: any = {
+      name,
+      phone: phone || null,
+    }
+
+    // Only update email if it hasn't changed (to maintain current verified status)
+    if (!emailChanged) {
+      updateData.email = email
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
-      data: {
-        name,
-        email,
-        phone: phone || null,
-        // Reset email verification if email changed
-        emailVerified: emailChanged ? null : currentUser.emailVerified
-      },
+      data: updateData,
       select: {
         id: true,
         name: true,
@@ -83,8 +118,8 @@ export async function PUT(request: NextRequest) {
       user: updatedUser,
       emailChanged,
       message: emailChanged 
-        ? 'Profile updated. Email verification reset - please verify your new email address.' 
-        : 'Profile updated successfully.'
+        ? 'Profile updated! A verification email has been sent to your new email address. Please verify it to complete the change.' 
+        : 'Profile updated successfully!'
     })
 
   } catch (error) {

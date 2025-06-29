@@ -23,6 +23,12 @@ model User {
   avatar        String?
   role          UserRole  @default(CUSTOMER)
   emailVerified DateTime?
+  
+  // Email verification fields
+  emailVerificationToken   String?   @unique
+  emailVerificationExpires DateTime?
+  pendingEmail            String?   // For email change verification
+  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
