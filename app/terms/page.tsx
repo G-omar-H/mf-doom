@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { ArrowLeft, FileText, Scale, CreditCard, Truck, Shield, AlertTriangle, Mail } from 'lucide-react'
 
 export const metadata = {
-  title: 'Terms of Service | MF DOOM Shop',
-  description: 'Terms of Service for MF DOOM Shop - Rules and conditions for using our website and services.',
+  title: 'Terms of Service | thismfdoom',
+  description: 'Terms of Service for thismfdoom - Rules and conditions for using our website and services.',
 }
 
 export default function TermsOfServicePage() {
@@ -38,7 +38,7 @@ export default function TermsOfServicePage() {
               <h2 className="text-xl font-bold text-gray-900 m-0">Legal Agreement</h2>
             </div>
             <p className="text-gray-700 m-0">
-              By accessing and using MF DOOM Shop, you agree to be bound by these Terms of Service. 
+              By accessing and using thismfdoom, you agree to be bound by these Terms of Service. 
               If you do not agree to these terms, please do not use our website or services.
             </p>
           </div>
@@ -48,7 +48,7 @@ export default function TermsOfServicePage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Acceptance of Terms</h2>
               
               <p className="text-gray-700 mb-4">
-                These Terms of Service ("Terms") constitute a legally binding agreement between you and MF DOOM Shop 
+                These Terms of Service ("Terms") constitute a legally binding agreement between you and thismfdoom 
                 regarding your use of our website, products, and services. By using our website, you acknowledge that 
                 you have read, understood, and agree to be bound by these Terms.
               </p>
@@ -148,7 +148,7 @@ export default function TermsOfServicePage() {
               
               <p className="text-gray-700 mb-4">
                 All content on this website, including but not limited to text, graphics, logos, images, and software, 
-                is the property of MF DOOM Shop or its licensors and is protected by copyright and other intellectual 
+                is the property of thismfdoom or its licensors and is protected by copyright and other intellectual 
                 property laws.
               </p>
               
@@ -279,10 +279,10 @@ export default function TermsOfServicePage() {
               
               <div className="bg-gray-50 rounded-lg p-6">
                 <ul className="space-y-2 text-gray-700">
-                  <li><strong>Email:</strong> legal@mfdoomshop.com</li>
-                  <li><strong>Customer Service:</strong> support@mfdoomshop.com</li>
+                  <li><strong>Email:</strong> legal@thismfdoom.shop</li>
+                  <li><strong>Customer Service:</strong> support@thismfdoom.shop</li>
                   <li><strong>Instagram:</strong> @thismfdoom_</li>
-                  <li><strong>Website:</strong> <Link href="/" className="text-mf-blue hover:underline">mfdoomshop.com</Link></li>
+                  <li><strong>Website:</strong> <Link href="/" className="text-mf-blue hover:underline">thismfdoom.shop</Link></li>
                 </ul>
               </div>
             </section>

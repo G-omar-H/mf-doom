@@ -11,7 +11,7 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
-            <h3 className="text-2xl font-bold mb-4">MF DOOM SHOP</h3>
+            <h3 className="text-2xl font-bold mb-4">thismfdoom</h3>
             <p className="text-gray-400 mb-4 max-w-md">
               Paying tribute to the villain - celebrating the masked legend's legacy. 
               Curated by @thismfdoom_ for true hip-hop heads.
@@ -65,7 +65,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <a 
-                  href="mailto:contact@mfdoomshop.com" 
+                  href="mailto:contact@thismfdoom.shop" 
                   className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
                 >
                   <Mail size={16} />
@@ -84,7 +84,7 @@ export const Footer: React.FC = () => {
 
         <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-gray-500 mb-4 md:mb-0">
-            © {currentYear} MF DOOM Shop. All rights reserved.
+            © {currentYear} thismfdoom. All rights reserved.
           </p>
           <div className="flex gap-4 text-sm text-gray-500">
             <Link href="/privacy" className="hover:text-white transition-colors">

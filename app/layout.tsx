@@ -10,21 +10,21 @@ import { Toaster } from 'react-hot-toast'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'MF DOOM Shop | Premium Streetwear & Vinyl Collection',
+  title: 'thismfdoom | Premium Streetwear & Vinyl Collection',
   description: 'Official MF DOOM merchandise store featuring exclusive streetwear, vinyl records, and collectibles. Just remember ALL CAPS when you spell the man name.',
-  keywords: ['MF DOOM', 'streetwear', 'vinyl', 'hip hop', 'merchandise', 'collectibles'],
-  metadataBase: new URL('https://mfdoomshop.com'),
+  keywords: ['MF DOOM', 'streetwear', 'vinyl', 'hip hop', 'merchandise', 'collectibles', 'thismfdoom'],
+  metadataBase: new URL('https://thismfdoom.shop'),
   openGraph: {
-    title: 'MF DOOM Shop - Premium Streetwear Collection',
+    title: 'thismfdoom - Premium Streetwear Collection',
     description: 'Official MF DOOM merchandise featuring exclusive streetwear, vinyl records, and collectibles.',
-    url: 'https://mfdoomshop.com',
-    siteName: 'MF DOOM Shop',
+    url: 'https://thismfdoom.shop',
+    siteName: 'thismfdoom',
     images: [
       {
-        url: 'https://mfdoomshop.com/og-image.jpg',
+        url: 'https://thismfdoom.shop/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'MF DOOM Shop - Premium Streetwear Collection',
+        alt: 'thismfdoom - Premium Streetwear Collection',
       },
     ],
     locale: 'en_US',

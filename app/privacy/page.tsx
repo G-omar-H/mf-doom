@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { ArrowLeft, Shield, Lock, Eye, Database, Mail, Globe } from 'lucide-react'
 
 export const metadata = {
-  title: 'Privacy Policy | MF DOOM Shop',
-  description: 'Privacy Policy for MF DOOM Shop - How we collect, use, and protect your personal information.',
+  title: 'Privacy Policy | thismfdoom',
+  description: 'Privacy Policy for thismfdoom - How we collect, use, and protect your personal information.',
 }
 
 export default function PrivacyPolicyPage() {
@@ -38,7 +38,7 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-xl font-bold text-gray-900 m-0">Your Privacy Matters</h2>
             </div>
             <p className="text-gray-700 m-0">
-              At MF DOOM Shop, we respect your privacy and are committed to protecting your personal information. 
+              At thismfdoom, we respect your privacy and are committed to protecting your personal information. 
               This policy explains how we collect, use, and safeguard your data when you visit our website or make a purchase.
             </p>
           </div>
@@ -192,9 +192,9 @@ export default function PrivacyPolicyPage() {
               <p className="text-gray-700 mb-4">If you have questions about this Privacy Policy or want to exercise your rights, contact us:</p>
               <div className="bg-gray-50 rounded-lg p-6">
                 <ul className="space-y-2 text-gray-700">
-                  <li><strong>Email:</strong> privacy@mfdoomshop.com</li>
+                  <li><strong>Email:</strong> privacy@thismfdoom.shop</li>
                   <li><strong>Instagram:</strong> @thismfdoom_</li>
-                  <li><strong>Website:</strong> <Link href="/" className="text-mf-blue hover:underline">mfdoomshop.com</Link></li>
+                  <li><strong>Website:</strong> <Link href="/" className="text-mf-blue hover:underline">thismfdoom.shop</Link></li>
                 </ul>
               </div>
             </section>
