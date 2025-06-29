@@ -181,10 +181,10 @@ export default function AccountSettingsPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4">
         <div className="text-center">
           {/* Spinning DOOM Mask GIF */}
-          <div className="w-16 h-16 mx-auto mb-4">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4">
             <Image
               src="/icons/mfdoomcask.gif"
               alt="Loading..."
@@ -194,7 +194,7 @@ export default function AccountSettingsPage() {
               unoptimized
             />
           </div>
-          <p className="text-gray-600 font-medium">Loading villain settings...</p>
+          <p className="text-gray-600 font-medium text-sm sm:text-base">Loading villain settings...</p>
         </div>
       </div>
     )
@@ -203,57 +203,57 @@ export default function AccountSettingsPage() {
   if (!session) return null
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4 sm:py-6 lg:py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
           <Link 
             href="/account/profile"
-            className="inline-flex items-center gap-2 text-mf-blue hover:text-mf-dark-blue transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-mf-blue hover:text-mf-dark-blue transition-colors mb-4 sm:mb-6 touch-manipulation"
           >
             <ArrowLeft size={20} />
-            <span>Back to Profile</span>
+            <span className="text-sm sm:text-base">Back to Profile</span>
           </Link>
           
-          <div className="flex items-center gap-4 mb-2">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center">
-              <Settings className="w-6 h-6 text-white" />
+          <div className="flex items-center gap-3 sm:gap-4 mb-2">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center">
+              <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-black text-gray-900">VILLAIN SETTINGS</h1>
-              <p className="text-gray-600">Customize your experience</p>
+              <h1 className="text-2xl sm:text-3xl font-black text-gray-900">VILLAIN SETTINGS</h1>
+              <p className="text-gray-600 text-sm sm:text-base">Customize your experience</p>
             </div>
           </div>
         </motion.div>
 
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           {/* Notifications */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white rounded-2xl shadow-lg p-6"
+            className="bg-white rounded-2xl shadow-lg p-4 sm:p-6"
           >
-            <div className="flex items-center gap-3 mb-6">
-              <Bell className="w-6 h-6 text-blue-500" />
-              <h2 className="text-xl font-bold text-gray-900">Notifications</h2>
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
+              <Bell className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900">Notifications</h2>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {[
                 { key: 'email', label: 'Email Notifications', desc: 'Receive notifications via email' },
                 { key: 'orderUpdates', label: 'Order Updates', desc: 'Get notified about order status changes' },
                 { key: 'promotions', label: 'Promotions & Deals', desc: 'Special offers and discounts' },
                 { key: 'newsletter', label: 'Newsletter', desc: 'MF DOOM updates and news' }
               ].map((item) => (
-                <div key={item.key} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{item.label}</h3>
-                    <p className="text-sm text-gray-600">{item.desc}</p>
+                <div key={item.key} className="flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg">
+                  <div className="flex-1 min-w-0 pr-4">
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base">{item.label}</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">{item.desc}</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -280,23 +280,23 @@ export default function AccountSettingsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white rounded-2xl shadow-lg p-6"
+            className="bg-white rounded-2xl shadow-lg p-4 sm:p-6"
           >
-            <div className="flex items-center gap-3 mb-6">
-              <Shield className="w-6 h-6 text-green-500" />
-              <h2 className="text-xl font-bold text-gray-900">Privacy</h2>
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
+              <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" />
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900">Privacy</h2>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {[
                 { key: 'showProfile', label: 'Public Profile', desc: 'Allow others to see your profile' },
                 { key: 'showOrders', label: 'Order History Visibility', desc: 'Show order history in public profile' },
                 { key: 'allowTracking', label: 'Analytics Tracking', desc: 'Help improve our service with usage data' }
               ].map((item) => (
-                <div key={item.key} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{item.label}</h3>
-                    <p className="text-sm text-gray-600">{item.desc}</p>
+                <div key={item.key} className="flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg">
+                  <div className="flex-1 min-w-0 pr-4">
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base">{item.label}</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">{item.desc}</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -323,14 +323,14 @@ export default function AccountSettingsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white rounded-2xl shadow-lg p-6"
+            className="bg-white rounded-2xl shadow-lg p-4 sm:p-6"
           >
-            <div className="flex items-center gap-3 mb-6">
-              <Globe className="w-6 h-6 text-purple-500" />
-              <h2 className="text-xl font-bold text-gray-900">Preferences</h2>
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
+              <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-purple-500" />
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900">Preferences</h2>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
               {/* Theme */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-3">Theme</label>
@@ -342,7 +342,7 @@ export default function AccountSettingsPage() {
                   ].map((theme) => {
                     const Icon = theme.icon
                     return (
-                      <label key={theme.value} className="flex items-center gap-3 p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors">
+                      <label key={theme.value} className="flex items-center gap-3 p-2.5 sm:p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors touch-manipulation">
                         <input
                           type="radio"
                           name="theme"
@@ -357,7 +357,7 @@ export default function AccountSettingsPage() {
                           }))}
                           className="text-purple-600 focus:ring-purple-500"
                         />
-                        <Icon size={20} className="text-gray-600" />
+                        <Icon size={18} className="text-gray-600 sm:w-5 sm:h-5" />
                         <span className="text-sm font-medium text-gray-900">{theme.label}</span>
                       </label>
                     )
@@ -377,7 +377,7 @@ export default function AccountSettingsPage() {
                       language: e.target.value
                     }
                   }))}
-                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition-colors"
+                  className="w-full p-2.5 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition-colors text-sm sm:text-base"
                 >
                   <option value="en">English</option>
                   <option value="es">Español</option>
@@ -397,7 +397,7 @@ export default function AccountSettingsPage() {
                       currency: e.target.value
                     }
                   }))}
-                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition-colors"
+                  className="w-full p-2.5 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition-colors text-sm sm:text-base"
                 >
                   <option value="USD">USD ($)</option>
                   <option value="EUR">EUR (€)</option>
@@ -413,11 +413,11 @@ export default function AccountSettingsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-white rounded-2xl shadow-lg p-6"
+            className="bg-white rounded-2xl shadow-lg p-4 sm:p-6"
           >
-            <div className="flex items-center gap-3 mb-6">
-              <Key className="w-6 h-6 text-red-500" />
-              <h2 className="text-xl font-bold text-gray-900">Security</h2>
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
+              <Key className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" />
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900">Security</h2>
             </div>
             
             <form onSubmit={updatePassword} className="space-y-4">
@@ -428,20 +428,20 @@ export default function AccountSettingsPage() {
                     type={showPasswords.current ? 'text' : 'password'}
                     value={passwordData.currentPassword}
                     onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
-                    className="w-full pl-4 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors"
+                    className="w-full pl-4 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors text-sm sm:text-base"
                     placeholder="Enter current password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPasswords(prev => ({ ...prev, current: !prev.current }))}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 touch-manipulation"
                   >
                     {showPasswords.current ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">New Password</label>
                   <div className="relative">
@@ -449,13 +449,13 @@ export default function AccountSettingsPage() {
                       type={showPasswords.new ? 'text' : 'password'}
                       value={passwordData.newPassword}
                       onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                      className="w-full pl-4 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors"
+                      className="w-full pl-4 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors text-sm sm:text-base"
                       placeholder="Enter new password"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPasswords(prev => ({ ...prev, new: !prev.new }))}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 touch-manipulation"
                     >
                       {showPasswords.new ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
@@ -469,13 +469,13 @@ export default function AccountSettingsPage() {
                       type={showPasswords.confirm ? 'text' : 'password'}
                       value={passwordData.confirmPassword}
                       onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                      className="w-full pl-4 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors"
+                      className="w-full pl-4 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors text-sm sm:text-base"
                       placeholder="Confirm new password"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPasswords(prev => ({ ...prev, confirm: !prev.confirm }))}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 touch-manipulation"
                     >
                       {showPasswords.confirm ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
@@ -485,7 +485,7 @@ export default function AccountSettingsPage() {
 
               <button
                 type="submit"
-                className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors"
+                className="w-full sm:w-auto bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors touch-manipulation"
               >
                 Update Password
               </button>
@@ -497,30 +497,33 @@ export default function AccountSettingsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="flex items-center justify-between bg-white rounded-2xl shadow-lg p-6"
+            className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between bg-white rounded-2xl shadow-lg p-4 sm:p-6 gap-4 sm:gap-0"
           >
-            <div>
-              <h3 className="font-bold text-gray-900">Save Changes</h3>
-              <p className="text-sm text-gray-600">Make sure to save your settings</p>
+            <div className="flex items-center gap-3">
+              <Check className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" />
+              <div>
+                <h3 className="font-bold text-gray-900 text-sm sm:text-base">Save Changes</h3>
+                <p className="text-xs sm:text-sm text-gray-600">Apply all your preference changes</p>
+              </div>
             </div>
             <button
               onClick={saveSettings}
               disabled={saving}
-              className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-70"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-70 touch-manipulation"
             >
               {saving ? (
-                <div style={{ width: 16, height: 16 }}>
+                <div style={{ width: 20, height: 20 }}>
                   <Image
                     src="/icons/mfdoomcask.gif"
                     alt="Saving..."
-                    width={16}
-                    height={16}
+                    width={20}
+                    height={20}
                     className="w-full h-full"
                     unoptimized
                   />
                 </div>
               ) : (
-                <Save size={20} />
+                <Save className="w-5 h-5" />
               )}
               <span>{saving ? 'Saving...' : 'Save Settings'}</span>
             </button>
@@ -531,73 +534,78 @@ export default function AccountSettingsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="bg-red-50 border-2 border-red-200 rounded-2xl p-6"
+            className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 sm:p-6"
           >
-            <div className="flex items-center gap-3 mb-4">
-              <AlertTriangle className="w-6 h-6 text-red-500" />
-              <h2 className="text-xl font-bold text-red-900">Danger Zone</h2>
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
+              <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" />
+              <h2 className="text-lg sm:text-xl font-bold text-red-900">Danger Zone</h2>
             </div>
             
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
+            <div className="bg-white rounded-xl p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h3 className="font-semibold text-red-900">Delete Account</h3>
-                  <p className="text-sm text-red-700">Permanently delete your account and all data</p>
+                  <h3 className="font-bold text-red-900 text-sm sm:text-base">Delete Account</h3>
+                  <p className="text-xs sm:text-sm text-red-700">Permanently delete your account and all data</p>
                 </div>
                 <button
                   onClick={() => setShowDeleteModal(true)}
-                  className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors touch-manipulation"
                 >
-                  <Trash2 size={18} />
+                  <Trash2 className="w-5 h-5" />
                   <span>Delete Account</span>
                 </button>
               </div>
             </div>
           </motion.section>
-        </div>
 
-        {/* Delete Confirmation Modal */}
-        {showDeleteModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          {/* Delete Confirmation Modal */}
+          {showDeleteModal && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              onClick={(e) => e.target === e.currentTarget && setShowDeleteModal(false)}
             >
-              <div className="text-center">
-                <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Account</h3>
-                <p className="text-gray-600 mb-6">
-                  This action cannot be undone. This will permanently delete your account and all associated data.
-                </p>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setShowDeleteModal(false)}
-                    className="flex-1 px-4 py-2 border-2 border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={deleteAccount}
-                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                  >
-                    Delete Account
-                  </button>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
+              >
+                <div className="text-center">
+                  <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Account</h3>
+                  <p className="text-gray-600 mb-6 text-sm">
+                    This action cannot be undone. All your data will be permanently deleted.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      onClick={() => setShowDeleteModal(false)}
+                      className="flex-1 px-4 py-3 border-2 border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors touch-manipulation"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={deleteAccount}
+                      className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors touch-manipulation"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Bottom Quote */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7 }}
-          className="text-center mt-12"
+          className="text-center mt-8 sm:mt-12"
         >
-          <p className="text-sm text-gray-600 italic">
-            "Your mask, your rules, your villain empire"
+          <p className="text-xs sm:text-sm text-gray-600 italic">
+            "Just remember ALL CAPS when you spell the man name"
           </p>
         </motion.div>
       </div>

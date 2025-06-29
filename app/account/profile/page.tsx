@@ -18,7 +18,8 @@ import {
   X,
   Check,
   AlertCircle,
-  Send
+  Send,
+  ChevronRight
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Image from 'next/image'
@@ -199,7 +200,7 @@ export default function ProfilePage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-mf-light-gray flex items-center justify-center">
+      <div className="min-h-screen bg-mf-light-gray flex items-center justify-center px-4">
         <div className="text-center">
           <div className="w-12 h-12 mx-auto mb-4">
             <Image
@@ -222,7 +223,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-mf-light-gray py-12">
+    <div className="min-h-screen bg-mf-light-gray py-4 sm:py-8 lg:py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
@@ -230,10 +231,10 @@ export default function ProfilePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="text-center mb-6 sm:mb-8 lg:mb-12"
           >
             {/* DOOM Mask GIF */}
-            <div className="w-24 h-24 mx-auto mb-6 relative">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mx-auto mb-4 sm:mb-6 relative">
               <Image
                 src="/icons/mfdoomcask.gif"
                 alt="THISMFDOOM Mask"
@@ -245,38 +246,38 @@ export default function ProfilePage() {
               {/* Glowing effect */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-mf-blue to-purple-500 animate-pulse opacity-20 blur-lg"></div>
             </div>
-            <h1 className="text-4xl font-black mb-2 bg-gradient-to-r from-gray-900 via-black to-gray-900 bg-clip-text text-transparent">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black mb-2 bg-gradient-to-r from-gray-900 via-black to-gray-900 bg-clip-text text-transparent">
               VILLAIN PROFILE
             </h1>
-            <p className="text-mf-gray text-lg">
+            <p className="text-mf-gray text-sm sm:text-base lg:text-lg">
               Manage your villain collective membership
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {/* Profile Information */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
-              className="lg:col-span-2 bg-white rounded-xl shadow-sm p-8 border border-gray-100"
+              className="lg:col-span-2 bg-white rounded-xl shadow-sm p-4 sm:p-6 lg:p-8 border border-gray-100"
             >
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold">Personal Information</h2>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
+                <h2 className="text-xl sm:text-2xl font-bold">Personal Information</h2>
                 {!isEditing ? (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="flex items-center space-x-2 text-mf-blue hover:text-mf-dark-blue transition-colors"
+                    className="flex items-center justify-center sm:justify-start space-x-2 text-mf-blue hover:text-mf-dark-blue transition-colors py-2 px-4 sm:py-0 sm:px-0 rounded-lg sm:rounded-none bg-mf-blue/5 sm:bg-transparent"
                   >
                     <Edit3 className="w-4 h-4" />
-                    <span>Edit</span>
+                    <span>Edit Profile</span>
                   </button>
                 ) : (
-                  <div className="flex space-x-2">
+                  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                     <button
                       onClick={handleSaveProfile}
                       disabled={loading}
-                      className="flex items-center space-x-2 bg-mf-blue text-white px-4 py-2 rounded-lg hover:bg-mf-dark-blue transition-colors disabled:opacity-70"
+                      className="flex items-center justify-center space-x-2 bg-mf-blue text-white px-4 py-2.5 sm:py-2 rounded-lg hover:bg-mf-dark-blue transition-colors disabled:opacity-70 text-sm sm:text-base"
                     >
                       {loading ? (
                         <div style={{ width: 16, height: 16 }}>
@@ -292,7 +293,7 @@ export default function ProfilePage() {
                       ) : (
                         <Save className="w-4 h-4" />
                       )}
-                      <span>{loading ? 'Saving...' : 'Save'}</span>
+                      <span>{loading ? 'Saving...' : 'Save Changes'}</span>
                     </button>
                     <button
                       onClick={() => {
@@ -304,7 +305,7 @@ export default function ProfilePage() {
                           emailVerified: false
                         })
                       }}
-                      className="flex items-center space-x-2 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+                      className="flex items-center justify-center space-x-2 bg-gray-200 text-gray-700 px-4 py-2.5 sm:py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm sm:text-base"
                     >
                       <X className="w-4 h-4" />
                       <span>Cancel</span>
@@ -313,7 +314,7 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 {/* Name */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -326,14 +327,14 @@ export default function ProfilePage() {
                         type="text"
                         value={profile.name}
                         onChange={(e) => setProfile(prev => ({ ...prev, name: e.target.value }))}
-                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm sm:text-base"
                         placeholder="Enter your villain name"
                       />
                     </div>
                   ) : (
                     <div className="flex items-center space-x-3 py-3 px-4 bg-mf-light-gray rounded-lg">
-                      <User className="w-5 h-5 text-mf-gray" />
-                      <span className="font-medium">{profile.name}</span>
+                      <User className="w-5 h-5 text-mf-gray flex-shrink-0" />
+                      <span className="font-medium text-sm sm:text-base">{profile.name}</span>
                     </div>
                   )}
                 </div>
@@ -351,13 +352,13 @@ export default function ProfilePage() {
                           type="email"
                           value={profile.email}
                           onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
-                          className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+                          className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm sm:text-base"
                           placeholder="Enter your email address"
                         />
                       </div>
                       {profile.email !== session?.user?.email && (
                         <p className="text-xs text-amber-600 flex items-center gap-1">
-                          <AlertCircle className="w-3 h-3" />
+                          <AlertCircle className="w-3 h-3 flex-shrink-0" />
                           Changing email will require verification
                         </p>
                       )}
@@ -365,23 +366,25 @@ export default function ProfilePage() {
                   ) : (
                     <div className="space-y-2">
                       <div className="flex items-center space-x-3 py-3 px-4 bg-mf-light-gray rounded-lg">
-                        <Mail className="w-5 h-5 text-mf-gray" />
-                        <span className="font-medium flex-1">{profile.email}</span>
+                        <Mail className="w-5 h-5 text-mf-gray flex-shrink-0" />
+                        <span className="font-medium flex-1 text-sm sm:text-base min-w-0 break-words">{profile.email}</span>
                         {profile.emailVerified ? (
-                          <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded flex items-center gap-1">
+                          <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded flex items-center gap-1 flex-shrink-0">
                             <Check className="w-3 h-3" />
-                            Verified
+                            <span className="hidden sm:inline">Verified</span>
+                            <span className="sm:hidden">✓</span>
                           </span>
                         ) : (
-                          <div className="flex items-center space-x-2">
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 flex-shrink-0">
                             <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded flex items-center gap-1">
                               <AlertCircle className="w-3 h-3" />
-                              Unverified
+                              <span className="hidden sm:inline">Unverified</span>
+                              <span className="sm:hidden">!</span>
                             </span>
                             <button
                               onClick={handleSendVerification}
                               disabled={sendingVerification}
-                              className="text-xs bg-mf-blue text-white px-2 py-1 rounded hover:bg-mf-dark-blue transition-colors disabled:opacity-70 flex items-center gap-1"
+                              className="text-xs bg-mf-blue text-white px-2 py-1 rounded hover:bg-mf-dark-blue transition-colors disabled:opacity-70 flex items-center justify-center gap-1 min-w-0"
                             >
                               {sendingVerification ? (
                                 <div style={{ width: 12, height: 12 }}>
@@ -397,7 +400,7 @@ export default function ProfilePage() {
                               ) : (
                                 <Send className="w-3 h-3" />
                               )}
-                              Verify
+                              <span className="hidden sm:inline">Verify</span>
                             </button>
                           </div>
                         )}
@@ -412,11 +415,11 @@ export default function ProfilePage() {
                     Phone Number
                   </label>
                   {isEditing ? (
-                    <div className="flex space-x-2">
+                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                       <select
                         value={phoneCountry}
                         onChange={(e) => setPhoneCountry(e.target.value)}
-                        className="px-3 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+                        className="w-full sm:w-auto px-3 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm sm:text-base"
                       >
                         {countryCodes.map((country) => (
                           <option key={country.code} value={country.code}>
@@ -430,15 +433,15 @@ export default function ProfilePage() {
                           type="tel"
                           value={phoneNumber}
                           onChange={(e) => setPhoneNumber(e.target.value)}
-                          className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+                          className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm sm:text-base"
                           placeholder="Enter phone number"
                         />
                       </div>
                     </div>
                   ) : (
                     <div className="flex items-center space-x-3 py-3 px-4 bg-mf-light-gray rounded-lg">
-                      <Phone className="w-5 h-5 text-mf-gray" />
-                      <span className="font-medium">{profile.phone || 'Not provided'}</span>
+                      <Phone className="w-5 h-5 text-mf-gray flex-shrink-0" />
+                      <span className="font-medium text-sm sm:text-base">{profile.phone || 'Not provided'}</span>
                     </div>
                   )}
                   <p className="text-xs text-mf-gray mt-1">
@@ -453,12 +456,12 @@ export default function ProfilePage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
-              className="space-y-6"
+              className="space-y-4 sm:space-y-6"
             >
               {/* Account Actions */}
-              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+              <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 border border-gray-100">
                 <h3 className="text-lg font-bold mb-4">Quick Actions</h3>
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {[
                     { title: 'Order History', icon: ShoppingBag, href: '/account/orders', desc: 'View your villain purchases' },
                     { title: 'Wishlist', icon: Heart, href: '/account/wishlist', desc: 'Saved items for later' },
@@ -468,25 +471,26 @@ export default function ProfilePage() {
                     <button
                       key={action.title}
                       onClick={() => router.push(action.href)}
-                      className="w-full flex items-center p-3 rounded-lg border-2 border-transparent hover:border-mf-blue hover:bg-mf-blue/5 transition-all duration-200 group text-left"
+                      className="w-full flex items-center p-3 rounded-lg border-2 border-transparent hover:border-mf-blue hover:bg-mf-blue/5 transition-all duration-200 group text-left touch-manipulation"
                     >
-                      <div className="w-8 h-8 bg-mf-light-gray rounded-lg flex items-center justify-center group-hover:bg-mf-blue group-hover:text-white transition-colors mr-3">
+                      <div className="w-8 h-8 bg-mf-light-gray rounded-lg flex items-center justify-center group-hover:bg-mf-blue group-hover:text-white transition-colors mr-3 flex-shrink-0">
                         <action.icon className="w-4 h-4" />
                       </div>
-                      <div>
+                      <div className="flex-1 min-w-0">
                         <p className="font-semibold text-sm">{action.title}</p>
-                        <p className="text-xs text-mf-gray">{action.desc}</p>
+                        <p className="text-xs text-mf-gray hidden sm:block">{action.desc}</p>
                       </div>
+                      <ChevronRight className="w-4 h-4 text-mf-gray group-hover:text-mf-blue transition-colors flex-shrink-0" />
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Sign Out */}
-              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+              <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 border border-gray-100">
                 <button
                   onClick={handleSignOut}
-                  className="w-full flex items-center justify-center space-x-2 bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition-colors"
+                  className="w-full flex items-center justify-center space-x-2 bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition-colors touch-manipulation"
                 >
                   <LogOut className="w-5 h-5" />
                   <span>Sign Out</span>
@@ -500,9 +504,9 @@ export default function ProfilePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-center mt-12"
+            className="text-center mt-8 sm:mt-12"
           >
-            <p className="text-sm text-mf-gray">
+            <p className="text-xs sm:text-sm text-mf-gray">
               "Remember ALL CAPS when you spell the man name"
             </p>
           </motion.div>

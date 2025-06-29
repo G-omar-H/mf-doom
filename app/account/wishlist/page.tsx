@@ -11,7 +11,8 @@ import {
   X,
   Star,
   Package,
-  Plus
+  Plus,
+  Eye
 } from 'lucide-react'
 import { formatPrice } from '@/lib/utils/formatters'
 import Image from 'next/image'
@@ -108,10 +109,10 @@ export default function WishlistPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4">
         <div className="text-center">
           {/* Spinning DOOM Mask GIF */}
-          <div className="w-16 h-16 mx-auto mb-4">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4">
             <Image
               src="/icons/mfdoomcask.gif"
               alt="Loading..."
@@ -121,7 +122,7 @@ export default function WishlistPage() {
               unoptimized
             />
           </div>
-          <p className="text-gray-600 font-medium">Loading villain wishlist...</p>
+          <p className="text-gray-600 font-medium text-sm sm:text-base">Loading villain wishlist...</p>
         </div>
       </div>
     )
@@ -130,29 +131,29 @@ export default function WishlistPage() {
   if (!session) return null
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4 sm:py-6 lg:py-8">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
           <Link 
             href="/account/profile"
-            className="inline-flex items-center gap-2 text-mf-blue hover:text-mf-dark-blue transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-mf-blue hover:text-mf-dark-blue transition-colors mb-4 sm:mb-6 touch-manipulation"
           >
             <ArrowLeft size={20} />
-            <span>Back to Profile</span>
+            <span className="text-sm sm:text-base">Back to Profile</span>
           </Link>
           
-          <div className="flex items-center gap-4 mb-2">
-            <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center">
-              <Heart className="w-6 h-6 text-white" />
+          <div className="flex items-center gap-3 sm:gap-4 mb-2">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center">
+              <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-black text-gray-900">VILLAIN WISHLIST</h1>
-              <p className="text-gray-600">Your coveted collection awaits</p>
+              <h1 className="text-2xl sm:text-3xl font-black text-gray-900">VILLAIN WISHLIST</h1>
+              <p className="text-gray-600 text-sm sm:text-base">Your coveted collection awaits</p>
             </div>
           </div>
         </motion.div>
@@ -161,13 +162,13 @@ export default function WishlistPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl shadow-lg p-12 text-center"
+            className="bg-white rounded-2xl shadow-lg p-8 sm:p-12 text-center"
           >
-            <Heart size={64} className="text-gray-300 mx-auto mb-6" />
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Your Wishlist is Empty</h3>
-            <p className="text-gray-600 mb-6">Save items you love for later</p>
+            <Heart size={48} className="text-gray-300 mx-auto mb-4 sm:mb-6 sm:w-16 sm:h-16" />
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">Your Wishlist is Empty</h3>
+            <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">Save items you love for later</p>
             <Link href="/">
-              <button className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors">
+              <button className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors touch-manipulation">
                 Start Exploring
               </button>
             </Link>
@@ -179,45 +180,45 @@ export default function WishlistPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8"
             >
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
                 <div className="flex items-center gap-3">
-                  <Heart className="w-8 h-8 text-red-500" />
+                  <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{wishlistItems.length}</p>
-                    <p className="text-sm text-gray-600">Saved Items</p>
+                    <p className="text-xl sm:text-2xl font-bold text-gray-900">{wishlistItems.length}</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Saved Items</p>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
                 <div className="flex items-center gap-3">
-                  <Package className="w-8 h-8 text-blue-500" />
+                  <Package className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500" />
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-xl sm:text-2xl font-bold text-gray-900">
                       {wishlistItems.filter(item => item.product.inStock).length}
                     </p>
-                    <p className="text-sm text-gray-600">In Stock</p>
+                    <p className="text-xs sm:text-sm text-gray-600">In Stock</p>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100 sm:col-span-1 col-span-1">
                 <div className="flex items-center gap-3">
-                  <Star className="w-8 h-8 text-yellow-500" />
+                  <Star className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-xl sm:text-2xl font-bold text-gray-900">
                       {formatPrice(wishlistItems.reduce((sum, item) => sum + item.product.price, 0))}
                     </p>
-                    <p className="text-sm text-gray-600">Total Value</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Total Value</p>
                   </div>
                 </div>
               </div>
             </motion.div>
 
             {/* Wishlist Items */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               <AnimatePresence>
                 {wishlistItems.map((item, index) => (
                   <motion.div
@@ -236,7 +237,7 @@ export default function WishlistPage() {
                           alt={item.product.name}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         />
                       </Link>
                       
@@ -244,7 +245,7 @@ export default function WishlistPage() {
                       <button
                         onClick={() => removeFromWishlist(item.id)}
                         disabled={removingItems.has(item.id)}
-                        className="absolute top-3 right-3 w-8 h-8 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-red-500 transition-colors"
+                        className="absolute top-3 right-3 w-8 h-8 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-red-500 transition-colors touch-manipulation"
                       >
                         {removingItems.has(item.id) ? (
                           <div style={{ width: 16, height: 16 }}>
@@ -275,20 +276,29 @@ export default function WishlistPage() {
                           {Math.round(((item.product.compareAtPrice - item.product.price) / item.product.compareAtPrice) * 100)}% OFF
                         </div>
                       )}
+
+                      {/* Quick View Button - Desktop Only */}
+                      <Link href={`/products/${item.product.slug}`} className="hidden sm:block">
+                        <button className="absolute inset-0 w-full h-full bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
+                            <Eye size={20} className="text-gray-900" />
+                          </div>
+                        </button>
+                      </Link>
                     </div>
 
                     {/* Product Info */}
-                    <div className="p-6">
+                    <div className="p-4 sm:p-6">
                       <Link href={`/products/${item.product.slug}`}>
-                        <h3 className="text-lg font-bold text-gray-900 mb-2 hover:text-mf-blue transition-colors line-clamp-2">
+                        <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2 hover:text-mf-blue transition-colors line-clamp-2">
                           {item.product.name}
                         </h3>
                       </Link>
                       
-                      <p className="text-sm text-gray-600 mb-3 capitalize">{item.product.category}</p>
+                      <p className="text-xs sm:text-sm text-gray-600 mb-3 capitalize">{item.product.category}</p>
                       
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-xl font-bold text-gray-900">
+                        <span className="text-lg sm:text-xl font-bold text-gray-900">
                           {formatPrice(item.product.price)}
                         </span>
                         {item.product.compareAtPrice && item.product.compareAtPrice > item.product.price && (
@@ -299,17 +309,25 @@ export default function WishlistPage() {
                       </div>
 
                       {/* Actions */}
-                      <div className="flex gap-2">
+                      <div className="space-y-2 sm:space-y-3">
                         <button
                           onClick={() => addToCartFromWishlist(item)}
                           disabled={!item.product.inStock}
-                          className="flex-1 flex items-center justify-center gap-2 bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-full flex items-center justify-center gap-2 bg-black text-white py-2.5 sm:py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
                         >
                           <ShoppingCart size={16} />
                           <span className="text-sm font-medium">
                             {item.product.inStock ? 'Add to Cart' : 'Out of Stock'}
                           </span>
                         </button>
+
+                        {/* Mobile View Product Button */}
+                        <Link href={`/products/${item.product.slug}`} className="block sm:hidden">
+                          <button className="w-full flex items-center justify-center gap-2 bg-gray-100 text-gray-700 py-2.5 px-4 rounded-lg hover:bg-gray-200 transition-colors touch-manipulation">
+                            <Eye size={16} />
+                            <span className="text-sm font-medium">View Product</span>
+                          </button>
+                        </Link>
                       </div>
 
                       <p className="text-xs text-gray-500 mt-3">
@@ -328,9 +346,9 @@ export default function WishlistPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-center mt-12"
+          className="text-center mt-8 sm:mt-12"
         >
-          <p className="text-sm text-gray-600 italic">
+          <p className="text-xs sm:text-sm text-gray-600 italic">
             "Just remember ALL CAPS when you spell the man name"
           </p>
         </motion.div>
