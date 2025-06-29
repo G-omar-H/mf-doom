@@ -410,3 +410,37 @@ model SalesAnalytics {
   @@unique([date, productId])
   @@map("sales_analytics")
 }
+
+// Visitor Analytics
+model VisitorAnalytics {
+  id               String      @id @default(uuid())
+  sessionId        String
+  pathname         String
+  userAgent        String
+  referrer         String
+  language         String
+  timezone         String
+  screenResolution String
+  deviceType       DeviceType
+  ip               String?
+  country          String?
+  region           String?
+  city             String?
+  latitude         Float?
+  longitude        Float?
+  isp              String?
+  timestamp        DateTime    @default(now())
+  createdAt        DateTime    @default(now())
+
+  @@index([sessionId])
+  @@index([pathname])
+  @@index([country])
+  @@index([timestamp])
+  @@map("visitor_analytics")
+}
+
+enum DeviceType {
+  mobile
+  tablet
+  desktop
+}

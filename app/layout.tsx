@@ -6,6 +6,9 @@ import { Footer } from '@/components/layout/Footer'
 import { CartDrawer } from '@/components/layout/CartDrawer'
 import { SessionProvider } from '@/components/providers/SessionProvider'
 import { Toaster } from 'react-hot-toast'
+import { Analytics } from '@vercel/analytics/react'
+import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics'
+import { VisitorTracking } from '@/components/analytics/VisitorTracking'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -65,6 +68,11 @@ export default function RootLayout({
               },
             }}
           />
+          
+          {/* Analytics Components */}
+          <Analytics />
+          <GoogleAnalytics />
+          <VisitorTracking />
         </SessionProvider>
       </body>
     </html>
