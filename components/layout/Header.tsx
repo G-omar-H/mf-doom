@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { ShoppingCart, Menu, X, Instagram, User, LogOut, Settings } from 'lucide-react'
 import { useCartStore } from '@/lib/store/cartStore'
@@ -58,24 +59,87 @@ export const Header: React.FC = () => {
     >
       <div className="px-4 md:px-8">
         <nav className="flex items-center justify-between h-16">
-          {/* Logo */}
+          {/* Enhanced Logo - Mobile Optimized */}
           <Link href="/">
             <motion.div
               animate={{ 
-                y: [0, -5, 0],
+                y: [0, -2, 0], // Reduced animation for mobile
               }}
               transition={{
-                duration: 2,
+                duration: 3,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
               whileHover={{ 
-                scale: 1.05,
+                scale: 1.02, // Reduced scale for mobile
                 transition: { duration: 0.2 }
               }}
-              className="font-bold text-xl"
+              whileTap={{ scale: 0.98 }} // Added tap feedback for mobile
+              className="flex items-center space-x-2 md:space-x-3 group retro-glow touch-manipulation"
             >
-              THISMFDOOM
+              {/* DOOM Mask Icon - Mobile Optimized */}
+              <div className="relative">
+                <motion.div
+                  animate={{ 
+                    rotate: [0, 3, -3, 0], // Reduced rotation for mobile
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 relative glitch"
+                >
+                  <Image
+                    src="/icons/mfdoomcask.gif"
+                    alt="DOOM Mask"
+                    width={40}
+                    height={40}
+                    className="w-full h-full filter drop-shadow-sm md:drop-shadow-md"
+                    unoptimized
+                    priority
+                  />
+                  {/* Mobile-optimized glowing effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-mf-blue via-purple-500 to-mf-blue opacity-0 group-hover:opacity-30 md:group-hover:opacity-40 blur-md md:blur-lg transition-all duration-300 md:duration-500 rounded-full animate-pulse"></div>
+                  {/* Secondary glow layer - reduced for mobile */}
+                  <div className="absolute inset-0 bg-mf-blue opacity-0 group-hover:opacity-15 md:group-hover:opacity-20 blur-sm transition-opacity duration-300 rounded-full"></div>
+                </motion.div>
+              </div>
+
+              {/* Logo Text - Mobile Optimized */}
+              <div className="flex flex-col scanlines">
+                <motion.div
+                  className="relative"
+                  whileHover={{
+                    textShadow: "0 0 8px rgba(140, 212, 230, 0.6), 0 0 16px rgba(140, 212, 230, 0.3)"
+                  }}
+                >
+                  {/* Main logo text with mobile-friendly sizing */}
+                  <span className="font-black text-base sm:text-lg md:text-xl tracking-tight relative z-10 bg-gradient-to-r from-black via-gray-800 to-black bg-clip-text text-transparent group-hover:from-black group-hover:via-mf-dark-blue group-hover:to-black transition-all duration-300 md:duration-500 glitch">
+                    THIS<span className="text-mf-blue group-hover:retro-text transition-all duration-300">MF</span>DOOM
+                  </span>
+                  
+                  {/* Mobile-optimized retro overlay effects */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 md:group-hover:opacity-30 transition-opacity duration-300 md:duration-500">
+                    <div className="h-full w-full bg-gradient-to-b from-transparent via-mf-blue/10 to-transparent bg-[length:100%_2px] md:bg-[length:100%_3px] animate-pulse"></div>
+                  </div>
+                  
+                  {/* Additional neon glow layer - mobile optimized */}
+                  <div className="absolute -inset-0.5 md:-inset-1 bg-gradient-to-r from-transparent via-mf-blue/15 md:via-mf-blue/20 to-transparent opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300 md:duration-500 rounded"></div>
+                </motion.div>
+                
+                {/* Enhanced Subtitle - Mobile Optimized */}
+                <motion.span 
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-[9px] sm:text-[10px] md:text-xs text-mf-gray uppercase tracking-wider md:tracking-widest font-medium opacity-60 sm:opacity-70 group-hover:opacity-100 group-hover:text-mf-dark-blue transition-all duration-300 md:duration-500 relative"
+                >
+                  VILLAIN COLLECTIVE
+                  {/* Subtle underline effect - mobile friendly */}
+                  <div className="absolute -bottom-0.5 left-0 h-px w-0 bg-gradient-to-r from-mf-blue to-purple-500 group-hover:w-full transition-all duration-500 md:duration-700 ease-out"></div>
+                </motion.span>
+              </div>
             </motion.div>
           </Link>
 

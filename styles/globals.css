@@ -106,6 +106,168 @@
       transform: translateY(-5px) translateX(-50%);
     }
   }
+
+  /* Retro Logo Effects */
+  .retro-glow {
+    filter: drop-shadow(0 0 8px rgba(140, 212, 230, 0.2));
+    transition: filter 0.3s ease;
+  }
+
+  .retro-glow:hover {
+    filter: drop-shadow(0 0 12px rgba(140, 212, 230, 0.5)) drop-shadow(0 0 20px rgba(140, 212, 230, 0.3));
+  }
+
+  /* Mobile-optimized retro glow */
+  @media (max-width: 768px) {
+    .retro-glow {
+      filter: drop-shadow(0 0 6px rgba(140, 212, 230, 0.2));
+    }
+    
+    .retro-glow:hover {
+      filter: drop-shadow(0 0 10px rgba(140, 212, 230, 0.4)) drop-shadow(0 0 15px rgba(140, 212, 230, 0.2));
+    }
+  }
+
+  /* Scanline effect */
+  .scanlines {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scanlines::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(transparent 50%, rgba(0, 0, 0, 0.03) 50%);
+    background-size: 100% 4px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .scanlines:hover::before {
+    opacity: 1;
+    animation: scanline-flicker 2s infinite;
+  }
+
+  /* Mobile-optimized scanlines */
+  @media (max-width: 768px) {
+    .scanlines::before {
+      background-size: 100% 3px;
+    }
+    
+    .scanlines:hover::before {
+      animation: scanline-flicker 1.5s infinite;
+    }
+  }
+
+  @keyframes scanline-flicker {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Retro text effects */
+  .retro-text {
+    text-shadow: 
+      0 0 5px rgba(140, 212, 230, 0.5),
+      0 0 10px rgba(140, 212, 230, 0.3),
+      0 0 15px rgba(140, 212, 230, 0.2);
+  }
+
+  /* Mobile-optimized retro text */
+  @media (max-width: 768px) {
+    .retro-text {
+      text-shadow: 
+        0 0 4px rgba(140, 212, 230, 0.4),
+        0 0 8px rgba(140, 212, 230, 0.2);
+    }
+  }
+
+  /* Glitch effect for special occasions */
+  .glitch {
+    position: relative;
+  }
+
+  .glitch:hover {
+    animation: glitch-anim 0.3s ease-in-out;
+  }
+
+  /* Mobile-optimized glitch effect */
+  @media (max-width: 768px) {
+    .glitch:hover {
+      animation: glitch-anim-mobile 0.2s ease-in-out;
+    }
+  }
+
+  @keyframes glitch-anim {
+    0% {
+      transform: translate(0);
+    }
+    20% {
+      transform: translate(-2px, 2px);
+    }
+    40% {
+      transform: translate(-2px, -2px);
+    }
+    60% {
+      transform: translate(2px, 2px);
+    }
+    80% {
+      transform: translate(2px, -2px);
+    }
+    100% {
+      transform: translate(0);
+    }
+  }
+
+  /* Mobile-friendly glitch animation */
+  @keyframes glitch-anim-mobile {
+    0% {
+      transform: translate(0);
+    }
+    25% {
+      transform: translate(-1px, 1px);
+    }
+    50% {
+      transform: translate(1px, -1px);
+    }
+    75% {
+      transform: translate(-1px, -1px);
+    }
+    100% {
+      transform: translate(0);
+    }
+  }
+
+  /* Neon border effect */
+  .neon-border {
+    border: 1px solid rgba(140, 212, 230, 0.3);
+    box-shadow: 
+      0 0 5px rgba(140, 212, 230, 0.2),
+      inset 0 0 5px rgba(140, 212, 230, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .neon-border:hover {
+    border-color: rgba(140, 212, 230, 0.6);
+    box-shadow: 
+      0 0 10px rgba(140, 212, 230, 0.4),
+      0 0 20px rgba(140, 212, 230, 0.2),
+      inset 0 0 10px rgba(140, 212, 230, 0.1);
+  }
+
+  /* Mobile-optimized neon border */
+  @media (max-width: 768px) {
+    .neon-border:hover {
+      box-shadow: 
+        0 0 8px rgba(140, 212, 230, 0.3),
+        0 0 15px rgba(140, 212, 230, 0.15),
+        inset 0 0 8px rgba(140, 212, 230, 0.1);
+    }
+  }
 }
 
 /* Custom scrollbar */
@@ -187,6 +349,38 @@
   /* Mobile-only shadow effects */
   .mobile-shadow-xl {
     box-shadow: 0 10px 30px rgba(140, 212, 230, 0.3);
+  }
+  
+  /* Mobile-optimized logo performance */
+  .retro-glow,
+  .scanlines,
+  .glitch {
+    will-change: auto; /* Prevent unnecessary layer creation */
+  }
+  
+  /* Reduce motion for better performance on mobile */
+  .scanlines::before {
+    animation-duration: 2s; /* Slightly slower for mobile */
+  }
+  
+  /* Mobile-friendly touch interactions */
+  .touch-manipulation {
+    touch-action: manipulation; /* Prevents double-tap zoom */
+    -webkit-touch-callout: none; /* Prevents callout menu */
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  /* Optimize blur effects for mobile */
+  .retro-glow:hover [class*="blur-"] {
+    transform: translateZ(0); /* Hardware acceleration */
+  }
+  
+  /* Mobile logo accessibility */
+  .group:focus-visible {
+    outline: 2px solid rgba(140, 212, 230, 0.8);
+    outline-offset: 2px;
+    border-radius: 8px;
   }
 }
 
