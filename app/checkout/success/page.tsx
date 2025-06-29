@@ -4,11 +4,12 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { CheckCircle, Loader2 } from 'lucide-react'
+import { CheckCircle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useCartStore } from '@/lib/store/cartStore'
 import { formatPrice } from '@/lib/utils/formatters'
 import confetti from 'canvas-confetti'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
 
 export default function CheckoutSuccessPage() {
   const [isProcessing, setIsProcessing] = useState(false)
@@ -97,7 +98,7 @@ export default function CheckoutSuccessPage() {
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
             className="inline-block mb-6"
           >
-            <Loader2 size={100} className="text-doom-gold animate-spin" />
+            <LoadingSpinner size={100} />
           </motion.div>
 
           <h1 className="font-metal text-5xl text-doom-gold mb-4">

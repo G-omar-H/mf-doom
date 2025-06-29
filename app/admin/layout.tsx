@@ -21,6 +21,7 @@ import {
   Shield
 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
 
 const adminNavItems = [
   {
@@ -99,10 +100,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   if (status === 'loading') {
     return (
       <div className="min-h-screen bg-mf-light-gray flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-mf-blue border-t-transparent mx-auto mb-4"></div>
-          <p className="text-mf-gray">Loading admin panel...</p>
-        </div>
+        <LoadingSpinner size={64} text="Loading admin panel..." />
       </div>
     )
   }

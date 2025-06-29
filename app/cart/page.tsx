@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { Minus, Plus, Trash2, ShoppingBag, Package } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic'
@@ -30,11 +31,8 @@ export default function CartPage() {
   // Don't render until hydrated to prevent hydration mismatch
   if (!isHydrated) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="font-metal text-5xl text-doom-gold text-center mb-12">
-          YOUR CART
-        </h1>
-        <div className="text-center text-doom-silver">Loading...</div>
+      <div className="min-h-screen bg-doom-dark text-white flex items-center justify-center">
+        <LoadingSpinner size={64} text="Loading cart..." />
       </div>
     )
   }

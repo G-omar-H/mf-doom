@@ -18,6 +18,7 @@ import {
   X
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import Image from 'next/image'
 
 interface UserProfile {
   name: string
@@ -88,7 +89,16 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen bg-mf-light-gray flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-mf-blue border-t-transparent mx-auto mb-4"></div>
+          <div className="w-12 h-12 mx-auto mb-4">
+            <Image
+              src="/icons/mfdoomcask.gif"
+              alt="Loading..."
+              width={48}
+              height={48}
+              className="w-full h-full"
+              unoptimized
+            />
+          </div>
           <p className="text-mf-gray">Loading villain profile...</p>
         </div>
       </div>
@@ -110,15 +120,16 @@ export default function ProfilePage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            {/* Enhanced Spinning DOOM Mask */}
+            {/* DOOM Mask GIF */}
             <div className="w-24 h-24 mx-auto mb-6 relative">
-              <div className="w-full h-full bg-gradient-to-r from-gray-800 to-black rounded-full flex items-center justify-center animate-spin shadow-2xl">
-                <div className="w-20 h-20 bg-gradient-to-r from-gray-300 to-white rounded-full flex items-center justify-center">
-                  <div className="w-16 h-16 bg-gradient-to-r from-gray-800 to-black rounded-full flex items-center justify-center">
-                    <div className="w-3 h-3 bg-white rounded-full shadow-lg"></div>
-                  </div>
-                </div>
-              </div>
+              <Image
+                src="/icons/mfdoomcask.gif"
+                alt="MF DOOM Mask"
+                width={96}
+                height={96}
+                className="w-full h-full"
+                unoptimized
+              />
               {/* Glowing effect */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-mf-blue to-purple-500 animate-pulse opacity-20 blur-lg"></div>
             </div>

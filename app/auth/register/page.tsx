@@ -6,6 +6,8 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Eye, EyeOff, Lock, Mail, User, ArrowRight } from 'lucide-react'
 import toast from 'react-hot-toast'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import Image from 'next/image'
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -216,7 +218,16 @@ export default function RegisterPage() {
                 className="w-full bg-mf-blue text-white py-3 px-6 rounded-lg font-semibold hover:bg-mf-dark-blue transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <div style={{ width: 20, height: 20 }}>
+                    <Image
+                      src="/icons/mfdoomcask.gif"
+                      alt="Loading..."
+                      width={20}
+                      height={20}
+                      className="w-full h-full"
+                      unoptimized
+                    />
+                  </div>
                 ) : (
                   <>
                     <span>Join the Collective</span>

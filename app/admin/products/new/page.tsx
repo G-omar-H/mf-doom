@@ -23,6 +23,7 @@ import {
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import Image from 'next/image'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
 
 interface ProductForm {
   name: string
@@ -258,8 +259,8 @@ export default function AdminNewProductPage() {
 
   if (status === 'loading') {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-mf-blue border-t-transparent"></div>
+      <div className="min-h-screen bg-mf-light-gray flex items-center justify-center">
+        <LoadingSpinner size={64} text="Loading admin..." />
       </div>
     )
   }
@@ -291,21 +292,28 @@ export default function AdminNewProductPage() {
               <span className="sm:hidden">Cancel</span>
             </Link>
             <button
-              onClick={handleSubmit}
+              type="submit"
               disabled={saving || uploadingImages}
-              className="btn-primary flex items-center space-x-2 disabled:opacity-50 text-sm md:text-base"
+              className="w-full flex items-center justify-center space-x-2 bg-mf-blue text-white py-3 px-6 rounded-lg hover:bg-mf-dark-blue transition-colors disabled:opacity-70 disabled:cursor-not-allowed font-semibold"
             >
               {saving ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span className="hidden sm:inline">Creating...</span>
-                  <span className="sm:hidden">Creating</span>
+                  <div style={{ width: 16, height: 16 }}>
+                    <Image
+                      src="/icons/mfdoomcask.gif"
+                      alt="Saving..."
+                      width={16}
+                      height={16}
+                      className="w-full h-full"
+                      unoptimized
+                    />
+                  </div>
+                  <span>Creating...</span>
                 </>
               ) : (
                 <>
                   <Save className="w-4 h-4" />
-                  <span className="hidden sm:inline">Create Product</span>
-                  <span className="sm:hidden">Create</span>
+                  <span>Create Product</span>
                 </>
               )}
             </button>
@@ -537,9 +545,12 @@ export default function AdminNewProductPage() {
                 />
                 
                 {uploadingImages ? (
-                  <div className="flex flex-col items-center space-y-2">
-                    <Loader2 className="w-8 h-8 md:w-12 md:h-12 text-mf-blue animate-spin" />
-                    <p className="text-mf-gray text-sm md:text-base">Uploading images...</p>
+                  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+                    <div className="bg-white rounded-xl p-8 max-w-md w-full mx-4">
+                      <div className="text-center">
+                        <LoadingSpinner size={80} text="Uploading images..." />
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center space-y-2 md:space-y-4">
@@ -649,8 +660,17 @@ export default function AdminNewProductPage() {
                 >
                   {saving ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Creating Product...</span>
+                      <div style={{ width: 16, height: 16 }}>
+                        <Image
+                          src="/icons/mfdoomcask.gif"
+                          alt="Saving..."
+                          width={16}
+                          height={16}
+                          className="w-full h-full"
+                          unoptimized
+                        />
+                      </div>
+                      <span>Creating...</span>
                     </>
                   ) : (
                     <>

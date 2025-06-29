@@ -16,6 +16,7 @@ import {
   Plus
 } from 'lucide-react'
 import Link from 'next/link'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
 
 interface DashboardStats {
   totalUsers: number
@@ -60,10 +61,7 @@ export default function AdminDashboard() {
   if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen bg-mf-light-gray flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-mf-blue border-t-transparent mx-auto mb-4"></div>
-          <p className="text-mf-gray">Loading villain dashboard...</p>
-        </div>
+        <LoadingSpinner size={64} text="Loading dashboard..." />
       </div>
     )
   }

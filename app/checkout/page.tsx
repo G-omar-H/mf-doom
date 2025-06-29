@@ -247,15 +247,15 @@ export default function CheckoutPage() {
               {/* Totals */}
               <div className="border-t border-gray-100 p-6 space-y-4 bg-gray-50">
                 <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Subtotal</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Subtotal</span>
                     <span className="font-medium text-gray-900">{formatPrice(subtotal)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Shipping</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Shipping</span>
                     <span className="font-medium text-gray-900">{shipping === 0 ? 'FREE' : formatPrice(shipping)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
+                </div>
+                <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Tax (8%)</span>
                     <span className="font-medium text-gray-900">{formatPrice(tax)}</span>
                   </div>
@@ -272,7 +272,7 @@ export default function CheckoutPage() {
                       <span className="text-sm text-mf-blue font-medium">
                         Add {formatPrice(100 - subtotal)} more for free shipping!
                       </span>
-                    </div>
+                  </div>
                   </motion.div>
                 )}
                 
@@ -288,11 +288,11 @@ export default function CheckoutPage() {
 
           {/* Enhanced Checkout Form */}
           <div className="lg:col-span-7 lg:order-1 mt-8 lg:mt-0">
-            <motion.div
+          <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               className="space-y-8"
-            >
+          >
               {/* Contact Information */}
               <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div className="bg-gradient-to-r from-gray-50 to-white p-6 border-b border-gray-100">
@@ -306,15 +306,15 @@ export default function CheckoutPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="md:col-span-2">
                       <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                        Email Address *
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
+                      Email Address *
+                    </label>
+                <input
+                  type="email"
+                      id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
                         className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
                           formErrors.email 
                             ? 'border-red-300 focus:border-red-500 bg-red-50' 
@@ -322,8 +322,8 @@ export default function CheckoutPage() {
                             ? 'border-green-300 focus:border-green-500 bg-green-50'
                             : 'border-gray-200 focus:border-mf-blue focus:bg-blue-50'
                         }`}
-                        placeholder="your@email.com"
-                      />
+                      placeholder="your@email.com"
+                />
                       <AnimatePresence>
                         {formErrors.email && (
                           <motion.div
@@ -347,18 +347,18 @@ export default function CheckoutPage() {
                           </motion.div>
                         )}
                       </AnimatePresence>
-                    </div>
-                    <div>
+              </div>
+              <div>
                       <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
-                        Full Name *
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required
+                      Full Name *
+                    </label>
+                <input
+                  type="text"
+                      id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
                         className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
                           formErrors.name 
                             ? 'border-red-300 focus:border-red-500 bg-red-50' 
@@ -366,8 +366,8 @@ export default function CheckoutPage() {
                             ? 'border-green-300 focus:border-green-500 bg-green-50'
                             : 'border-gray-200 focus:border-mf-blue focus:bg-blue-50'
                         }`}
-                        placeholder="John Doe"
-                      />
+                      placeholder="John Doe"
+                    />
                       <AnimatePresence>
                         {formErrors.name && (
                           <motion.div
@@ -381,48 +381,48 @@ export default function CheckoutPage() {
                           </motion.div>
                         )}
                       </AnimatePresence>
-                    </div>
+                  </div>
                     <div>
                       <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all duration-200 focus:outline-none focus:border-mf-blue focus:bg-blue-50"
-                        placeholder="+1 (555) 123-4567"
-                      />
+                      placeholder="+1 (555) 123-4567"
+                />
                     </div>
-                  </div>
-                </div>
+              </div>
+            </div>
               </div>
 
-              {/* Shipping Address */}
+          {/* Shipping Address */}
               <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div className="bg-gradient-to-r from-gray-50 to-white p-6 border-b border-gray-100">
                   <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
                     <div className="w-8 h-8 bg-mf-blue text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
-                    <Truck size={20} className="text-mf-blue" />
+                  <Truck size={20} className="text-mf-blue" />
                     Shipping Address
                   </h3>
                   <p className="text-gray-600 mt-1">Where should we send your order?</p>
                 </div>
                 <div className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="md:col-span-2">
+                  <div className="md:col-span-2">
                       <label htmlFor="address" className="block text-sm font-semibold text-gray-700 mb-2">
-                        Street Address *
-                      </label>
-                      <input
-                        type="text"
-                        id="address"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleInputChange}
-                        required
+                      Street Address *
+                    </label>
+                <input
+                  type="text"
+                      id="address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  required
                         className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
                           formErrors.address 
                             ? 'border-red-300 focus:border-red-500 bg-red-50' 
@@ -430,8 +430,8 @@ export default function CheckoutPage() {
                             ? 'border-green-300 focus:border-green-500 bg-green-50'
                             : 'border-gray-200 focus:border-mf-blue focus:bg-blue-50'
                         }`}
-                        placeholder="123 Main Street"
-                      />
+                      placeholder="123 Main Street"
+                />
                       <AnimatePresence>
                         {formErrors.address && (
                           <motion.div
@@ -445,18 +445,18 @@ export default function CheckoutPage() {
                           </motion.div>
                         )}
                       </AnimatePresence>
-                    </div>
-                    <div>
+              </div>
+                <div>
                       <label htmlFor="city" className="block text-sm font-semibold text-gray-700 mb-2">
-                        City *
-                      </label>
-                      <input
-                        type="text"
-                        id="city"
-                        name="city"
-                        value={formData.city}
-                        onChange={handleInputChange}
-                        required
+                      City *
+                    </label>
+                  <input
+                    type="text"
+                      id="city"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    required
                         className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
                           formErrors.city 
                             ? 'border-red-300 focus:border-red-500 bg-red-50' 
@@ -464,8 +464,8 @@ export default function CheckoutPage() {
                             ? 'border-green-300 focus:border-green-500 bg-green-50'
                             : 'border-gray-200 focus:border-mf-blue focus:bg-blue-50'
                         }`}
-                        placeholder="New York"
-                      />
+                      placeholder="New York"
+                  />
                       <AnimatePresence>
                         {formErrors.city && (
                           <motion.div
@@ -479,18 +479,18 @@ export default function CheckoutPage() {
                           </motion.div>
                         )}
                       </AnimatePresence>
-                    </div>
-                    <div>
+                </div>
+                <div>
                       <label htmlFor="state" className="block text-sm font-semibold text-gray-700 mb-2">
-                        State *
-                      </label>
-                      <input
-                        type="text"
-                        id="state"
-                        name="state"
-                        value={formData.state}
-                        onChange={handleInputChange}
-                        required
+                      State *
+                    </label>
+                  <input
+                    type="text"
+                      id="state"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleInputChange}
+                    required
                         className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
                           formErrors.state 
                             ? 'border-red-300 focus:border-red-500 bg-red-50' 
@@ -498,8 +498,8 @@ export default function CheckoutPage() {
                             ? 'border-green-300 focus:border-green-500 bg-green-50'
                             : 'border-gray-200 focus:border-mf-blue focus:bg-blue-50'
                         }`}
-                        placeholder="NY"
-                      />
+                      placeholder="NY"
+                  />
                       <AnimatePresence>
                         {formErrors.state && (
                           <motion.div
@@ -513,18 +513,18 @@ export default function CheckoutPage() {
                           </motion.div>
                         )}
                       </AnimatePresence>
-                    </div>
-                    <div>
+                </div>
+                <div>
                       <label htmlFor="zip" className="block text-sm font-semibold text-gray-700 mb-2">
-                        ZIP Code *
-                      </label>
-                      <input
-                        type="text"
-                        id="zip"
-                        name="zip"
-                        value={formData.zip}
-                        onChange={handleInputChange}
-                        required
+                      ZIP Code *
+                    </label>
+                  <input
+                    type="text"
+                      id="zip"
+                    name="zip"
+                    value={formData.zip}
+                    onChange={handleInputChange}
+                    required
                         className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
                           formErrors.zip 
                             ? 'border-red-300 focus:border-red-500 bg-red-50' 
@@ -532,8 +532,8 @@ export default function CheckoutPage() {
                             ? 'border-green-300 focus:border-green-500 bg-green-50'
                             : 'border-gray-200 focus:border-mf-blue focus:bg-blue-50'
                         }`}
-                        placeholder="10001"
-                      />
+                      placeholder="10001"
+                    />
                       <AnimatePresence>
                         {formErrors.zip && (
                           <motion.div
@@ -547,21 +547,21 @@ export default function CheckoutPage() {
                           </motion.div>
                         )}
                       </AnimatePresence>
-                    </div>
-                    <div>
+                  </div>
+                  <div>
                       <label htmlFor="country" className="block text-sm font-semibold text-gray-700 mb-2">
-                        Country *
-                      </label>
-                      <select
-                        id="country"
-                        name="country"
-                        value={formData.country}
-                        onChange={handleInputChange}
+                      Country *
+                    </label>
+                    <select
+                      id="country"
+                      name="country"
+                      value={formData.country}
+                      onChange={handleInputChange}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all duration-200 focus:outline-none focus:border-mf-blue focus:bg-blue-50"
-                      >
-                        <option value="US">United States</option>
-                        <option value="CA">Canada</option>
-                      </select>
+                    >
+                      <option value="US">United States</option>
+                      <option value="CA">Canada</option>
+                    </select>
                     </div>
                   </div>
                 </div>
@@ -572,14 +572,14 @@ export default function CheckoutPage() {
                 <div className="bg-gradient-to-r from-gray-50 to-white p-6 border-b border-gray-100">
                   <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
                     <div className="w-8 h-8 bg-mf-blue text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
-                    <CreditCard size={20} className="text-mf-blue" />
+                  <CreditCard size={20} className="text-mf-blue" />
                     Payment Method
                   </h3>
                   <p className="text-gray-600 mt-1">Choose your preferred payment method</p>
-                </div>
+            </div>
 
                 <div className="p-6">
-                  {/* Payment Method Selection */}
+          {/* Payment Method Selection */}
                   <div className="space-y-4 mb-8">
                     <motion.label 
                       whileHover={{ scale: 1.02 }}
@@ -590,14 +590,14 @@ export default function CheckoutPage() {
                           : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                       }`}
                     >
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="paypal"
-                        checked={paymentMethod === 'paypal'}
-                        onChange={(e) => setPaymentMethod(e.target.value as 'paypal')}
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="paypal"
+                  checked={paymentMethod === 'paypal'}
+                  onChange={(e) => setPaymentMethod(e.target.value as 'paypal')}
                         className="text-mf-blue focus:ring-mf-blue w-4 h-4"
-                      />
+                    />
                       <div className="ml-4 flex-1">
                         <div className="flex items-center justify-between">
                           <span className="text-lg font-semibold text-gray-900">PayPal</span>
@@ -608,12 +608,12 @@ export default function CheckoutPage() {
                           </div>
                         </div>
                         <p className="text-sm text-gray-600 mt-1">Pay with any card (no account needed) or PayPal balance</p>
-                      </div>
+                    </div>
                     </motion.label>
-                  </div>
+            </div>
 
-                  {/* PayPal Payment */}
-                  {paymentMethod === 'paypal' && (
+            {/* PayPal Payment */}
+            {paymentMethod === 'paypal' && (
                     <motion.div 
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -629,44 +629,44 @@ export default function CheckoutPage() {
                             </p>
                           </div>
                         </div>
-                      </div>
+                    </div>
                       
                       <div className={`transition-all duration-300 ${!isFormValid ? 'opacity-50 pointer-events-none' : ''}`}>
-                        <PayPalProvider
-                          items={items}
-                          customerEmail={formData.email}
-                          customerData={{
-                            name: formData.name,
-                            email: formData.email,
-                            phone: formData.phone,
-                          }}
-                          shippingAddress={{
-                            line1: formData.address,
-                            city: formData.city,
-                            state: formData.state,
-                            postalCode: formData.zip,
-                            country: formData.country,
-                          }}
-                          onSuccess={handlePayPalSuccess}
-                          onError={handlePayPalError}
+                    <PayPalProvider
+                      items={items}
+                      customerEmail={formData.email}
+                      customerData={{
+                        name: formData.name,
+                        email: formData.email,
+                        phone: formData.phone,
+                      }}
+                      shippingAddress={{
+                        line1: formData.address,
+                        city: formData.city,
+                        state: formData.state,
+                        postalCode: formData.zip,
+                        country: formData.country,
+                      }}
+                      onSuccess={handlePayPalSuccess}
+                      onError={handlePayPalError}
                           disabled={!isFormValid || isProcessing}
-                        />
-                      </div>
-                      
+                    />
+        </div>
+
                       {!isFormValid && (
                         <motion.div
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           className="bg-amber-50 border border-amber-200 p-4 rounded-xl"
                         >
-                          <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3">
                             <AlertCircle size={20} className="text-amber-600" />
-                            <div>
+                <div>
                               <h4 className="font-semibold text-amber-800">Complete Required Fields</h4>
                               <p className="text-sm text-amber-700 mt-1">
                                 Please fill out all required fields above to continue with payment.
-                              </p>
-                            </div>
+                    </p>
+                  </div>
                           </div>
                         </motion.div>
                       )}
@@ -709,7 +709,7 @@ export default function CheckoutPage() {
               </motion.div>
             </motion.div>
           </div>
-        </div>
+          </div>
       </div>
     </div>
   )

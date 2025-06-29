@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js'
 import { CartItem } from '@/types'
+import Image from 'next/image'
 
 interface PayPalProviderProps {
   items: CartItem[]
@@ -99,7 +100,7 @@ export const PayPalProvider: React.FC<PayPalProviderProps> = ({
     console.error('PayPal payment error:', err)
     setIsProcessing(false)
     onError(err)
-  }
+    }
 
   const initialOptions = {
     clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
@@ -110,6 +111,24 @@ export const PayPalProvider: React.FC<PayPalProviderProps> = ({
     // Add components to enable Pay Later messaging
     components: 'buttons,messages,funding-eligibility',
     'data-sdk-integration-source': 'developer-studio'
+  }
+
+  if (isProcessing) {
+    return (
+      <div className="flex items-center justify-center p-4">
+        <div style={{ width: 16, height: 16 }} className="mr-2">
+          <Image
+            src="/icons/mfdoomcask.gif"
+            alt="Loading PayPal..."
+            width={16}
+            height={16}
+            className="w-full h-full"
+            unoptimized
+          />
+        </div>
+        <span className="text-gray-600">Loading PayPal...</span>
+      </div>
+    )
   }
 
   return (
@@ -130,7 +149,7 @@ export const PayPalProvider: React.FC<PayPalProviderProps> = ({
           </div>
           <div className="text-sm text-gray-400">Recommended</div>
         </div>
-
+        
         {/* Order Summary */}
         <div className="bg-gray-50 rounded-lg p-3 mb-4 text-sm">
           <div className="flex justify-between items-center mb-1">
@@ -171,13 +190,6 @@ export const PayPalProvider: React.FC<PayPalProviderProps> = ({
             onCancel={onCancel}
           />
         </PayPalScriptProvider>
-
-        {isProcessing && (
-          <div className="mt-3 flex items-center justify-center space-x-2 text-sm text-gray-600">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-            <span>Processing payment...</span>
-          </div>
-        )}
       </div>
 
       {/* Payment Security Info */}

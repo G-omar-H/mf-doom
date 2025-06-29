@@ -7,6 +7,8 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Eye, EyeOff, Lock, Mail, ArrowRight } from 'lucide-react'
 import toast from 'react-hot-toast'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import Image from 'next/image'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -142,15 +144,24 @@ export default function LoginPage() {
                 whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-black text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-900 transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full bg-black text-white py-3 px-4 rounded-lg font-semibold hover:bg-gray-800 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
               >
                 {isLoading ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                ) : (
                   <>
-                    <span>Enter the Villain Lair</span>
-                    <ArrowRight className="w-5 h-5" />
+                    <div style={{ width: 20, height: 20 }}>
+                      <Image
+                        src="/icons/mfdoomcask.gif"
+                        alt="Loading..."
+                        width={20}
+                        height={20}
+                        className="w-full h-full"
+                        unoptimized
+                      />
+                    </div>
+                    <span>Signing In...</span>
                   </>
+                ) : (
+                  <span>Sign In</span>
                 )}
               </motion.button>
             </form>

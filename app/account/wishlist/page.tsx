@@ -110,15 +110,16 @@ export default function WishlistPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <div className="text-center">
-          {/* Spinning DOOM Mask CSS Animation */}
-          <div className="w-16 h-16 mx-auto mb-4 relative">
-            <div className="w-full h-full bg-black rounded-full flex items-center justify-center animate-spin">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
-                  <div className="w-2 h-2 bg-white rounded-full"></div>
-                </div>
-              </div>
-            </div>
+          {/* Spinning DOOM Mask GIF */}
+          <div className="w-16 h-16 mx-auto mb-4">
+            <Image
+              src="/icons/mfdoomcask.gif"
+              alt="Loading..."
+              width={64}
+              height={64}
+              className="w-full h-full"
+              unoptimized
+            />
           </div>
           <p className="text-gray-600 font-medium">Loading villain wishlist...</p>
         </div>
@@ -246,7 +247,16 @@ export default function WishlistPage() {
                         className="absolute top-3 right-3 w-8 h-8 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-red-500 transition-colors"
                       >
                         {removingItems.has(item.id) ? (
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <div style={{ width: 16, height: 16 }}>
+                            <Image
+                              src="/icons/mfdoomcask.gif"
+                              alt="Removing..."
+                              width={16}
+                              height={16}
+                              className="w-full h-full"
+                              unoptimized
+                            />
+                          </div>
                         ) : (
                           <X size={16} />
                         )}

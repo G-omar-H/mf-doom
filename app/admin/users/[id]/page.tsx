@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
 
 interface UserDetail {
   id: string
@@ -210,8 +211,8 @@ export default function AdminUserDetailPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-mf-blue border-t-transparent"></div>
+      <div className="min-h-screen bg-mf-light-gray flex items-center justify-center">
+        <LoadingSpinner size={64} text="Loading user details..." />
       </div>
     )
   }

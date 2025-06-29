@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
 import { CartDrawer } from '@/components/layout/CartDrawer'
 import { SessionProvider } from '@/components/providers/SessionProvider'
 import { Toaster } from 'react-hot-toast'
@@ -44,6 +45,7 @@ export default function RootLayout({
           <main className="min-h-screen pt-16">
             {children}
           </main>
+          <Footer />
           <CartDrawer />
           <Toaster 
             position="top-right"
