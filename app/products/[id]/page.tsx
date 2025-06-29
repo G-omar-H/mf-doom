@@ -2,15 +2,16 @@
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ShoppingCart, Package } from 'lucide-react'
+import { ArrowLeft, ShoppingCart } from 'lucide-react'
 import { formatPrice } from '@/lib/utils/formatters'
 import { Button } from '@/components/ui/Button'
 import { useCartStore } from '@/lib/store/cartStore'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import ImageGallery from '@/components/ui/ImageGallery'
+import SizeChart from '@/components/ui/SizeChart'
 
 export default function ProductDetailPage() {
   const params = useParams()
@@ -21,7 +22,6 @@ export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({})
-  const [imageError, setImageError] = useState(false)
 
   // Fetch product from API
   useEffect(() => {
@@ -66,7 +66,22 @@ export default function ProductDetailPage() {
     )
   }
 
-  const hasImages = product.images && product.images.length > 0
+  // Determine size chart category based on product category or name
+  const getSizeChartCategory = (product: any): 'clothing' | 'shoes' | 'accessories' | 'headwear' => {
+    const category = product.category?.toLowerCase() || ''
+    const name = product.name?.toLowerCase() || ''
+    
+    if (category.includes('shoe') || category.includes('sneaker') || name.includes('shoe') || name.includes('sneaker')) {
+      return 'shoes'
+    }
+    if (category.includes('hat') || category.includes('cap') || category.includes('beanie') || name.includes('hat') || name.includes('cap') || name.includes('beanie')) {
+      return 'headwear'
+    }
+    if (category.includes('clothing') || category.includes('shirt') || category.includes('hoodie') || category.includes('jacket') || category.includes('tee')) {
+      return 'clothing'
+    }
+    return 'accessories'
+  }
 
   const handleAddToCart = () => {
     // Check if all required variants are selected
@@ -108,47 +123,12 @@ export default function ProductDetailPage() {
             transition={{ duration: 0.5 }}
             className="w-full"
           >
-            <div className="bg-white rounded-lg overflow-hidden shadow-sm">
-              <div className="relative h-64 sm:h-80 md:h-96 lg:h-[600px] bg-mf-light-gray">
-                {hasImages && !imageError ? (
-                  <Image
-                    src={product.images[selectedImage]}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
-                    onError={() => setImageError(true)}
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 50vw"
-                  />
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 p-4">
-                    <Package size={48} className="text-gray-400 mb-4 sm:w-24 sm:h-24" />
-                    <span className="text-sm sm:text-lg text-gray-500 text-center break-words max-w-full">{product.name}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            {hasImages && product.images.length > 1 && (
-              <div className="flex gap-2 sm:gap-4 mt-4 overflow-x-auto pb-2">
-                {product.images.map((image: string, index: number) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
-                    className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden flex-shrink-0 ${
-                      selectedImage === index ? 'ring-2 ring-mf-dark-blue' : ''
-                    }`}
-                  >
-                    <Image
-                      src={image}
-                      alt={`${product.name} ${index + 1}`}
-                      fill
-                      className="object-cover"
-                      sizes="80px"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
+            <ImageGallery
+              images={product.images || []}
+              productName={product.name}
+              currentImage={selectedImage}
+              onImageChange={setSelectedImage}
+            />
           </motion.div>
 
           {/* Product Info */}
@@ -174,9 +154,17 @@ export default function ProductDetailPage() {
               <div className="space-y-3 sm:space-y-4">
                 {product.variants.map((variant: any) => (
                   <div key={variant.type} className="w-full min-w-0">
-                    <label className="block text-mf-gray mb-2 font-semibold capitalize text-sm sm:text-base">
-                      {variant.type}
-                    </label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-mf-gray font-semibold capitalize text-sm sm:text-base">
+                        {variant.type}
+                      </label>
+                      {variant.type.toLowerCase().includes('size') && (
+                        <SizeChart 
+                          category={getSizeChartCategory(product)}
+                          productName={product.name}
+                        />
+                      )}
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       {variant.options.map((option: string) => (
                         <button
@@ -197,6 +185,17 @@ export default function ProductDetailPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* Size Guide for products without size variants but could benefit from sizing info */}
+            {(!product.variants || !product.variants.some((v: any) => v.type.toLowerCase().includes('size'))) && 
+             (getSizeChartCategory(product) === 'clothing' || getSizeChartCategory(product) === 'shoes' || getSizeChartCategory(product) === 'headwear') && (
+              <div className="py-2">
+                <SizeChart 
+                  category={getSizeChartCategory(product)}
+                  productName={product.name}
+                />
               </div>
             )}
 
