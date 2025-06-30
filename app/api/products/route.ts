@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma, withRetry, checkDatabaseConnection } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   // Check if Prisma is available (might be null during build time)
@@ -15,28 +15,53 @@ export async function GET(request: NextRequest) {
   const featured = searchParams.get('featured')
 
   try {
-    const products = await prisma.product.findMany({
-      where: {
-        status: 'ACTIVE',
-        ...(category && category !== 'all' && { 
-          category: category.toUpperCase() as any 
-        }),
-        ...(featured === 'true' && { featured: true }),
-      },
-      include: {
-        images: true,
-        variants: true,
-        inventoryItems: {
-          select: {
-            quantityAvailable: true,
-            quantityOnHand: true,
-          }
+    // Use retry logic for database operations
+    const products = await withRetry(async () => {
+      // Quick connection check
+      const isConnected = await checkDatabaseConnection()
+      if (!isConnected) {
+        throw new Error('Database connection failed')
+      }
+
+      return await prisma!.product.findMany({
+        where: {
+          status: 'ACTIVE',
+          ...(category && category !== 'all' && { 
+            category: category.toUpperCase() as any 
+          }),
+          ...(featured === 'true' && { featured: true }),
         },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    })
+        include: {
+          images: {
+            select: {
+              url: true,
+              altText: true,
+              position: true
+            },
+            orderBy: { position: 'asc' }
+          },
+          variants: {
+            select: {
+              id: true,
+              name: true,
+              type: true,
+              options: true
+            }
+          },
+          inventoryItems: {
+            select: {
+              quantityAvailable: true,
+              quantityOnHand: true,
+            }
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        // Add timeout protection
+        take: 100, // Limit results for better performance
+      })
+    }, 3, 1000) // 3 retries with 1s base delay
 
     // Transform products to match existing interface
     const transformedProducts = products.map((product: any) => ({
@@ -60,11 +85,23 @@ export async function GET(request: NextRequest) {
       updatedAt: product.updatedAt,
     }))
 
-    return NextResponse.json(transformedProducts)
+    return NextResponse.json(transformedProducts, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+      },
+    })
   } catch (error) {
     console.error('Error fetching products:', error)
+    
+    // Return more specific error information
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch products'
+    
     return NextResponse.json(
-      { error: 'Failed to fetch products' },
+      { 
+        error: errorMessage,
+        timestamp: new Date().toISOString(),
+        category: category || 'all'
+      },
       { status: 500 }
     )
   }
