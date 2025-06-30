@@ -14,7 +14,8 @@ import {
   ShoppingCart,
   Star,
   BarChart3,
-  RefreshCw
+  RefreshCw,
+  Tag
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
@@ -30,6 +31,9 @@ interface DatabaseCounts {
   wishlistItems: number
   products: number
   inventory: number
+  addresses: number
+  discountCodes: number
+  orderDiscountCodes: number
 }
 
 interface DatabaseInspection {
@@ -38,6 +42,7 @@ interface DatabaseInspection {
     orders: any[]
     users: any[]
     reviews: any[]
+    discountCodes: any[]
   }
 }
 
@@ -210,16 +215,18 @@ export default function AdminCleanupPage() {
               <h2 className="text-xl font-bold">Current Database State</h2>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
               <div className="bg-blue-50 p-4 rounded-lg text-center">
                 <ShoppingCart className="w-6 h-6 text-blue-600 mx-auto mb-2" />
                 <div className="text-2xl font-bold text-blue-600">{inspection.counts.orders}</div>
                 <div className="text-sm text-blue-600">Orders</div>
+                <div className="text-xs text-gray-500">{inspection.counts.orderDiscountCodes} discount codes</div>
               </div>
               <div className="bg-green-50 p-4 rounded-lg text-center">
                 <Users className="w-6 h-6 text-green-600 mx-auto mb-2" />
                 <div className="text-2xl font-bold text-green-600">{inspection.counts.users}</div>
                 <div className="text-sm text-green-600">Users</div>
+                <div className="text-xs text-gray-500">{inspection.counts.addresses} addresses</div>
               </div>
               <div className="bg-purple-50 p-4 rounded-lg text-center">
                 <Star className="w-6 h-6 text-purple-600 mx-auto mb-2" />
@@ -233,10 +240,17 @@ export default function AdminCleanupPage() {
                 </div>
                 <div className="text-sm text-orange-600">Analytics</div>
               </div>
+              <div className="bg-yellow-50 p-4 rounded-lg text-center">
+                <Tag className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-yellow-600">{inspection.counts.discountCodes}</div>
+                <div className="text-sm text-yellow-600">Discounts</div>
+                <div className="text-xs text-gray-500">{inspection.counts.wishlistItems} wishlist</div>
+              </div>
               <div className="bg-mf-blue/10 p-4 rounded-lg text-center">
                 <Database className="w-6 h-6 text-mf-blue mx-auto mb-2" />
                 <div className="text-2xl font-bold text-mf-blue">{inspection.counts.products}</div>
                 <div className="text-sm text-mf-blue">Products</div>
+                <div className="text-xs text-gray-500">{inspection.counts.inventory} inventory</div>
               </div>
             </div>
 
@@ -251,6 +265,12 @@ export default function AdminCleanupPage() {
                     {inspection.samples.users.map((user: any) => (
                       <div key={user.id} className="mb-1">
                         <strong>{user.email}</strong> - {user.name} ({user.role}) - {new Date(user.createdAt).toLocaleDateString()}
+                        {user._count && (
+                          <div className="text-gray-500 ml-2">
+                            Orders: {user._count.orders}, Reviews: {user._count.reviews}, 
+                            Wishlist: {user._count.wishlist}, Addresses: {user._count.addresses}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -266,6 +286,19 @@ export default function AdminCleanupPage() {
                         <strong>{order.orderNumber}</strong> - ${order.totalAmount} ({order.status}) - {new Date(order.createdAt).toLocaleDateString()}
                         {order.user && ` - ${order.user.email}`}
                         {order.guestEmail && ` - Guest: ${order.guestEmail}`}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {inspection.samples.discountCodes && inspection.samples.discountCodes.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-gray-600 mb-2">Discount Codes:</h4>
+                  <div className="bg-gray-50 p-3 rounded text-xs">
+                    {inspection.samples.discountCodes.map((code: any) => (
+                      <div key={code.id} className="mb-1">
+                        <strong>{code.code}</strong> - {code.name} ({code.type}) - Used: {code.usedCount} times
                       </div>
                     ))}
                   </div>

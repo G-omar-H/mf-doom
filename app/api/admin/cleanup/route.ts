@@ -35,7 +35,10 @@ export async function GET(request: NextRequest) {
       productViewCount,
       wishlistCount,
       productCount,
-      inventoryCount
+      inventoryCount,
+      addressCount,
+      discountCodeCount,
+      orderDiscountCodeCount
     ] = await Promise.all([
       prisma.order.count(),
       prisma.orderItem.count(),
@@ -46,14 +49,18 @@ export async function GET(request: NextRequest) {
       prisma.productView.count(),
       prisma.wishlistItem.count(),
       prisma.product.count(),
-      prisma.inventoryItem.count()
+      prisma.inventoryItem.count(),
+      prisma.address.count(),
+      prisma.discountCode.count(),
+      prisma.orderDiscountCode.count()
     ])
 
     // Get sample data to inspect
     const [
       sampleOrders,
       sampleUsers,
-      sampleReviews
+      sampleReviews,
+      sampleDiscountCodes
     ] = await Promise.all([
       prisma.order.findMany({
         take: 5,
@@ -79,7 +86,15 @@ export async function GET(request: NextRequest) {
           email: true,
           name: true,
           role: true,
-          createdAt: true
+          createdAt: true,
+          _count: {
+            select: {
+              orders: true,
+              reviews: true,
+              wishlist: true,
+              addresses: true
+            }
+          }
         }
       }),
       prisma.productReview.findMany({
@@ -97,6 +112,17 @@ export async function GET(request: NextRequest) {
             }
           }
         }
+      }),
+      prisma.discountCode.findMany({
+        take: 3,
+        select: {
+          id: true,
+          code: true,
+          name: true,
+          type: true,
+          status: true,
+          usedCount: true
+        }
       })
     ])
 
@@ -111,12 +137,16 @@ export async function GET(request: NextRequest) {
         productViews: productViewCount,
         wishlistItems: wishlistCount,
         products: productCount,
-        inventory: inventoryCount
+        inventory: inventoryCount,
+        addresses: addressCount,
+        discountCodes: discountCodeCount,
+        orderDiscountCodes: orderDiscountCodeCount
       },
       samples: {
         orders: sampleOrders,
         users: sampleUsers,
-        reviews: sampleReviews
+        reviews: sampleReviews,
+        discountCodes: sampleDiscountCodes
       }
     }
 
@@ -179,12 +209,11 @@ export async function POST(request: NextRequest) {
     switch (action) {
       case 'ORDERS_ONLY':
         console.log('🗑️  Deleting only orders and order items...')
-        const deletedOrderItems = await prisma.orderItem.deleteMany({})
+        // OrderItems and OrderDiscountCodes will cascade when orders are deleted
         const deletedOrders = await prisma.order.deleteMany({})
         
         summary.deleted = {
-          orders: deletedOrders.count,
-          orderItems: deletedOrderItems.count
+          orders: deletedOrders.count
         }
         break
 
@@ -199,9 +228,11 @@ export async function POST(request: NextRequest) {
 
       case 'ANALYTICS_ONLY':
         console.log('🗑️  Deleting only analytics data...')
-        const deletedAnalytics = await prisma.salesAnalytics.deleteMany({})
-        const deletedVisitorAnalytics = await prisma.visitorAnalytics.deleteMany({})
-        const deletedProductViews = await prisma.productView.deleteMany({})
+        const [deletedAnalytics, deletedVisitorAnalytics, deletedProductViews] = await Promise.all([
+          prisma.salesAnalytics.deleteMany({}),
+          prisma.visitorAnalytics.deleteMany({}),
+          prisma.productView.deleteMany({})
+        ])
         
         summary.deleted = {
           salesAnalytics: deletedAnalytics.count,
@@ -211,7 +242,7 @@ export async function POST(request: NextRequest) {
         break
 
       case 'TEST_USERS_ONLY':
-        console.log('🗑️  Deleting test users...')
+        console.log('🗑️  Deleting test users (handling foreign key constraints)...')
         // Delete users that look like test users
         const testUserPatterns = [
           'test@',
@@ -223,6 +254,7 @@ export async function POST(request: NextRequest) {
           '.local'
         ]
         
+        // First, find test users
         const testUsers = await prisma.user.findMany({
           where: {
             OR: testUserPatterns.map(pattern => ({
@@ -230,81 +262,108 @@ export async function POST(request: NextRequest) {
                 contains: pattern
               }
             }))
+          },
+          select: {
+            id: true,
+            email: true
           }
         })
 
-        const deletedTestUsers = await prisma.user.deleteMany({
-          where: {
-            OR: testUserPatterns.map(pattern => ({
-              email: {
-                contains: pattern
+        if (testUsers.length > 0) {
+          const testUserIds = testUsers.map(u => u.id)
+          
+          // Delete in proper order to respect foreign key constraints
+          // 1. Delete orders (and their items/discount codes will cascade)
+          const deletedTestOrders = await prisma.order.deleteMany({
+            where: {
+              userId: {
+                in: testUserIds
               }
-            }))
+            }
+          })
+          
+          // 2. Now delete the users (reviews, wishlist, addresses will cascade)
+          const deletedTestUsers = await prisma.user.deleteMany({
+            where: {
+              id: {
+                in: testUserIds
+              }
+            }
+          })
+          
+          summary.deleted = {
+            testUsers: deletedTestUsers.count,
+            testOrders: deletedTestOrders.count,
+            deletedEmails: testUsers.map(u => u.email)
           }
-        })
-        
-        summary.deleted = {
-          testUsers: deletedTestUsers.count,
-          deletedEmails: testUsers.map(u => u.email)
+        } else {
+          summary.deleted = {
+            testUsers: 0,
+            message: 'No test users found'
+          }
         }
         break
 
       case 'ALL_TRANSACTIONAL_DATA':
-        console.log('🗑️  Deleting all transactional data (orders, reviews, analytics)...')
+        console.log('🗑️  Deleting all transactional data (orders, reviews, analytics, discount codes)...')
         
-        // Delete all transactional data but keep products and inventory
+        // Delete all transactional data but keep products, inventory, and users
         const [
-          delOrderItems,
           delOrders,
           delReviews,
           delAnalytics,
           delVisitorAnalytics,
           delProductViews,
-          delWishlist
+          delWishlist,
+          delDiscountCodes
         ] = await Promise.all([
-          prisma.orderItem.deleteMany({}),
-          prisma.order.deleteMany({}),
+          prisma.order.deleteMany({}), // OrderItems and OrderDiscountCodes cascade
           prisma.productReview.deleteMany({}),
           prisma.salesAnalytics.deleteMany({}),
           prisma.visitorAnalytics.deleteMany({}),
           prisma.productView.deleteMany({}),
-          prisma.wishlistItem.deleteMany({})
+          prisma.wishlistItem.deleteMany({}),
+          prisma.discountCode.deleteMany({}) // OrderDiscountCodes will be deleted first by order deletion
         ])
         
         summary.deleted = {
-          orderItems: delOrderItems.count,
           orders: delOrders.count,
           reviews: delReviews.count,
           salesAnalytics: delAnalytics.count,
           visitorAnalytics: delVisitorAnalytics.count,
           productViews: delProductViews.count,
-          wishlistItems: delWishlist.count
+          wishlistItems: delWishlist.count,
+          discountCodes: delDiscountCodes.count
         }
         break
 
       case 'NUCLEAR_OPTION':
         console.log('☢️  NUCLEAR OPTION: Deleting ALL data except products and admin users...')
         
-        // Keep only products, inventory, and admin users
+        // Keep only products, inventory, product images/variants, and admin users
+        // Delete in proper order to handle foreign key constraints
+        
+        // 1. Delete all orders first (cascades to order items and order discount codes)
+        const nuclearOrders = await prisma.order.deleteMany({})
+        
+        // 2. Delete all other transactional data
         const [
-          nuclearOrderItems,
-          nuclearOrders,
           nuclearReviews,
           nuclearAnalytics,
           nuclearVisitorAnalytics,
           nuclearProductViews,
-          nuclearWishlist
+          nuclearWishlist,
+          nuclearDiscountCodes
         ] = await Promise.all([
-          prisma.orderItem.deleteMany({}),
-          prisma.order.deleteMany({}),
           prisma.productReview.deleteMany({}),
           prisma.salesAnalytics.deleteMany({}),
           prisma.visitorAnalytics.deleteMany({}),
           prisma.productView.deleteMany({}),
-          prisma.wishlistItem.deleteMany({})
+          prisma.wishlistItem.deleteMany({}),
+          prisma.discountCode.deleteMany({})
         ])
 
-        // Delete all non-admin users
+        // 3. Delete all non-admin users (addresses will cascade)
         const nuclearUsers = await prisma.user.deleteMany({
           where: {
             role: 'CUSTOMER'
@@ -312,13 +371,13 @@ export async function POST(request: NextRequest) {
         })
         
         summary.deleted = {
-          orderItems: nuclearOrderItems.count,
           orders: nuclearOrders.count,
           reviews: nuclearReviews.count,
           salesAnalytics: nuclearAnalytics.count,
           visitorAnalytics: nuclearVisitorAnalytics.count,
           productViews: nuclearProductViews.count,
           wishlistItems: nuclearWishlist.count,
+          discountCodes: nuclearDiscountCodes.count,
           customerUsers: nuclearUsers.count
         }
         break
@@ -346,13 +405,15 @@ export async function POST(request: NextRequest) {
       remainingProducts,
       remainingInventory,
       remainingOrders,
-      remainingReviews
+      remainingReviews,
+      remainingDiscountCodes
     ] = await Promise.all([
       prisma.user.count(),
       prisma.product.count(),
       prisma.inventoryItem.count(),
       prisma.order.count(),
-      prisma.productReview.count()
+      prisma.productReview.count(),
+      prisma.discountCode.count()
     ])
 
     summary.remaining = {
@@ -360,7 +421,8 @@ export async function POST(request: NextRequest) {
       products: remainingProducts,
       inventory: remainingInventory,
       orders: remainingOrders,
-      reviews: remainingReviews
+      reviews: remainingReviews,
+      discountCodes: remainingDiscountCodes
     }
 
     console.log('🎉 Cleanup completed successfully!')
