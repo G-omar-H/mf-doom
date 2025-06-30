@@ -64,7 +64,20 @@ export const Header: React.FC = () => {
   ]
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/' })
+    console.log('Logout initiated...')
+    setIsUserMenuOpen(false)
+    
+    try {
+      // Use window.location for more reliable logout
+      await signOut({ 
+        callbackUrl: '/',
+        redirect: true // Let NextAuth handle the redirect
+      })
+    } catch (error) {
+      console.error('Logout error:', error)
+      // Force logout if NextAuth fails
+      window.location.href = '/'
+    }
   }
 
   return (

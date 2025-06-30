@@ -43,11 +43,11 @@ export const authOptions: NextAuthOptions = {
   // Security configuration
   secret: process.env.NEXTAUTH_SECRET,
   
-  // Session configuration
+  // Session configuration - FIXED for better sync
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 4 * 60 * 60, // 4 hours - more frequent updates for better sync
+    updateAge: 60 * 60, // 1 hour - more frequent updates for better sync (was 4 hours)
   },
 
   // JWT configuration
@@ -56,7 +56,7 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
 
-  // Cookie configuration for enhanced security
+  // Cookie configuration for enhanced security and better sync
   cookies: {
     sessionToken: {
       name: `next-auth.session-token`,
@@ -65,8 +65,7 @@ export const authOptions: NextAuthOptions = {
         sameSite: 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production',
-        // Remove domain restriction that was causing cookie issues
-        // domain: process.env.NODE_ENV === 'production' ? process.env.NEXTAUTH_URL_DOMAIN : undefined,
+        maxAge: 30 * 24 * 60 * 60, // Explicit maxAge for session token
       }
     },
     callbackUrl: {
@@ -75,6 +74,7 @@ export const authOptions: NextAuthOptions = {
         sameSite: 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production',
+        maxAge: 15 * 60, // 15 minutes for callback URL
       }
     },
     csrfToken: {
@@ -84,6 +84,7 @@ export const authOptions: NextAuthOptions = {
         sameSite: 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production',
+        maxAge: 15 * 60, // 15 minutes for CSRF token
       }
     },
   },
@@ -248,15 +249,54 @@ export const authOptions: NextAuthOptions = {
       return session
     },
 
-    async redirect({ url, baseUrl }) {
+    async redirect({ url, baseUrl }): Promise<string> {
+      console.log('Redirect callback:', { url, baseUrl })
+      
+      // Handle logout redirect
+      if (url.includes('/auth/logout') || url.includes('signout')) {
+        console.log('Logout redirect detected, sending to home')
+        return baseUrl
+      }
+      
+      // Handle login redirect
+      if (url.includes('/auth/login') || url.includes('signin')) {
+        console.log('Login redirect detected, checking for callback URL')
+        // Check if there's a callbackUrl parameter
+        const urlObj = new URL(url, baseUrl)
+        const callbackUrl = urlObj.searchParams.get('callbackUrl')
+        
+        if (callbackUrl) {
+          // Validate callback URL is safe
+          if (callbackUrl.startsWith('/') && !callbackUrl.startsWith('//')) {
+            console.log('Using callback URL:', callbackUrl)
+            return `${baseUrl}${callbackUrl}`
+          }
+        }
+        
+        // Default redirect after login
+        console.log('No valid callback URL, redirecting to dashboard')
+        return `${baseUrl}/admin/dashboard`
+      }
+      
       // Allows relative callback URLs
-      if (url.startsWith('/')) return `${baseUrl}${url}`
+      if (url.startsWith('/')) {
+        console.log('Relative URL redirect:', url)
+        return `${baseUrl}${url}`
+      }
+      
       // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url
+      if (url.startsWith(baseUrl)) {
+        console.log('Same origin redirect:', url)
+        return url
+      }
+      
+      // Default to base URL for safety
+      console.log('Default redirect to baseUrl')
       return baseUrl
     },
 
-    async signIn({ user, account, profile, email, credentials }) {
+    async signIn({ user, account, profile, email, credentials }): Promise<boolean> {
+      console.log('SignIn callback triggered for user:', user.email)
       // Always allow sign in for credentials provider
       return true
     }
