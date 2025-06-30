@@ -193,23 +193,32 @@ export const authOptions: NextAuthOptions = {
         trigger,
         tokenId: token?.id,
         userId: user?.id,
+        tokenEmail: token?.email,
+        tokenRole: token?.role,
         timestamp: new Date().toISOString()
       })
 
       // Initial sign in - establish token
       if (user && account) {
-        console.log('👤 Establishing JWT token for new login:', user.email)
+        console.log('👤 Establishing JWT token for new login:', {
+          userEmail: user.email,
+          userId: user.id,
+          userRole: user.role,
+          provider: account.provider
+        })
+        
         token.id = user.id
         token.role = user.role
         token.avatar = user.avatar
         token.phone = user.phone
         
-        console.log('✅ JWT token established:', {
+        console.log('✅ JWT token established successfully:', {
           id: token.id,
           email: token.email,
           role: token.role,
-          provider: account.provider,
-          tokenSub: token.sub
+          sub: token.sub,
+          iat: token.iat,
+          exp: token.exp
         })
       }
 
@@ -263,6 +272,15 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
+      // Validate token integrity before returning
+      if (!token.id || !token.role) {
+        console.error('❌ Invalid token detected:', {
+          hasId: !!token.id,
+          hasRole: !!token.role,
+          tokenData: { id: token.id, role: token.role, email: token.email }
+        })
+      }
+
       console.log('🎯 JWT token finalized:', {
         id: token.id,
         email: token.email,
@@ -271,7 +289,8 @@ export const authOptions: NextAuthOptions = {
         hasPhone: !!token.phone,
         sub: token.sub,
         iat: token.iat,
-        exp: token.exp
+        exp: token.exp,
+        isValid: !!(token.id && token.role)
       })
 
       return token
@@ -284,42 +303,56 @@ export const authOptions: NextAuthOptions = {
         hasUser: !!(session?.user),
         tokenId: token?.id,
         tokenEmail: token?.email,
-        tokenRole: token?.role
+        tokenRole: token?.role,
+        sessionExpires: session?.expires,
+        timestamp: new Date().toISOString()
       })
 
-      if (token && session?.user) {
-        // Map token data to session with explicit type checking
+      // Check for missing or invalid token
+      if (!token) {
+        console.error('❌ Session callback: No token provided')
+        return session
+      }
+
+      if (!token.id || !token.role) {
+        console.error('❌ Session callback: Invalid token data:', {
+          tokenId: token.id,
+          tokenRole: token.role,
+          tokenEmail: token.email,
+          tokenSub: token.sub
+        })
+        return session
+      }
+
+      if (!session) {
+        console.error('❌ Session callback: No session provided')
+        return session
+      }
+
+      if (!session.user) {
+        console.error('❌ Session callback: No session.user provided')
+        return session
+      }
+
+      // Map token data to session with explicit type checking
+      try {
         session.user.id = token.id
         session.user.role = token.role
         session.user.avatar = token.avatar
         session.user.phone = token.phone
         
         console.log('✅ Session synchronized successfully:', {
-          id: session.user.id,
-          email: session.user.email,
-          role: session.user.role,
+          userId: session.user.id,
+          userEmail: session.user.email,
+          userRole: session.user.role,
           hasAvatar: !!session.user.avatar,
           hasPhone: !!session.user.phone,
+          sessionExpires: session.expires,
           syncTime: new Date().toISOString()
         })
-      } else {
-        console.error('❌ Session synchronization failed:', {
-          reason: !token ? 'No token' : !session ? 'No session' : !session.user ? 'No session.user' : 'Unknown',
-          hasToken: !!token,
-          hasSession: !!session,
-          hasUser: !!(session?.user),
-          tokenData: token ? { 
-            id: token.id, 
-            email: token.email, 
-            role: token.role,
-            sub: token.sub 
-          } : null,
-          sessionData: session ? { 
-            userExists: !!session.user,
-            expires: session.expires 
-          } : null,
-          timestamp: new Date().toISOString()
-        })
+      } catch (error) {
+        console.error('❌ Error during session synchronization:', error)
+        return session
       }
       
       return session

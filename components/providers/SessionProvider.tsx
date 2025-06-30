@@ -14,6 +14,15 @@ function SessionDebugger() {
   
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
+      // Check for NextAuth cookies
+      const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [key, value] = cookie.trim().split('=')
+        if (key && key.includes('next-auth')) {
+          acc[key] = value ? value.substring(0, 20) + '...' : 'empty'
+        }
+        return acc
+      }, {} as Record<string, string>)
+
       console.log('🎫 Session State Change:', {
         status,
         hasSession: !!session,
@@ -21,8 +30,14 @@ function SessionDebugger() {
         userEmail: session?.user?.email,
         userRole: session?.user?.role,
         timestamp: new Date().toISOString(),
-        sessionExpires: session?.expires
+        sessionExpires: session?.expires,
+        cookies: Object.keys(cookies).length > 0 ? cookies : 'No NextAuth cookies found'
       })
+
+      // Alert on unexpected unauthenticated status
+      if (status === 'unauthenticated' && Object.keys(cookies).length === 0) {
+        console.warn('⚠️ Session unauthenticated and no cookies found - possible session loss')
+      }
     }
   }, [session, status])
 

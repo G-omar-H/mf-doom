@@ -79,11 +79,13 @@ interface AdminLayoutProps {
 }
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
-  const { data: session, status } = useSession()
+  const { data: session, status, update } = useSession()
   const router = useRouter()
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sessionChecked, setSessionChecked] = useState(false)
+  const [retryCount, setRetryCount] = useState(0)
+  const [isRetrying, setIsRetrying] = useState(false)
 
   useEffect(() => {
     console.log('🔍 Admin Layout - Session Check:', {
@@ -91,6 +93,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       hasSession: !!session,
       userRole: session?.user?.role,
       pathname,
+      retryCount,
+      isRetrying,
       timestamp: new Date().toISOString()
     })
 
@@ -102,6 +106,47 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
     // Mark that we've checked the session
     setSessionChecked(true)
+
+    // Handle unauthenticated status with retry logic
+    if (status === 'unauthenticated') {
+      // Check if we just came from a login (callback URL suggests recent login attempt)
+      const hasCallbackUrl = pathname === '/admin/dashboard'
+      
+      // Retry up to 3 times with delays for session establishment
+      if (hasCallbackUrl && retryCount < 3) {
+        console.log(`🔄 Session unauthenticated after login, retrying... (${retryCount + 1}/3)`)
+        setIsRetrying(true)
+        setRetryCount(prev => prev + 1)
+        
+        // Wait and retry session check with forced update
+        setTimeout(async () => {
+          console.log('🔄 Retrying session check with forced update...')
+          try {
+            await update() // Force session refresh
+            console.log('✅ Session update completed')
+          } catch (error) {
+            console.error('❌ Session update failed:', error)
+          }
+          setIsRetrying(false)
+        }, 1000 * (retryCount + 1)) // Increasing delay: 1s, 2s, 3s
+        
+        return
+      }
+      
+      // If retries exhausted or no callback URL, redirect to login
+      console.warn('❌ Session unauthenticated after retries, redirecting to login')
+      router.push('/auth/login?callbackUrl=' + encodeURIComponent(pathname))
+      return
+    }
+
+    // Reset retry count on successful session
+    if (status === 'authenticated') {
+      if (retryCount > 0) {
+        console.log(`✅ Session established after ${retryCount} retries`)
+      }
+      setRetryCount(0)
+      setIsRetrying(false)
+    }
 
     // Enhanced session validation with more detailed logging
     if (!session) {
@@ -127,24 +172,29 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       userEmail: session.user.email,
       userRole: session.user.role
     })
-  }, [session, status, router, pathname])
+  }, [session, status, router, pathname, retryCount, update])
 
   const handleSignOut = async () => {
     console.log('🚪 Admin logout initiated')
     await signOut({ callbackUrl: '/' })
   }
 
-  // Show loading state while session is being determined
-  if (status === 'loading' || !sessionChecked) {
+  // Show loading state while session is being determined or retrying
+  if (status === 'loading' || !sessionChecked || isRetrying) {
     return (
       <div className="min-h-screen bg-mf-light-gray flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner size={64} />
           <p className="mt-4 text-mf-gray font-medium">
-            {status === 'loading' ? 'Loading admin panel...' : 'Validating session...'}
+            {status === 'loading' 
+              ? 'Loading admin panel...' 
+              : isRetrying 
+                ? `Establishing session... (${retryCount}/3)` 
+                : 'Validating session...'}
           </p>
           <p className="mt-2 text-sm text-mf-gray">
             Session status: {status}
+            {isRetrying && ` • Retry ${retryCount}/3`}
           </p>
         </div>
       </div>
