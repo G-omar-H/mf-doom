@@ -60,6 +60,47 @@ export function removeVerificationToken(token: string) {
   verificationTokens.delete(token)
 }
 
+// Password Reset Token Management
+const passwordResetTokens = new Map<string, {
+  email: string
+  userId: string
+  expires: Date
+}>()
+
+// Store password reset token  
+export function storePasswordResetToken(token: string, data: {
+  email: string
+  userId: string
+}) {
+  passwordResetTokens.set(token, {
+    ...data,
+    expires: new Date(Date.now() + 1 * 60 * 60 * 1000) // 1 hour expiry
+  })
+}
+
+// Validate password reset token
+export function validatePasswordResetToken(token: string) {
+  const data = passwordResetTokens.get(token)
+  if (!data) return null
+  
+  if (data.expires < new Date()) {
+    passwordResetTokens.delete(token)
+    return null
+  }
+  
+  return data
+}
+
+// Remove password reset token
+export function removePasswordResetToken(token: string) {
+  passwordResetTokens.delete(token)
+}
+
+// Generate password reset token
+export function generatePasswordResetToken(): string {
+  return crypto.randomBytes(32).toString('hex')
+}
+
 // THISMFDOOM branded email template
 function createEmailTemplate(type: 'verification' | 'email_change', verificationUrl: string, userName: string) {
   const isEmailChange = type === 'email_change'
@@ -292,5 +333,219 @@ export async function sendTestEmail() {
   } catch (error) {
     console.error('Email service error:', error)
     return false
+  }
+}
+
+// Password reset email template
+function createPasswordResetEmailTemplate(resetUrl: string, userName: string) {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Your Password | THISMFDOOM</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #ffffff;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: 900;
+            color: #8CD4E6;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        .subtitle {
+            color: #cccccc;
+            font-size: 14px;
+            margin: 0;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            color: #333333;
+        }
+        .icon {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0 0 20px 0;
+            text-align: center;
+        }
+        .message {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #666666;
+            margin-bottom: 30px;
+        }
+        .cta-button {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto 30px auto;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        .security-note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .security-title {
+            font-weight: 600;
+            color: #856404;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+        .security-text {
+            font-size: 14px;
+            color: #856404;
+            margin: 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #999999;
+            font-size: 14px;
+        }
+        .footer-link {
+            color: #8CD4E6;
+            text-decoration: none;
+        }
+        .quote {
+            font-style: italic;
+            color: #8CD4E6;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">THISMFDOOM</div>
+            <p class="subtitle">VILLAIN COLLECTIVE</p>
+        </div>
+        
+        <div class="card">
+            <div class="icon">
+                <div class="icon-circle">
+                    🔐
+                </div>
+            </div>
+            
+            <h1 class="title">Reset Your Password</h1>
+            
+            <div class="message">
+                <p>Hey ${userName},</p>
+                <p>We received a request to reset your password for your THISMFDOOM account. No worries - even villains forget their passwords sometimes!</p>
+                <p>Click the button below to create a new password:</p>
+            </div>
+            
+            <a href="${resetUrl}" class="cta-button">
+                Reset Password
+            </a>
+            
+            <div class="security-note">
+                <div class="security-title">⚠️ Security Notice</div>
+                <p class="security-text">
+                    This password reset link will expire in 1 hour for your security. If you didn't request this password reset, 
+                    please ignore this email or contact our support team if you have concerns.
+                </p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>
+                Need help? Contact us at 
+                <a href="mailto:support@thismfdoom.shop" class="footer-link">support@thismfdoom.shop</a>
+            </p>
+            <p>
+                Visit us at 
+                <a href="https://thismfdoom.shop" class="footer-link">thismfdoom.shop</a>
+            </p>
+            <p class="quote">"Just remember ALL CAPS when you spell the man name"</p>
+        </div>
+    </div>
+</body>
+</html>
+  `
+}
+
+// Send password reset email
+export async function sendPasswordResetEmail(
+  email: string, 
+  token: string, 
+  userName: string
+) {
+  try {
+    const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${token}`
+    
+    const mailOptions = {
+      from: {
+        name: 'THISMFDOOM',
+        address: process.env.SMTP_FROM || 'noreply@thismfdoom.shop'
+      },
+      to: email,
+      subject: 'Reset Your Password - THISMFDOOM',
+      html: createPasswordResetEmailTemplate(resetUrl, userName)
+    }
+
+    // Send email
+    const info = await transporter.sendMail(mailOptions)
+    console.log('Password reset email sent:', info.messageId)
+    
+    return {
+      success: true,
+      messageId: info.messageId
+    }
+  } catch (error) {
+    console.error('Failed to send password reset email:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }
   }
 } 

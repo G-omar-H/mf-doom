@@ -29,6 +29,10 @@ model User {
   emailVerificationExpires DateTime?
   pendingEmail            String?   // For email change verification
   
+  // Password reset fields
+  passwordResetToken       String?   @unique @map("password_reset_token")
+  passwordResetExpires     DateTime? @map("password_reset_expires")
+  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
