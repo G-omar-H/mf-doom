@@ -114,6 +114,7 @@ async function getAnalyticsData(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const days = parseInt(searchParams.get('days') || '7')
   const limit = parseInt(searchParams.get('limit') || '100')
+  const excludeSessionId = searchParams.get('excludeSessionId') // New parameter to exclude current admin session
 
   if (!prisma) {
     return NextResponse.json({ error: 'Database not available' }, { status: 503 })
@@ -163,7 +164,7 @@ async function getAnalyticsData(request: NextRequest) {
 
   const uniqueVisitors = uniqueVisitorsRaw.length
 
-  // Step 3: Get page data and real-time visitors
+  // Step 3: Get page data and real-time visitors (EXCLUDE ADMIN SESSION)
   console.log('📄 Fetching page analytics...')
   const [topPages, realtimeVisitorsRaw] = await Promise.all([
     prisma.visitorAnalytics.groupBy({
@@ -175,13 +176,25 @@ async function getAnalyticsData(request: NextRequest) {
     }).catch(() => []),
 
     prisma.visitorAnalytics.findMany({
-      where: { timestamp: { gte: lastFiveMinutes } },
+      where: { 
+        timestamp: { gte: lastFiveMinutes },
+        // Exclude current admin session if provided
+        ...(excludeSessionId && {
+          sessionId: { not: excludeSessionId }
+        })
+      },
       select: { sessionId: true },
       distinct: ['sessionId']
     }).catch(() => [])
   ])
 
   const realTimeVisitors = realtimeVisitorsRaw.length
+  
+  // Log for debugging
+  if (excludeSessionId) {
+    console.log(`🔒 Excluded admin session ${excludeSessionId} from active visitor count`)
+    console.log(`👥 Active visitors (excluding admin): ${realTimeVisitors}`)
+  }
 
   // Step 4: Get session data for duration calculation (optimized)
   console.log('⏱️ Calculating session metrics...')

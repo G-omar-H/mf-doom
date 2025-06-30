@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Globe2,
@@ -149,14 +150,42 @@ export default function VisitorInsightsWidget({
   period = '7',
   refreshInterval = 30000 // 30 seconds
 }: VisitorInsightsWidgetProps) {
+  const { data: session } = useSession()
   const [visitorData, setVisitorData] = useState<VisitorData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
 
+  // Generate a consistent session ID for this browser session
+  const getSessionId = () => {
+    if (typeof window === 'undefined') return null
+    
+    let sessionId = sessionStorage.getItem('admin-session-id')
+    if (!sessionId) {
+      // Generate a unique session ID
+      sessionId = `admin-${Date.now()}-${Math.random().toString(36).substring(2)}`
+      sessionStorage.setItem('admin-session-id', sessionId)
+    }
+    return sessionId
+  }
+
   const fetchVisitorAnalytics = async () => {
     try {
-      const response = await fetch(`/api/analytics/visitor?days=${period}&limit=100`)
+      // Build URL with parameters
+      const params = new URLSearchParams({
+        days: period,
+        limit: '100'
+      })
+
+      // If current user is admin, exclude their session from count
+      if (session?.user?.role === 'ADMIN') {
+        const currentSessionId = getSessionId()
+        if (currentSessionId) {
+          params.append('excludeSessionId', currentSessionId)
+        }
+      }
+
+      const response = await fetch(`/api/analytics/visitor?${params.toString()}`)
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`)
       }
@@ -178,7 +207,7 @@ export default function VisitorInsightsWidget({
     // Set up auto-refresh
     const interval = setInterval(fetchVisitorAnalytics, refreshInterval)
     return () => clearInterval(interval)
-  }, [period, refreshInterval])
+  }, [period, refreshInterval, session?.user?.role])
 
   if (loading) {
     return (
@@ -255,20 +284,20 @@ export default function VisitorInsightsWidget({
       </div>
 
       {/* Key Metrics */}
-      <div className="p-6">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="p-4 md:p-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-br from-blue-600/20 to-blue-800/20 rounded-xl p-4 border border-blue-500/30"
+            className="bg-gradient-to-br from-blue-600/20 to-blue-800/20 rounded-lg md:rounded-xl p-3 md:p-4 border border-blue-500/30"
           >
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                <Eye className="w-6 h-6 text-blue-400" />
+            <div className="flex items-center space-x-2 md:space-x-3">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                <Eye className="w-5 h-5 md:w-6 md:h-6 text-blue-400" />
               </div>
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="text-blue-300 text-xs font-medium uppercase tracking-wide">Page Views</p>
-                <p className="text-white text-xl font-bold">{visitorData.totalPageViews.toLocaleString()}</p>
+                <p className="text-white text-lg md:text-xl font-bold">{visitorData.totalPageViews.toLocaleString()}</p>
                 <p className="text-blue-400 text-xs">Last {period} days</p>
               </div>
             </div>
@@ -278,15 +307,15 @@ export default function VisitorInsightsWidget({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-gradient-to-br from-purple-600/20 to-purple-800/20 rounded-xl p-4 border border-purple-500/30"
+            className="bg-gradient-to-br from-purple-600/20 to-purple-800/20 rounded-lg md:rounded-xl p-3 md:p-4 border border-purple-500/30"
           >
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-purple-400" />
+            <div className="flex items-center space-x-2 md:space-x-3">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                <Users className="w-5 h-5 md:w-6 md:h-6 text-purple-400" />
               </div>
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="text-purple-300 text-xs font-medium uppercase tracking-wide">Unique Visitors</p>
-                <p className="text-white text-xl font-bold">{visitorData.uniqueVisitors.toLocaleString()}</p>
+                <p className="text-white text-lg md:text-xl font-bold">{visitorData.uniqueVisitors.toLocaleString()}</p>
                 <p className="text-purple-400 text-xs">Individual sessions</p>
               </div>
             </div>
@@ -296,18 +325,22 @@ export default function VisitorInsightsWidget({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-gradient-to-br from-green-600/20 to-green-800/20 rounded-xl p-4 border border-green-500/30"
+            className="bg-gradient-to-br from-green-600/20 to-green-800/20 rounded-lg md:rounded-xl p-3 md:p-4 border border-green-500/30"
           >
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
-                <User className="w-6 h-6 text-green-400" />
+            <div className="flex items-center space-x-2 md:space-x-3">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
+                <User className="w-5 h-5 md:w-6 md:h-6 text-green-400" />
               </div>
-              <div>
-                <p className="text-green-300 text-xs font-medium uppercase tracking-wide">Active (5min)</p>
-                <p className="text-white text-xl font-bold">{visitorData.realTimeVisitors || 0}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-green-300 text-xs font-medium uppercase tracking-wide">
+                  {session?.user?.role === 'ADMIN' ? 'Visitors (5min)' : 'Active (5min)'}
+                </p>
+                <p className="text-white text-lg md:text-xl font-bold">{visitorData.realTimeVisitors || 0}</p>
                 <div className="flex items-center space-x-1">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <p className="text-green-400 text-xs">Last 5 minutes</p>
+                  <p className="text-green-400 text-xs">
+                    {session?.user?.role === 'ADMIN' ? 'Excludes admin' : 'Last 5 minutes'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -317,15 +350,15 @@ export default function VisitorInsightsWidget({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-gradient-to-br from-yellow-600/20 to-yellow-800/20 rounded-xl p-4 border border-yellow-500/30"
+            className="bg-gradient-to-br from-yellow-600/20 to-yellow-800/20 rounded-lg md:rounded-xl p-3 md:p-4 border border-yellow-500/30"
           >
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
-                <Clock className="w-6 h-6 text-yellow-400" />
+            <div className="flex items-center space-x-2 md:space-x-3">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                <Clock className="w-5 h-5 md:w-6 md:h-6 text-yellow-400" />
               </div>
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="text-yellow-300 text-xs font-medium uppercase tracking-wide">Avg Session</p>
-                <p className="text-white text-xl font-bold">{Math.round(visitorData.avgSessionDuration || 0)}s</p>
+                <p className="text-white text-lg md:text-xl font-bold">{Math.round(visitorData.avgSessionDuration || 0)}s</p>
                 <p className="text-yellow-400 text-xs">Time on site</p>
               </div>
             </div>
@@ -333,26 +366,26 @@ export default function VisitorInsightsWidget({
         </div>
 
         {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
           {/* Device Types Chart */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 border border-gray-600/30"
+            className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-lg md:rounded-xl p-4 md:p-6 border border-gray-600/30"
           >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-white">Device Distribution</h3>
-              <Monitor className="w-5 h-5 text-gray-400" />
+            <div className="flex items-center justify-between mb-4 md:mb-6">
+              <h3 className="text-base md:text-lg font-bold text-white">Device Distribution</h3>
+              <Monitor className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
             </div>
-            <div className="h-64">
+            <div className="h-48 md:h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={deviceChartData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={80}
+                    outerRadius={60}
                     dataKey="visits"
                     label={({ device, percent }: any) => `${device} ${(percent * 100).toFixed(0)}%`}
                     labelLine={false}
@@ -372,7 +405,7 @@ export default function VisitorInsightsWidget({
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5 }}
-            className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 border border-gray-600/30"
+            className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-lg md:rounded-xl p-4 md:p-6 border border-gray-600/30"
           >
             <WorldMap countryData={visitorData.topCountries} visitorLocations={visitorData.visitorLocations} />
           </motion.div>
@@ -384,23 +417,23 @@ export default function VisitorInsightsWidget({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 border border-gray-600/30 mb-8"
+            className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-lg md:rounded-xl p-4 md:p-6 border border-gray-600/30 mb-6 md:mb-8"
           >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-white">24-Hour Traffic Pattern</h3>
-              <TrendingUp className="w-5 h-5 text-gray-400" />
+            <div className="flex items-center justify-between mb-4 md:mb-6">
+              <h3 className="text-base md:text-lg font-bold text-white">24-Hour Traffic Pattern</h3>
+              <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
             </div>
-            <div className="h-64">
+            <div className="h-48 md:h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={visitorData.hourlyTraffic}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                   <XAxis 
                     dataKey="hour" 
                     stroke="#9CA3AF" 
-                    fontSize={12}
+                    fontSize={10}
                     tickFormatter={(hour) => `${hour}:00`}
                   />
-                  <YAxis stroke="#9CA3AF" fontSize={12} />
+                  <YAxis stroke="#9CA3AF" fontSize={10} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
                   <Area
@@ -427,28 +460,28 @@ export default function VisitorInsightsWidget({
         )}
 
         {/* Top Pages & Countries Tables */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           {/* Top Pages */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
-            className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 border border-gray-600/30"
+            className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-lg md:rounded-xl p-4 md:p-6 border border-gray-600/30"
           >
-            <h3 className="text-lg font-bold text-white mb-4">Popular Pages</h3>
-            <div className="space-y-3">
+            <h3 className="text-base md:text-lg font-bold text-white mb-3 md:mb-4">Popular Pages</h3>
+            <div className="space-y-2 md:space-y-3">
               {visitorData.topPages.slice(0, 5).map((page, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-700/30 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center text-blue-400 text-sm font-bold">
+                <div key={index} className="flex items-center justify-between p-2 md:p-3 bg-gray-700/30 rounded-lg">
+                  <div className="flex items-center space-x-2 md:space-x-3 min-w-0 flex-1">
+                    <div className="w-6 h-6 md:w-8 md:h-8 bg-blue-500/20 rounded-lg flex items-center justify-center text-blue-400 text-xs md:text-sm font-bold">
                       {index + 1}
                     </div>
-                    <span className="text-white text-sm font-medium">
+                    <span className="text-white text-xs md:text-sm font-medium truncate">
                       {page.page === '/' ? 'Homepage' : page.page}
                     </span>
                   </div>
-                  <span className="text-gray-300 text-sm font-medium">
-                    {page.visits.toLocaleString()} views
+                  <span className="text-gray-300 text-xs md:text-sm font-medium ml-2">
+                    {page.visits.toLocaleString()}
                   </span>
                 </div>
               ))}
@@ -460,18 +493,18 @@ export default function VisitorInsightsWidget({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 border border-gray-600/30"
+            className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-lg md:rounded-xl p-4 md:p-6 border border-gray-600/30"
           >
-            <h3 className="text-lg font-bold text-white mb-4">Global Visitors</h3>
-            <div className="space-y-3">
+            <h3 className="text-base md:text-lg font-bold text-white mb-3 md:mb-4">Global Visitors</h3>
+            <div className="space-y-2 md:space-y-3">
               {visitorData.topCountries.slice(0, 5).map((country, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-700/30 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="text-2xl">{getCountryFlag(country.country)}</div>
-                    <span className="text-white text-sm font-medium">{country.country}</span>
+                <div key={index} className="flex items-center justify-between p-2 md:p-3 bg-gray-700/30 rounded-lg">
+                  <div className="flex items-center space-x-2 md:space-x-3 min-w-0 flex-1">
+                    <div className="text-lg md:text-2xl">{getCountryFlag(country.country)}</div>
+                    <span className="text-white text-xs md:text-sm font-medium truncate">{country.country}</span>
                   </div>
-                  <span className="text-gray-300 text-sm font-medium">
-                    {country.visits.toLocaleString()} visits
+                  <span className="text-gray-300 text-xs md:text-sm font-medium ml-2">
+                    {country.visits.toLocaleString()}
                   </span>
                 </div>
               ))}

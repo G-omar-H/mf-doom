@@ -12,6 +12,13 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Custom xs breakpoint for extra small screens */
+  @media (min-width: 475px) {
+    .xs\:inline {
+      display: inline;
+    }
+  }
 }
 
 @layer components {

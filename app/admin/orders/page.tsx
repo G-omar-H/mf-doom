@@ -192,70 +192,74 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Filters & Search */}
-      <div className="bg-white rounded-lg md:rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4 mb-4">
-          <div className="relative md:col-span-1">
+      <div className="bg-white rounded-lg md:rounded-xl shadow-sm p-3 md:p-6 border border-gray-100 mb-4 md:mb-6">
+        <div className="grid grid-cols-1 gap-3 mb-4">
+          {/* Search - Full width on mobile */}
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mf-gray w-5 h-5" />
             <input
               type="text"
               placeholder="Search orders..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-2 md:py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
+              className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
             />
           </div>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 md:px-4 py-2 md:py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
-          >
-            <option value="ALL">All Status</option>
-            <option value="PENDING">Pending</option>
-            <option value="CONFIRMED">Confirmed</option>
-            <option value="PROCESSING">Processing</option>
-            <option value="SHIPPED">Shipped</option>
-            <option value="DELIVERED">Delivered</option>
-            <option value="CANCELLED">Cancelled</option>
-          </select>
+          {/* Filters - 2 columns on mobile, 4 on larger screens */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm bg-white"
+            >
+              <option value="ALL">All Status</option>
+              <option value="PENDING">Pending</option>
+              <option value="CONFIRMED">Confirmed</option>
+              <option value="PROCESSING">Processing</option>
+              <option value="SHIPPED">Shipped</option>
+              <option value="DELIVERED">Delivered</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
 
-          <select
-            value={paymentFilter}
-            onChange={(e) => setPaymentFilter(e.target.value)}
-            className="px-3 md:px-4 py-2 md:py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
-          >
-            <option value="ALL">All Payment</option>
-            <option value="PENDING">Payment Pending</option>
-            <option value="PAID">Paid</option>
-            <option value="FAILED">Failed</option>
-            <option value="REFUNDED">Refunded</option>
-          </select>
+            <select
+              value={paymentFilter}
+              onChange={(e) => setPaymentFilter(e.target.value)}
+              className="px-3 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm bg-white"
+            >
+              <option value="ALL">All Payment</option>
+              <option value="PENDING">Payment Pending</option>
+              <option value="PAID">Paid</option>
+              <option value="FAILED">Failed</option>
+              <option value="REFUNDED">Refunded</option>
+            </select>
 
-          <div className="flex items-center justify-center bg-mf-light-gray rounded-lg px-3 md:px-4 py-2 md:py-3">
-            <span className="font-semibold text-sm md:text-base">{filteredOrders.length} Orders</span>
+            <div className="col-span-2 md:col-span-1 flex items-center justify-center bg-mf-light-gray rounded-lg px-3 py-3">
+              <span className="font-semibold text-sm">{filteredOrders.length} Orders</span>
+            </div>
           </div>
         </div>
 
         {/* Bulk Actions */}
         {selectedOrders.length > 0 && (
-          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 p-3 md:p-4 bg-mf-blue/10 rounded-lg">
+          <div className="flex flex-col space-y-3 p-3 bg-mf-blue/10 rounded-lg">
             <span className="text-sm font-medium">{selectedOrders.length} selected</span>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => handleBulkStatusUpdate('CONFIRMED')}
-                className="text-xs md:text-sm bg-blue-600 text-white px-2 md:px-3 py-1 rounded hover:bg-blue-700"
+                className="text-sm bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Confirm
               </button>
               <button
                 onClick={() => handleBulkStatusUpdate('PROCESSING')}
-                className="text-xs md:text-sm bg-purple-600 text-white px-2 md:px-3 py-1 rounded hover:bg-purple-700"
+                className="text-sm bg-purple-600 text-white px-3 py-2 rounded-lg hover:bg-purple-700 transition-colors"
               >
                 Process
               </button>
               <button
                 onClick={() => handleBulkStatusUpdate('SHIPPED')}
-                className="text-xs md:text-sm bg-indigo-600 text-white px-2 md:px-3 py-1 rounded hover:bg-indigo-700"
+                className="text-sm bg-indigo-600 text-white px-3 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
               >
                 Ship
               </button>
@@ -377,7 +381,7 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Orders - Mobile Card View */}
-      <div className="lg:hidden space-y-4">
+      <div className="lg:hidden space-y-3">
         {filteredOrders.map((order, index) => (
           <motion.div
             key={order.id}
@@ -388,8 +392,9 @@ export default function AdminOrdersPage() {
               optimisticLoading[order.id] ? 'opacity-75' : ''
             }`}
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-start space-x-3">
+            {/* Header Row */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center space-x-3">
                 <input
                   type="checkbox"
                   checked={selectedOrders.includes(order.id)}
@@ -400,27 +405,31 @@ export default function AdminOrdersPage() {
                       setSelectedOrders(prev => prev.filter(id => id !== order.id))
                     }
                   }}
-                  className="mt-1 w-4 h-4 text-mf-blue bg-gray-100 border-gray-300 rounded focus:ring-mf-blue focus:ring-2"
+                  className="w-4 h-4 text-mf-blue bg-gray-100 border-gray-300 rounded focus:ring-mf-blue focus:ring-2"
                 />
-                <div>
-                  <Link
-                    href={`/admin/orders/${order.id}`}
-                    className="font-semibold text-mf-blue hover:text-mf-dark-blue"
-                  >
-                    {order.orderNumber}
-                  </Link>
-                  <div className="text-sm text-mf-gray mt-1">{order.customerName}</div>
-                </div>
+                <Link
+                  href={`/admin/orders/${order.id}`}
+                  className="font-semibold text-mf-blue hover:text-mf-dark-blue text-sm"
+                >
+                  {order.orderNumber}
+                </Link>
               </div>
               <div className="text-right">
-                <div className="font-semibold">${order.totalAmount}</div>
+                <div className="font-bold text-gray-900">${order.totalAmount}</div>
                 <div className="text-xs text-mf-gray">
                   {new Date(order.createdAt).toLocaleDateString()}
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-between mb-3">
+            {/* Customer Info */}
+            <div className="mb-3">
+              <div className="text-sm font-medium text-gray-900">{order.customerName}</div>
+              <div className="text-xs text-mf-gray">{order.customerEmail}</div>
+            </div>
+
+            {/* Status Badges */}
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
                 <span className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                   {getStatusIcon(order.status)}
@@ -432,17 +441,18 @@ export default function AdminOrdersPage() {
               </div>
               <Link
                 href={`/admin/orders/${order.id}`}
-                className="text-mf-blue hover:text-mf-dark-blue"
+                className="p-2 text-mf-blue hover:text-mf-dark-blue hover:bg-mf-light-gray rounded-lg transition-colors"
               >
-                <Eye className="w-5 h-5" />
+                <Eye className="w-4 h-4" />
               </Link>
             </div>
 
+            {/* Status Update Dropdown */}
             <select
               value={order.status}
               onChange={(e) => updateOrderStatus(order.id, e.target.value)}
               disabled={optimisticLoading[order.id]}
-              className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:border-mf-blue focus:outline-none disabled:opacity-50"
+              className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:border-mf-blue focus:outline-none disabled:opacity-50 bg-white"
             >
               <option value="PENDING">Pending</option>
               <option value="CONFIRMED">Confirmed</option>

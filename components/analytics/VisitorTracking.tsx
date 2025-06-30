@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 interface VisitorData {
   sessionId: string
@@ -106,6 +107,7 @@ async function sendVisitorData(data: VisitorData) {
 
 export function VisitorTracking() {
   const pathname = usePathname()
+  const { data: session } = useSession()
   const [sessionId] = useState(() => {
     if (typeof window !== 'undefined') {
       let id = sessionStorage.getItem('doom_session_id')
@@ -124,6 +126,12 @@ export function VisitorTracking() {
 
     const trackVisitor = async () => {
       if (typeof window === 'undefined') return
+
+      // Skip tracking for admin users
+      if (session?.user?.role === 'ADMIN') {
+        console.log('🔒 Skipping visitor tracking for admin user')
+        return
+      }
 
       // Basic visitor data
       const visitorData: VisitorData = {
@@ -166,10 +174,15 @@ export function VisitorTracking() {
       mounted = false
       clearTimeout(timer)
     }
-  }, [pathname, sessionId])
+  }, [pathname, sessionId, session?.user?.role])
 
   // Track user engagement (time on page)
   useEffect(() => {
+    // Skip engagement tracking for admin users
+    if (session?.user?.role === 'ADMIN') {
+      return
+    }
+
     let startTime = Date.now()
     let isActive = true
 
@@ -219,7 +232,7 @@ export function VisitorTracking() {
       window.removeEventListener('beforeunload', handleBeforeUnload)
       trackEngagement()
     }
-  }, [pathname, sessionId])
+  }, [pathname, sessionId, session?.user?.role])
 
   // Don't render anything in development unless debug mode
   if (process.env.NODE_ENV === 'development' && !process.env.NEXT_PUBLIC_ANALYTICS_DEBUG) {

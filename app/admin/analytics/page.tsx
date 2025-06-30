@@ -188,64 +188,58 @@ export default function AdminAnalyticsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 p-4 md:p-6">
       {/* Header */}
-      <div className="mb-6 md:mb-8">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-gray-800 to-black rounded-xl flex items-center justify-center">
-              <Zap className="w-6 h-6 text-yellow-400" />
-            </div>
+      <div className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-4 py-4 md:py-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
             <div>
-              <h1 className="text-3xl md:text-4xl font-black tracking-tight text-gray-900">
-                VILLAIN ANALYTICS HQ
+              <h1 className="text-2xl md:text-3xl font-black tracking-tight text-gray-900">
+                DOOM ANALYTICS COMMAND
               </h1>
               <p className="text-gray-600 mt-1 text-sm md:text-base">
                 Comprehensive intelligence & performance monitoring
               </p>
             </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 md:gap-4">
-            <select
-              value={timeRange}
-              onChange={(e) => setTimeRange(e.target.value)}
-              className="px-3 md:px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors text-sm md:text-base bg-white"
-            >
-              <option value="7d">Last 7 days</option>
-              <option value="30d">Last 30 days</option>
-              <option value="90d">Last 90 days</option>
-              <option value="1y">Last year</option>
-            </select>
-            <button className="btn-secondary flex items-center space-x-2 text-sm md:text-base">
-              <Download className="w-4 h-4" />
-              <span className="hidden sm:inline">Export Report</span>
-              <span className="sm:hidden">Export</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Tab Navigation */}
-        <div className="mt-6 bg-white rounded-xl border border-gray-200 p-1">
-          <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
-            {[
-              { id: 'overview', label: 'Overview', icon: BarChart3 },
-              { id: 'business', label: 'Business Metrics', icon: DollarSign },
-              { id: 'visitors', label: 'Visitor Intelligence', icon: Globe2 }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center space-x-2 px-3 md:px-4 py-2 rounded-lg transition-all duration-200 font-medium text-xs md:text-sm whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? 'bg-gray-900 text-white shadow-lg'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+              <select
+                value={timeRange}
+                onChange={(e) => setTimeRange(e.target.value)}
+                className="w-full sm:w-auto px-3 md:px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors text-sm md:text-base bg-white"
               >
-                <tab.icon className="w-4 h-4" />
-                <span className="hidden sm:inline md:hidden lg:inline">{tab.label}</span>
-                <span className="sm:hidden md:inline lg:hidden">
-                  {tab.id === 'overview' ? 'Overview' : tab.id === 'business' ? 'Business' : 'Visitors'}
-                </span>
+                <option value="7d">Last 7 days</option>
+                <option value="30d">Last 30 days</option>
+                <option value="90d">Last 90 days</option>
+                <option value="1y">Last year</option>
+              </select>
+              <button className="w-full sm:w-auto btn-secondary flex items-center justify-center space-x-2 text-sm md:text-base px-3 md:px-4 py-2">
+                <Download className="w-4 h-4" />
+                <span className="hidden sm:inline">Export Report</span>
+                <span className="sm:hidden">Export</span>
               </button>
-            ))}
+            </div>
+          </div>
+
+          {/* Tab Navigation */}
+          <div className="mt-4 md:mt-6 bg-white rounded-xl border border-gray-200 p-1">
+            <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
+              {[
+                { id: 'overview', label: 'Overview', icon: BarChart3 },
+                { id: 'business', label: 'Business Metrics', icon: DollarSign },
+                { id: 'visitors', label: 'Visitor Intelligence', icon: Globe2 }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`flex items-center space-x-2 px-3 md:px-4 py-2 rounded-lg transition-all duration-200 font-medium text-xs md:text-sm whitespace-nowrap ${
+                    activeTab === tab.id
+                      ? 'bg-gray-900 text-white shadow-lg'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  <tab.icon className="w-4 h-4" />
+                  <span className="hidden xs:inline">{tab.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
