@@ -19,6 +19,52 @@
       display: inline;
     }
   }
+
+  /* Tablet-specific utilities (768px - 1024px) */
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .tablet\:text-lg {
+      font-size: 1.125rem;
+      line-height: 1.75rem;
+    }
+    
+    .tablet\:px-6 {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+    
+    .tablet\:py-4 {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+    
+    .tablet\:gap-6 {
+      gap: 1.5rem;
+    }
+    
+    .tablet\:min-h-12 {
+      min-height: 3rem;
+    }
+    
+    /* Better touch targets for tablets */
+    .tablet\:touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* Improved button sizing for tablet interactions */
+    .tablet\:btn-tablet {
+      padding: 0.875rem 1.5rem;
+      font-size: 1rem;
+      line-height: 1.5rem;
+    }
+  }
+  
+  /* Tablet landscape specific (1024px+) */
+  @media (min-width: 1024px) and (orientation: landscape) {
+    .tablet-landscape\:grid-cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
 }
 
 @layer components {
@@ -31,7 +77,8 @@
 
   /* Clean button design */
   .btn-primary {
-    @apply bg-black text-white px-6 py-3 font-semibold tracking-tight transition-all duration-200;
+    @apply bg-black text-white px-6 py-3 md:px-8 md:py-4 font-semibold tracking-tight transition-all duration-200;
+    min-height: 44px; /* Better touch target for tablets */
   }
 
   .btn-primary:hover {
@@ -40,7 +87,8 @@
   }
 
   .btn-secondary {
-    @apply bg-transparent text-black border-2 border-black px-6 py-3 font-semibold tracking-tight transition-all duration-200;
+    @apply bg-transparent text-black border-2 border-black px-6 py-3 md:px-8 md:py-4 font-semibold tracking-tight transition-all duration-200;
+    min-height: 44px; /* Better touch target for tablets */
   }
 
   .btn-secondary:hover {

@@ -90,13 +90,13 @@ export default function ProductsPage() {
           </div>
 
           {/* Filters */}
-          <div className="mb-8 space-y-4 md:space-y-0 md:flex md:items-center md:justify-between bg-mf-light-gray p-4 rounded-lg">
-            <div className="flex flex-wrap gap-2">
+          <div className="mb-8 space-y-4 lg:space-y-0 lg:flex lg:items-center lg:justify-between bg-mf-light-gray p-4 md:p-6 rounded-lg">
+            <div className="flex flex-wrap gap-2 md:gap-3">
               {categories.map((cat) => (
                 <button
                   key={cat.value}
                   onClick={() => setSelectedCategory(cat.value)}
-                  className={`px-4 py-2 rounded-full font-medium transition-all ${
+                  className={`px-4 py-2 md:px-5 md:py-3 rounded-full font-medium transition-all text-sm md:text-base min-h-10 md:min-h-12 ${
                     selectedCategory === cat.value
                       ? 'bg-black text-white'
                       : 'bg-white text-black hover:bg-gray-100'
@@ -110,7 +110,7 @@ export default function ProductsPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-white border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:border-mf-blue"
+              className="w-full lg:w-auto bg-white border border-gray-300 px-4 py-2 md:px-5 md:py-3 rounded-lg focus:outline-none focus:border-mf-blue text-sm md:text-base min-h-10 md:min-h-12"
             >
               <option value="name">Sort by Name</option>
               <option value="price-low">Price: Low to High</option>
@@ -141,7 +141,7 @@ export default function ProductsPage() {
           ) : (
             <motion.div
               layout
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6"
             >
               {filteredProducts.map((product, index) => (
                 <motion.div

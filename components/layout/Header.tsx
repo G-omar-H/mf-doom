@@ -73,8 +73,8 @@ export const Header: React.FC = () => {
         isScrolled ? 'bg-white/95 backdrop-blur-sm shadow-sm' : 'bg-transparent'
       }`}
     >
-      <div className="px-4 md:px-8">
-        <nav className="flex items-center justify-between h-16">
+      <div className="px-4 md:px-6 lg:px-8">
+        <nav className="flex items-center justify-between h-16 md:h-18 lg:h-20">
           {/* Enhanced Logo - Mobile Optimized */}
           <Link href="/">
             <motion.div
@@ -97,7 +97,7 @@ export const Header: React.FC = () => {
                 transition: { duration: 0.2 }
               } : {}}
               whileTap={{ scale: 0.98 }}
-              className="flex items-center space-x-2 md:space-x-3 group retro-glow touch-manipulation"
+              className="flex items-center space-x-2 md:space-x-3 lg:space-x-4 group retro-glow touch-manipulation"
             >
               {/* DOOM Mask Icon - Mobile Optimized */}
               <div className="relative">
@@ -116,13 +116,13 @@ export const Header: React.FC = () => {
                     ease: "easeInOut",
                     delay: 1.5 // Extra delay on mobile
                   }}
-                  className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 relative glitch"
+                  className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 relative glitch"
                 >
                   <Image
                     src="/icons/mfdoomcask.gif"
                     alt="DOOM Mask"
-                    width={40}
-                    height={40}
+                    width={48}
+                    height={48}
                     className="w-full h-full filter drop-shadow-sm md:drop-shadow-md"
                     unoptimized
                     priority
@@ -143,7 +143,7 @@ export const Header: React.FC = () => {
                   } : {}}
                 >
                   {/* Main logo text with mobile-friendly sizing */}
-                  <span className="font-black text-base sm:text-lg md:text-xl tracking-tight relative z-10 bg-gradient-to-r from-black via-gray-800 to-black bg-clip-text text-transparent group-hover:from-black group-hover:via-mf-dark-blue group-hover:to-black transition-all duration-300 md:duration-500 glitch">
+                  <span className="font-black text-base sm:text-lg md:text-xl lg:text-2xl tracking-tight relative z-10 bg-gradient-to-r from-black via-gray-800 to-black bg-clip-text text-transparent group-hover:from-black group-hover:via-mf-dark-blue group-hover:to-black transition-all duration-300 md:duration-500 glitch">
                     THIS<span className="text-mf-blue group-hover:retro-text transition-all duration-300">MF</span>DOOM
                   </span>
                   
@@ -161,7 +161,7 @@ export const Header: React.FC = () => {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: isMobile ? 0.5 : 0.2 }} // Longer delay on mobile
-                  className="text-[9px] sm:text-[10px] md:text-xs text-mf-gray uppercase tracking-wider md:tracking-widest font-medium opacity-60 sm:opacity-70 group-hover:opacity-100 group-hover:text-mf-dark-blue transition-all duration-300 md:duration-500 relative"
+                  className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm text-mf-gray uppercase tracking-wider md:tracking-widest font-medium opacity-60 sm:opacity-70 group-hover:opacity-100 group-hover:text-mf-dark-blue transition-all duration-300 md:duration-500 relative"
                 >
                   VILLAIN COLLECTIVE
                   {/* Subtle underline effect - mobile friendly */}
@@ -171,13 +171,13 @@ export const Header: React.FC = () => {
             </motion.div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          {/* Desktop Navigation - Enhanced for Tablets */}
+          <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium hover:text-mf-dark-blue transition-colors"
+                className="text-sm lg:text-base font-medium hover:text-mf-dark-blue transition-colors py-2 px-3 rounded-lg hover:bg-mf-blue/10 min-h-10"
               >
                 {link.label}
               </Link>
@@ -186,7 +186,7 @@ export const Header: React.FC = () => {
               href="https://instagram.com/thismfdoom_"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-medium hover:text-mf-dark-blue transition-colors flex items-center gap-1"
+              className="text-sm lg:text-base font-medium hover:text-mf-dark-blue transition-colors flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-mf-blue/10 min-h-10"
             >
               <Instagram size={16} />
               <span>@thismfdoom_</span>
@@ -194,20 +194,20 @@ export const Header: React.FC = () => {
           </div>
 
           {/* Right Side Actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3 md:space-x-4">
             {/* Authentication */}
             {status === 'loading' ? (
-              <div className="w-8 h-8 rounded-full bg-mf-light-gray animate-pulse"></div>
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-mf-light-gray animate-pulse"></div>
             ) : session ? (
               <div className="relative user-menu">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-mf-light-gray transition-colors"
+                  className="flex items-center space-x-2 p-2 md:p-3 rounded-lg hover:bg-mf-light-gray transition-colors min-h-10 md:min-h-12"
                 >
-                  <div className="w-8 h-8 bg-mf-blue rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-mf-blue rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 md:w-5 md:h-5 text-white" />
                   </div>
-                  <span className="hidden md:block text-sm font-medium">{session.user.name}</span>
+                  <span className="hidden lg:block text-sm md:text-base font-medium">{session.user.name}</span>
                 </button>
 
                 {/* User Dropdown Menu */}
@@ -216,11 +216,11 @@ export const Header: React.FC = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50"
+                    className="absolute right-0 mt-2 w-56 md:w-64 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50"
                   >
                     <div className="px-4 py-3 border-b border-gray-100">
-                      <p className="text-sm font-semibold">{session.user.name}</p>
-                      <p className="text-xs text-mf-gray">{session.user.email}</p>
+                      <p className="text-sm md:text-base font-semibold">{session.user.name}</p>
+                      <p className="text-xs md:text-sm text-mf-gray">{session.user.email}</p>
                       {session.user.role === 'ADMIN' && (
                         <span className="inline-block mt-1 bg-mf-blue text-white text-xs px-2 py-1 rounded">
                           Admin
@@ -232,18 +232,18 @@ export const Header: React.FC = () => {
                       <Link
                         href="/account/profile"
                         onClick={() => setIsUserMenuOpen(false)}
-                        className="flex items-center space-x-2 px-4 py-2 text-sm hover:bg-mf-light-gray transition-colors"
+                        className="flex items-center space-x-3 px-4 py-3 md:py-4 text-sm md:text-base hover:bg-mf-light-gray transition-colors min-h-12"
                       >
-                        <User className="w-4 h-4" />
+                        <User className="w-4 h-4 md:w-5 md:h-5" />
                         <span>Profile</span>
                       </Link>
                       
                       <Link
                         href="/account/orders"
                         onClick={() => setIsUserMenuOpen(false)}
-                        className="flex items-center space-x-2 px-4 py-2 text-sm hover:bg-mf-light-gray transition-colors"
+                        className="flex items-center space-x-3 px-4 py-3 md:py-4 text-sm md:text-base hover:bg-mf-light-gray transition-colors min-h-12"
                       >
-                        <ShoppingCart className="w-4 h-4" />
+                        <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" />
                         <span>Orders</span>
                       </Link>
 
@@ -251,9 +251,9 @@ export const Header: React.FC = () => {
                         <Link
                           href="/admin/dashboard"
                           onClick={() => setIsUserMenuOpen(false)}
-                          className="flex items-center space-x-2 px-4 py-2 text-sm hover:bg-mf-light-gray transition-colors"
+                          className="flex items-center space-x-3 px-4 py-3 md:py-4 text-sm md:text-base hover:bg-mf-light-gray transition-colors min-h-12"
                         >
-                          <Settings className="w-4 h-4" />
+                          <Settings className="w-4 h-4 md:w-5 md:h-5" />
                           <span>Admin Dashboard</span>
                         </Link>
                       )}
@@ -265,9 +265,9 @@ export const Header: React.FC = () => {
                           setIsUserMenuOpen(false)
                           handleSignOut()
                         }}
-                        className="flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left"
+                        className="flex items-center space-x-3 px-4 py-3 md:py-4 text-sm md:text-base text-red-600 hover:bg-red-50 transition-colors w-full text-left min-h-12"
                       >
-                        <LogOut className="w-4 h-4" />
+                        <LogOut className="w-4 h-4 md:w-5 md:h-5" />
                         <span>Sign Out</span>
                       </button>
                     </div>
@@ -275,16 +275,16 @@ export const Header: React.FC = () => {
                 )}
               </div>
             ) : (
-              <div className="hidden md:flex items-center space-x-2">
+              <div className="hidden lg:flex items-center space-x-3">
                 <Link
                   href="/auth/login"
-                  className="text-sm font-medium hover:text-mf-dark-blue transition-colors"
+                  className="text-sm md:text-base font-medium hover:text-mf-dark-blue transition-colors py-2 px-3 rounded-lg hover:bg-mf-blue/10 min-h-10"
                 >
                   Login
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="bg-mf-blue text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-mf-dark-blue transition-colors"
+                  className="bg-mf-blue text-white px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base font-medium hover:bg-mf-dark-blue transition-colors min-h-10 md:min-h-12"
                 >
                   Join Legion
                 </Link>
@@ -296,11 +296,11 @@ export const Header: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={toggleCart}
-              className="relative p-2"
+              className="relative p-2 md:p-3 hover:bg-mf-light-gray rounded-lg transition-colors min-h-10 md:min-h-12"
             >
-              <ShoppingCart size={20} />
+              <ShoppingCart size={20} className="md:w-6 md:h-6" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-black text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-medium">
+                <span className="absolute -top-1 -right-1 bg-black text-white text-xs w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center font-medium">
                   {totalItems}
                 </span>
               )}
@@ -309,9 +309,9 @@ export const Header: React.FC = () => {
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden"
+              className="lg:hidden p-2 md:p-3 hover:bg-mf-light-gray rounded-lg transition-colors min-h-10 md:min-h-12"
             >
-              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              {isMobileMenuOpen ? <X size={20} className="md:w-6 md:h-6" /> : <Menu size={20} className="md:w-6 md:h-6" />}
             </button>
           </div>
         </nav>
@@ -321,15 +321,15 @@ export const Header: React.FC = () => {
       <motion.div
         initial={false}
         animate={{ height: isMobileMenuOpen ? 'auto' : 0 }}
-        className="md:hidden overflow-hidden bg-white border-t border-gray-100 shadow-lg"
+        className="lg:hidden overflow-hidden bg-white border-t border-gray-100 shadow-lg"
       >
-        <div className="px-4 py-4 space-y-1">
+        <div className="px-4 md:px-6 py-4 md:py-6 space-y-1">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="block text-base font-medium hover:text-mf-dark-blue hover:bg-mf-blue/10 transition-all duration-200 px-4 py-3 rounded-lg"
+              className="block text-base md:text-lg font-medium hover:text-mf-dark-blue hover:bg-mf-blue/10 transition-all duration-200 px-4 py-3 md:py-4 rounded-lg min-h-12"
             >
               {link.label}
             </Link>
@@ -341,7 +341,7 @@ export const Header: React.FC = () => {
               <Link
                 href="/account/profile"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block text-base font-medium hover:text-mf-dark-blue hover:bg-mf-blue/10 transition-all duration-200 px-4 py-3 rounded-lg"
+                className="block text-base md:text-lg font-medium hover:text-mf-dark-blue hover:bg-mf-blue/10 transition-all duration-200 px-4 py-3 md:py-4 rounded-lg min-h-12"
               >
                 Profile
               </Link>
@@ -349,7 +349,7 @@ export const Header: React.FC = () => {
                 <Link
                   href="/admin/dashboard"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block text-base font-medium hover:text-mf-dark-blue hover:bg-mf-blue/10 transition-all duration-200 px-4 py-3 rounded-lg"
+                  className="block text-base md:text-lg font-medium hover:text-mf-dark-blue hover:bg-mf-blue/10 transition-all duration-200 px-4 py-3 md:py-4 rounded-lg min-h-12"
                 >
                   Admin Dashboard
                 </Link>
@@ -359,7 +359,7 @@ export const Header: React.FC = () => {
                   setIsMobileMenuOpen(false)
                   handleSignOut()
                 }}
-                className="block w-full text-left text-base font-medium text-red-600 hover:bg-red-50 transition-all duration-200 px-4 py-3 rounded-lg"
+                className="block w-full text-left text-base md:text-lg font-medium text-red-600 hover:bg-red-50 transition-all duration-200 px-4 py-3 md:py-4 rounded-lg min-h-12"
               >
                 Sign Out
               </button>
@@ -369,14 +369,14 @@ export const Header: React.FC = () => {
               <Link
                 href="/auth/login"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block text-base font-medium hover:text-mf-dark-blue hover:bg-mf-blue/10 transition-all duration-200 px-4 py-3 rounded-lg"
+                className="block text-base md:text-lg font-medium hover:text-mf-dark-blue hover:bg-mf-blue/10 transition-all duration-200 px-4 py-3 md:py-4 rounded-lg min-h-12"
               >
                 Login
               </Link>
               <Link
                 href="/auth/register"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block text-base font-medium bg-mf-blue text-white hover:bg-mf-dark-blue transition-all duration-200 px-4 py-3 rounded-lg"
+                className="block text-base md:text-lg font-medium bg-mf-blue text-white hover:bg-mf-dark-blue transition-all duration-200 px-4 py-3 md:py-4 rounded-lg min-h-12"
               >
                 Join the Legion
               </Link>
@@ -387,9 +387,9 @@ export const Header: React.FC = () => {
             href="https://instagram.com/thismfdoom_"
             target="_blank"
             rel="noopener noreferrer"
-            className="block text-base font-medium hover:text-mf-dark-blue hover:bg-mf-blue/10 transition-all duration-200 px-4 py-3 rounded-lg flex items-center gap-2"
+            className="block text-base md:text-lg font-medium hover:text-mf-dark-blue hover:bg-mf-blue/10 transition-all duration-200 px-4 py-3 md:py-4 rounded-lg flex items-center gap-2 md:gap-3 min-h-12"
           >
-            <Instagram size={18} />
+            <Instagram size={18} className="md:w-5 md:h-5" />
             @thismfdoom_ on Instagram
           </a>
         </div>

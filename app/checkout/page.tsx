@@ -184,7 +184,7 @@ export default function CheckoutPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="lg:grid lg:grid-cols-12 lg:gap-12">
+        <div className="lg:grid lg:grid-cols-12 lg:gap-8 xl:gap-12">
           {/* Enhanced Order Summary */}
           <div className="lg:col-span-5 lg:order-2">
             <motion.div 
@@ -303,8 +303,8 @@ export default function CheckoutPage() {
                   <p className="text-gray-600 mt-1">We'll use this to send order updates</p>
                 </div>
                 <div className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="md:col-span-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                    <div className="sm:col-span-2">
                       <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
                       Email Address *
                     </label>
@@ -315,7 +315,7 @@ export default function CheckoutPage() {
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                        className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
+                        className={`w-full px-4 py-3 md:py-4 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
                           formErrors.email 
                             ? 'border-red-300 focus:border-red-500 bg-red-50' 
                             : formData.email && !formErrors.email
@@ -359,7 +359,7 @@ export default function CheckoutPage() {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                        className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
+                        className={`w-full px-4 py-3 md:py-4 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
                           formErrors.name 
                             ? 'border-red-300 focus:border-red-500 bg-red-50' 
                             : formData.name && !formErrors.name
@@ -392,7 +392,7 @@ export default function CheckoutPage() {
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all duration-200 focus:outline-none focus:border-mf-blue focus:bg-blue-50"
+                        className="w-full px-4 py-3 md:py-4 border-2 border-gray-200 rounded-lg transition-all duration-200 focus:outline-none focus:border-mf-blue focus:bg-blue-50"
                       placeholder="+1 (555) 123-4567"
                 />
                     </div>
@@ -411,8 +411,8 @@ export default function CheckoutPage() {
                   <p className="text-gray-600 mt-1">Where should we send your order?</p>
                 </div>
                 <div className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="md:col-span-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                  <div className="sm:col-span-2">
                       <label htmlFor="address" className="block text-sm font-semibold text-gray-700 mb-2">
                       Street Address *
                     </label>
@@ -423,7 +423,7 @@ export default function CheckoutPage() {
                   value={formData.address}
                   onChange={handleInputChange}
                   required
-                        className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
+                        className={`w-full px-4 py-3 md:py-4 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
                           formErrors.address 
                             ? 'border-red-300 focus:border-red-500 bg-red-50' 
                             : formData.address && !formErrors.address
@@ -457,7 +457,7 @@ export default function CheckoutPage() {
                     value={formData.city}
                     onChange={handleInputChange}
                     required
-                        className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
+                        className={`w-full px-4 py-3 md:py-4 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
                           formErrors.city 
                             ? 'border-red-300 focus:border-red-500 bg-red-50' 
                             : formData.city && !formErrors.city
@@ -491,7 +491,7 @@ export default function CheckoutPage() {
                     value={formData.state}
                     onChange={handleInputChange}
                     required
-                        className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
+                        className={`w-full px-4 py-3 md:py-4 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
                           formErrors.state 
                             ? 'border-red-300 focus:border-red-500 bg-red-50' 
                             : formData.state && !formErrors.state
