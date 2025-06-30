@@ -12,21 +12,21 @@ export async function POST(request: NextRequest) {
 
     if (!token || !password) {
       return NextResponse.json(
-        { message: 'Token and password are required' },
+        { error: 'Token and password are required' },
         { status: 400 }
       )
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       return NextResponse.json(
-        { message: 'Password must be at least 6 characters' },
+        { error: 'Password must be at least 8 characters' },
         { status: 400 }
       )
     }
 
     if (!prisma) {
       return NextResponse.json(
-        { message: 'Database not available' },
+        { error: 'Database not available' },
         { status: 503 }
       )
     }
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     
     if (!memoryTokenData) {
       return NextResponse.json(
-        { message: 'Invalid or expired reset token' },
+        { error: 'Invalid or expired reset token' },
         { status: 400 }
       )
     }
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { message: 'Invalid or expired reset token' },
+        { error: 'Invalid or expired reset token' },
         { status: 400 }
       )
     }
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Password reset error:', error)
     return NextResponse.json(
-      { message: 'Something went wrong. Please try again.' },
+      { error: 'Something went wrong. Please try again.' },
       { status: 500 }
     )
   }

@@ -36,7 +36,7 @@ export default function ForgotPasswordPage() {
         setEmailSent(true)
         toast.success('Password reset email sent!')
       } else {
-        toast.error(data.message || 'Something went wrong')
+        toast.error(data.error || data.message || 'Something went wrong')
       }
     } catch (error) {
       toast.error('Network error. Please try again.')

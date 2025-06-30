@@ -13,37 +13,7 @@ if (process.env.NODE_ENV === 'development') {
   })
 }
 
-// Extend the built-in session types
-declare module 'next-auth' {
-  interface Session {
-    user: {
-      id: string
-      email: string
-      name: string
-      role: string
-      avatar?: string
-      phone?: string
-    }
-  }
-
-  interface User {
-    id: string
-    email: string
-    name: string
-    role: string
-    avatar?: string
-    phone?: string
-  }
-}
-
-declare module 'next-auth/jwt' {
-  interface JWT {
-    id: string
-    role: string
-    avatar?: string
-    phone?: string
-  }
-}
+// Types are defined in types/next-auth.d.ts to avoid conflicts
 
 export const authOptions: NextAuthOptions = {
   // Remove PrismaAdapter to fix conflict with JWT strategy
@@ -57,11 +27,11 @@ export const authOptions: NextAuthOptions = {
     debug: true,
   }),
   
-  // Session configuration - FIXED for better sync
+  // Session configuration - IMPROVED for better sync
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 60 * 60, // 1 hour - more frequent updates for better sync (was 4 hours)
+    updateAge: 5 * 60, // 5 minutes - much more frequent updates for immediate sync (was 1 hour)
   },
 
   // JWT configuration

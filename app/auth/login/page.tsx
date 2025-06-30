@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn, getSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { signIn } from 'next-auth/react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Eye, EyeOff, Lock, Mail, ArrowRight } from 'lucide-react'
@@ -16,6 +16,8 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') || '/admin/dashboard'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,41 +30,21 @@ export default function LoginPage() {
 
     try {
       console.log('🔑 Attempting login for:', email)
+      console.log('🔄 Callback URL:', callbackUrl)
       
-      // Use NextAuth's built-in redirect - more reliable than manual session checking
+      // Use NextAuth's built-in redirect handling for better session sync
       const result = await signIn('credentials', {
         email,
         password,
-        callbackUrl: '/admin/dashboard', // Default redirect
-        redirect: false, // We'll handle the redirect after showing success message
+        callbackUrl,
+        redirect: true, // Let NextAuth handle the redirect completely
       })
 
+      // This code will only run if redirect: false, but we're using redirect: true
+      // So this is a fallback that shouldn't normally execute
       if (result?.error) {
         console.error('❌ Login failed:', result.error)
         toast.error('Invalid credentials')
-        setIsLoading(false)
-        return
-      }
-
-      if (result?.ok) {
-        console.log('✅ Login successful, redirecting...')
-        toast.success('Welcome back, villain!')
-        
-        // Small delay to show success message, then redirect
-        setTimeout(() => {
-          // Use NextAuth's callback URL for reliable redirect
-          if (result.url) {
-            console.log('🔄 Using NextAuth redirect URL:', result.url)
-            window.location.href = result.url
-          } else {
-            // Fallback redirect
-            console.log('🔄 Using fallback redirect')
-            window.location.href = '/admin/dashboard'
-          }
-        }, 500)
-      } else {
-        console.error('❌ Unexpected login result:', result)
-        toast.error('Login failed. Please try again.')
         setIsLoading(false)
       }
     } catch (error) {

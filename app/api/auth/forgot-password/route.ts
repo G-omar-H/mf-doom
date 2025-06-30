@@ -12,14 +12,14 @@ export async function POST(request: NextRequest) {
 
     if (!email) {
       return NextResponse.json(
-        { message: 'Email is required' },
+        { error: 'Email is required' },
         { status: 400 }
       )
     }
 
     if (!prisma) {
       return NextResponse.json(
-        { message: 'Database not available' },
+        { error: 'Database not available' },
         { status: 503 }
       )
     }
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
       })
 
       return NextResponse.json(
-        { message: 'Failed to send password reset email. Please try again.' },
+        { error: 'Failed to send password reset email. Please try again.' },
         { status: 500 }
       )
     }
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Forgot password error:', error)
     return NextResponse.json(
-      { message: 'Something went wrong. Please try again.' },
+      { error: 'Something went wrong. Please try again.' },
       { status: 500 }
     )
   }

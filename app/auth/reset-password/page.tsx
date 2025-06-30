@@ -47,7 +47,7 @@ export default function ResetPasswordPage() {
         setTokenValid(true)
       } else {
         const data = await response.json()
-        toast.error(data.message || 'Invalid or expired reset link')
+        toast.error(data.error || data.message || 'Invalid or expired reset link')
         setTimeout(() => router.push('/auth/forgot-password'), 2000)
       }
     } catch (error) {
@@ -66,8 +66,8 @@ export default function ResetPasswordPage() {
       return
     }
 
-    if (password.length < 6) {
-      toast.error('Password must be at least 6 characters')
+    if (password.length < 8) {
+      toast.error('Password must be at least 8 characters')
       return
     }
 
@@ -291,7 +291,7 @@ export default function ResetPasswordPage() {
                   </button>
                 </div>
                 <p className="text-xs text-mf-gray mt-2">
-                  Password must be at least 6 characters
+                  Password must be at least 8 characters
                 </p>
               </div>
 
