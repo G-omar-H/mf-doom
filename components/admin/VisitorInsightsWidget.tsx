@@ -303,11 +303,11 @@ export default function VisitorInsightsWidget({
                 <User className="w-6 h-6 text-green-400" />
               </div>
               <div>
-                <p className="text-green-300 text-xs font-medium uppercase tracking-wide">Real-time</p>
+                <p className="text-green-300 text-xs font-medium uppercase tracking-wide">Active (5min)</p>
                 <p className="text-white text-xl font-bold">{visitorData.realTimeVisitors || 0}</p>
                 <div className="flex items-center space-x-1">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <p className="text-green-400 text-xs">Active now</p>
+                  <p className="text-green-400 text-xs">Last 5 minutes</p>
                 </div>
               </div>
             </div>

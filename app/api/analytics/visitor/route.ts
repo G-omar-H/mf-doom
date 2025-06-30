@@ -121,6 +121,7 @@ async function getAnalyticsData(request: NextRequest) {
 
   // Calculate time ranges
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+  const lastFiveMinutes = new Date(Date.now() - 5 * 60 * 1000) // More accurate "real-time"
   const lastHour = new Date(Date.now() - 60 * 60 * 1000)
   const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000)
 
@@ -174,7 +175,7 @@ async function getAnalyticsData(request: NextRequest) {
     }).catch(() => []),
 
     prisma.visitorAnalytics.findMany({
-      where: { timestamp: { gte: lastHour } },
+      where: { timestamp: { gte: lastFiveMinutes } },
       select: { sessionId: true },
       distinct: ['sessionId']
     }).catch(() => [])

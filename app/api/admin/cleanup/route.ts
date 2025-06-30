@@ -241,6 +241,16 @@ export async function POST(request: NextRequest) {
         }
         break
 
+      case 'VISITOR_ANALYTICS_ONLY':
+        console.log('🗑️  Deleting only visitor analytics (real-time tracking data)...')
+        const deletedVisitorData = await prisma.visitorAnalytics.deleteMany({})
+        
+        summary.deleted = {
+          visitorAnalytics: deletedVisitorData.count,
+          message: 'This will reset the "Active (5min)" counter to 0'
+        }
+        break
+
       case 'TEST_USERS_ONLY':
         console.log('🗑️  Deleting test users (handling foreign key constraints)...')
         // Delete users that look like test users
@@ -390,6 +400,7 @@ export async function POST(request: NextRequest) {
               'ORDERS_ONLY',
               'REVIEWS_ONLY', 
               'ANALYTICS_ONLY',
+              'VISITOR_ANALYTICS_ONLY',
               'TEST_USERS_ONLY',
               'ALL_TRANSACTIONAL_DATA',
               'NUCLEAR_OPTION'

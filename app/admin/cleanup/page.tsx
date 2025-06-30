@@ -15,7 +15,8 @@ import {
   Star,
   BarChart3,
   RefreshCw,
-  Tag
+  Tag,
+  Activity
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
@@ -147,9 +148,17 @@ export default function AdminCleanupPage() {
     {
       id: 'ANALYTICS_ONLY',
       title: 'Delete Analytics Only', 
-      description: 'Remove all analytics and tracking data',
+      description: 'Remove all analytics and tracking data (includes visitor tracking)',
       icon: BarChart3,
       color: 'bg-purple-500',
+      risk: 'low'
+    },
+    {
+      id: 'VISITOR_ANALYTICS_ONLY',
+      title: 'Reset Visitor Tracking', 
+      description: 'Clear visitor analytics only (fixes misleading "Active" count)',
+      icon: Activity,
+      color: 'bg-indigo-500',
       risk: 'low'
     },
     {
@@ -369,6 +378,20 @@ export default function AdminCleanupPage() {
                 <p className="text-sm text-yellow-700 mt-1">
                   These actions permanently delete data from your Supabase production database. 
                   Make sure you have backups if needed. Products and admin users are preserved in most actions.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start space-x-3">
+              <Activity className="w-5 h-5 text-blue-600 mt-0.5" />
+              <div>
+                <h4 className="font-semibold text-blue-800">📊 Visitor Analytics Note</h4>
+                <p className="text-sm text-blue-700 mt-1">
+                  If your "Active (5min)" visitor count shows numbers but Vercel Analytics shows 0, 
+                  there's likely test visitor tracking data in your database. Use "Reset Visitor Tracking" 
+                  to clear this test data and get accurate real-time visitor counts.
                 </p>
               </div>
             </div>
