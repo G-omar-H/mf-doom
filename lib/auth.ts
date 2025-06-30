@@ -4,6 +4,15 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 
+// Debug environment variables
+if (process.env.NODE_ENV === 'development') {
+  console.log('🔧 NextAuth Environment Check:', {
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET ? '✅ Set' : '❌ Missing',
+    NODE_ENV: process.env.NODE_ENV
+  })
+}
+
 // Extend the built-in session types
 declare module 'next-auth' {
   interface Session {
@@ -42,6 +51,11 @@ export const authOptions: NextAuthOptions = {
   
   // Security configuration
   secret: process.env.NEXTAUTH_SECRET,
+  
+  // Debug environment variables
+  ...(process.env.NODE_ENV === 'development' && {
+    debug: true,
+  }),
   
   // Session configuration - FIXED for better sync
   session: {
@@ -165,7 +179,7 @@ export const authOptions: NextAuthOptions = {
 
           console.info('Successful login:', credentials.email)
 
-          return {
+          const returnUser = {
             id: user.id,
             email: user.email,
             name: user.name,
@@ -173,6 +187,9 @@ export const authOptions: NextAuthOptions = {
             avatar: user.avatar ?? undefined,
             phone: user.phone ?? undefined,
           }
+
+          console.log('🎯 Returning user object:', returnUser)
+          return returnUser
         } catch (error) {
           console.error('Authentication error:', error)
           return null
@@ -183,20 +200,33 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, user, account, profile, trigger }): Promise<JWT> {
+      console.log('🔐 JWT Callback triggered:', { 
+        hasUser: !!user, 
+        hasToken: !!token, 
+        trigger,
+        tokenId: token?.id,
+        userId: user?.id 
+      })
+
       // Initial sign in
       if (user) {
+        console.log('👤 Setting JWT token for new login:', user.email)
         token.id = user.id
         token.role = user.role
         token.avatar = user.avatar ?? undefined
         token.phone = user.phone ?? undefined
         
-        // Ensure token is properly set on initial login
-        console.log('JWT callback - Initial login for user:', user.email)
+        console.log('✅ JWT token created:', {
+          id: token.id,
+          email: token.email,
+          role: token.role
+        })
       }
 
       // Handle token refresh
       if (trigger === 'update' && prisma) {
         try {
+          console.log('🔄 Refreshing JWT token for user:', token.id)
           const refreshedUser = await prisma.user.findUnique({
             where: { id: token.id },
             select: {
@@ -215,9 +245,10 @@ export const authOptions: NextAuthOptions = {
             token.role = refreshedUser.role
             token.avatar = refreshedUser.avatar ?? undefined
             token.phone = refreshedUser.phone ?? undefined
+            console.log('✅ JWT token refreshed for:', refreshedUser.email)
           }
         } catch (error) {
-          console.error('Error refreshing user data:', error)
+          console.error('❌ Error refreshing user data:', error)
         }
       }
 
@@ -225,78 +256,79 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ session, token }): Promise<any> {
+      console.log('🎫 Session Callback triggered:', {
+        hasSession: !!session,
+        hasToken: !!token,
+        hasUser: !!(session?.user),
+        tokenId: token?.id,
+        tokenEmail: token?.email
+      })
+
       if (token && session.user) {
         session.user.id = token.id
         session.user.role = token.role
         session.user.avatar = token.avatar
         session.user.phone = token.phone
         
-        // Ensure session is properly established with production logging
-        if (process.env.NODE_ENV === 'production') {
-          console.log('✅ Production session established for user:', token.email, 'Role:', token.role)
-        } else {
-          console.log('Session callback - Session established for user:', token.email)
-        }
+        console.log('✅ Session created successfully:', {
+          id: session.user.id,
+          email: session.user.email,
+          role: session.user.role
+        })
       } else {
-        // Log session callback issues for debugging
-        console.error('❌ Session callback issue:', {
+        console.error('❌ Session creation failed:', {
           hasToken: !!token,
           hasSession: !!session,
           hasUser: !!(session?.user),
-          tokenData: token ? { id: token.id, email: token.email, role: token.role } : null
+          tokenData: token ? { id: token.id, email: token.email, role: token.role } : null,
+          sessionData: session ? { userExists: !!session.user } : null
         })
       }
       return session
     },
 
     async redirect({ url, baseUrl }): Promise<string> {
-      console.log('Redirect callback:', { url, baseUrl })
+      console.log('🔄 Redirect callback:', { url, baseUrl })
       
       // Handle logout redirect
       if (url.includes('/auth/logout') || url.includes('signout')) {
-        console.log('Logout redirect detected, sending to home')
+        console.log('🚪 Logout redirect detected, sending to home')
         return baseUrl
       }
       
-      // Handle login redirect
-      if (url.includes('/auth/login') || url.includes('signin')) {
-        console.log('Login redirect detected, checking for callback URL')
-        // Check if there's a callbackUrl parameter
-        const urlObj = new URL(url, baseUrl)
-        const callbackUrl = urlObj.searchParams.get('callbackUrl')
+      // Handle post-login redirect - check for role-based routing
+      if (url.includes('/admin/dashboard') || url.includes('callbackUrl')) {
+        console.log('🔐 Post-login redirect detected')
         
-        if (callbackUrl) {
-          // Validate callback URL is safe
-          if (callbackUrl.startsWith('/') && !callbackUrl.startsWith('//')) {
-            console.log('Using callback URL:', callbackUrl)
-            return `${baseUrl}${callbackUrl}`
-          }
-        }
-        
-        // Default redirect after login
-        console.log('No valid callback URL, redirecting to dashboard')
+        // For now, always redirect to admin dashboard for successful login
+        // The client-side code will handle role-based routing
         return `${baseUrl}/admin/dashboard`
       }
       
       // Allows relative callback URLs
       if (url.startsWith('/')) {
-        console.log('Relative URL redirect:', url)
+        console.log('📍 Relative URL redirect:', url)
         return `${baseUrl}${url}`
       }
       
       // Allows callback URLs on the same origin
       if (url.startsWith(baseUrl)) {
-        console.log('Same origin redirect:', url)
+        console.log('🏠 Same origin redirect:', url)
         return url
       }
       
       // Default to base URL for safety
-      console.log('Default redirect to baseUrl')
+      console.log('🏠 Default redirect to baseUrl')
       return baseUrl
     },
 
     async signIn({ user, account, profile, email, credentials }): Promise<boolean> {
-      console.log('SignIn callback triggered for user:', user.email)
+      console.log('✅ SignIn callback triggered:', {
+        userEmail: user.email,
+        userId: user.id,
+        userRole: user.role,
+        provider: account?.provider
+      })
       // Always allow sign in for credentials provider
       return true
     }
@@ -360,9 +392,6 @@ export const authOptions: NextAuthOptions = {
     logo: '/images/mf-doom-logo.png',
     buttonText: '#ffffff'
   },
-
-  // Debug mode for development
-  debug: process.env.NODE_ENV === 'development',
 
   // Enable CSRF protection
   useSecureCookies: process.env.NODE_ENV === 'production',

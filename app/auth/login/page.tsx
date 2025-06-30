@@ -27,71 +27,46 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      console.log('Attempting login for:', email)
+      console.log('🔑 Attempting login for:', email)
       
+      // Use NextAuth's built-in redirect - more reliable than manual session checking
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: false, // We'll handle redirect manually for better control
+        callbackUrl: '/admin/dashboard', // Default redirect
+        redirect: false, // We'll handle the redirect after showing success message
       })
 
       if (result?.error) {
-        console.error('Login failed:', result.error)
+        console.error('❌ Login failed:', result.error)
         toast.error('Invalid credentials')
         setIsLoading(false)
         return
       }
 
       if (result?.ok) {
-        console.log('✅ Login successful, waiting for session...')
+        console.log('✅ Login successful, redirecting...')
         toast.success('Welcome back, villain!')
         
-        // Simple session check with shorter wait time
-        setTimeout(async () => {
-          try {
-            const session = await getSession()
-            
-            if (session?.user?.id) {
-              console.log('✅ Session confirmed for:', session.user.email)
-              
-              // Redirect based on role
-              if (session.user.role === 'ADMIN') {
-                window.location.href = '/admin/dashboard'
-              } else {
-                window.location.href = '/account/profile'
-              }
-            } else {
-              // If no session after successful login, try one more time
-              console.warn('⚠️ No session found, retrying once...')
-              setTimeout(async () => {
-                const retrySession = await getSession()
-                if (retrySession?.user?.id) {
-                  console.log('✅ Session confirmed on retry')
-                  if (retrySession.user.role === 'ADMIN') {
-                    window.location.href = '/admin/dashboard'
-                  } else {
-                    window.location.href = '/account/profile'
-                  }
-                } else {
-                  console.error('❌ Session still not found after retry')
-                  toast.error('Login succeeded but session setup failed. Please refresh the page.')
-                  setIsLoading(false)
-                }
-              }, 1000)
-            }
-          } catch (sessionError) {
-            console.error('Session check error:', sessionError)
-            toast.error('Session check failed. Please refresh the page.')
-            setIsLoading(false)
+        // Small delay to show success message, then redirect
+        setTimeout(() => {
+          // Use NextAuth's callback URL for reliable redirect
+          if (result.url) {
+            console.log('🔄 Using NextAuth redirect URL:', result.url)
+            window.location.href = result.url
+          } else {
+            // Fallback redirect
+            console.log('🔄 Using fallback redirect')
+            window.location.href = '/admin/dashboard'
           }
-        }, 800) // Wait 800ms for session to establish
+        }, 500)
       } else {
-        console.error('Unexpected login result:', result)
+        console.error('❌ Unexpected login result:', result)
         toast.error('Login failed. Please try again.')
         setIsLoading(false)
       }
     } catch (error) {
-      console.error('Login error:', error)
+      console.error('❌ Login error:', error)
       toast.error('Something went wrong. Please try again.')
       setIsLoading(false)
     }
