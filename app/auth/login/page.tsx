@@ -38,25 +38,63 @@ export default function LoginPage() {
       } else {
         toast.success('Welcome back, villain!')
         
-        // Robust session check with retry mechanism
-        // This prevents the double login issue that occurred after adding forgot password
+        // Enhanced session establishment with proper timing for production
         let session = null
         let attempts = 0
-        const maxAttempts = 3
+        const maxAttempts = 8 // Increased for production reliability
+        
+        // First, force a session refresh to ensure server-side session is propagated
+        await new Promise(resolve => setTimeout(resolve, 500)) // Initial wait for production
         
         while (!session && attempts < maxAttempts) {
-          await new Promise(resolve => setTimeout(resolve, 200 * (attempts + 1))) // Exponential backoff
-          session = await getSession()
+          // Progressive backoff: 500ms, 750ms, 1000ms, 1250ms...
+          await new Promise(resolve => setTimeout(resolve, 500 + (attempts * 250)))
+          
+          try {
+            session = await getSession()
+            
+            // Verify session is properly established (not just returned)
+            if (session?.user?.id && session?.user?.role) {
+              console.log('✅ Session established for:', session.user.email)
+              break
+            } else if (session) {
+              console.warn('⚠️ Incomplete session data, retrying...', session)
+              session = null // Force retry if incomplete
+            }
+          } catch (sessionError) {
+            console.warn('Session check failed, retrying...', sessionError)
+          }
+          
           attempts++
+        }
+        
+        // Additional verification: ensure browser has session cookie
+        if (session) {
+          // Small delay to ensure browser processes session cookies
+          await new Promise(resolve => setTimeout(resolve, 200))
+          
+          // Final verification - re-check session one more time
+          const finalSession = await getSession()
+          if (!finalSession?.user?.id) {
+            console.warn('Session verification failed, forcing page reload')
+            // In extreme cases, reload the page to ensure proper session
+            window.location.href = session.user.role === 'ADMIN' ? '/admin/dashboard' : '/account/profile'
+            return
+          }
         }
         
         if (session?.user?.role === 'ADMIN') {
           router.push('/admin/dashboard')
-        } else {
+        } else if (session?.user) {
           router.push('/account/profile')
+        } else {
+          console.error('❌ Session establishment failed after all retries')
+          toast.error('Login succeeded but session failed. Please try again.')
+          // Don't redirect - let user try again
         }
       }
     } catch (error) {
+      console.error('Login error:', error)
       toast.error('Something went wrong')
     } finally {
       setIsLoading(false)

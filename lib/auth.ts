@@ -47,7 +47,7 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 24 hours - how often to update the session
+    updateAge: 4 * 60 * 60, // 4 hours - more frequent updates for better sync
   },
 
   // JWT configuration
@@ -230,8 +230,20 @@ export const authOptions: NextAuthOptions = {
         session.user.avatar = token.avatar
         session.user.phone = token.phone
         
-        // Ensure session is properly established
-        console.log('Session callback - Session established for user:', token.email)
+        // Ensure session is properly established with production logging
+        if (process.env.NODE_ENV === 'production') {
+          console.log('✅ Production session established for user:', token.email, 'Role:', token.role)
+        } else {
+          console.log('Session callback - Session established for user:', token.email)
+        }
+      } else {
+        // Log session callback issues for debugging
+        console.error('❌ Session callback issue:', {
+          hasToken: !!token,
+          hasSession: !!session,
+          hasUser: !!(session?.user),
+          tokenData: token ? { id: token.id, email: token.email, role: token.role } : null
+        })
       }
       return session
     },
