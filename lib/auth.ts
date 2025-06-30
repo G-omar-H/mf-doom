@@ -1,7 +1,6 @@
 import { NextAuthOptions, User } from 'next-auth'
 import { JWT } from 'next-auth/jwt'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { prisma } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 
@@ -38,7 +37,8 @@ declare module 'next-auth/jwt' {
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: prisma ? PrismaAdapter(prisma) : undefined,
+  // Remove PrismaAdapter to fix conflict with JWT strategy
+  // The adapter was causing session establishment issues with the new password reset fields
   
   // Security configuration
   secret: process.env.NEXTAUTH_SECRET,
@@ -65,7 +65,8 @@ export const authOptions: NextAuthOptions = {
         sameSite: 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production',
-        domain: process.env.NODE_ENV === 'production' ? process.env.NEXTAUTH_URL_DOMAIN : undefined,
+        // Remove domain restriction that was causing cookie issues
+        // domain: process.env.NODE_ENV === 'production' ? process.env.NEXTAUTH_URL_DOMAIN : undefined,
       }
     },
     callbackUrl: {
@@ -123,7 +124,7 @@ export const authOptions: NextAuthOptions = {
             return null
           }
 
-          // Find user
+          // Find user - exclude password reset fields to avoid conflicts
           const user = await prisma.user.findUnique({
             where: {
               email: credentials.email.toLowerCase().trim()
@@ -136,6 +137,7 @@ export const authOptions: NextAuthOptions = {
               role: true,
               avatar: true,
               phone: true,
+              // Explicitly exclude password reset fields
             }
           })
 
@@ -186,6 +188,9 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role
         token.avatar = user.avatar ?? undefined
         token.phone = user.phone ?? undefined
+        
+        // Ensure token is properly set on initial login
+        console.log('JWT callback - Initial login for user:', user.email)
       }
 
       // Handle token refresh
@@ -224,6 +229,9 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role
         session.user.avatar = token.avatar
         session.user.phone = token.phone
+        
+        // Ensure session is properly established
+        console.log('Session callback - Session established for user:', token.email)
       }
       return session
     },
@@ -237,7 +245,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     async signIn({ user, account, profile, email, credentials }) {
-      // Allow sign in
+      // Always allow sign in for credentials provider
       return true
     }
   },
@@ -254,7 +262,7 @@ export const authOptions: NextAuthOptions = {
   // Event handlers for logging and monitoring
   events: {
     async signIn({ user, account, profile, isNewUser }) {
-      console.info('User signed in:', { 
+      console.info('User signed in successfully:', { 
         userId: user.id, 
         email: user.email, 
         isNewUser,

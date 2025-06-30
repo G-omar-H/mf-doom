@@ -38,8 +38,18 @@ export default function LoginPage() {
       } else {
         toast.success('Welcome back, villain!')
         
-        // Get session to check user role
-        const session = await getSession()
+        // Robust session check with retry mechanism
+        // This prevents the double login issue that occurred after adding forgot password
+        let session = null
+        let attempts = 0
+        const maxAttempts = 3
+        
+        while (!session && attempts < maxAttempts) {
+          await new Promise(resolve => setTimeout(resolve, 200 * (attempts + 1))) // Exponential backoff
+          session = await getSession()
+          attempts++
+        }
+        
         if (session?.user?.role === 'ADMIN') {
           router.push('/admin/dashboard')
         } else {

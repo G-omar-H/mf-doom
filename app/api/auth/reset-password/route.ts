@@ -45,14 +45,17 @@ export async function POST(request: NextRequest) {
     const user = await prisma.user.findFirst({
       where: {
         id: memoryTokenData.userId,
-        email: memoryTokenData.email
-        // Note: Will validate token fields after Prisma regeneration
+        email: memoryTokenData.email,
+        passwordResetToken: token,
+        passwordResetExpires: {
+          gt: new Date() // Token hasn't expired
+        }
       }
     })
 
     if (!user) {
       return NextResponse.json(
-        { message: 'User not found' },
+        { message: 'Invalid or expired reset token' },
         { status: 400 }
       )
     }

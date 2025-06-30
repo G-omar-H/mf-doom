@@ -290,12 +290,12 @@ export default function AdminCategoriesPage() {
               </div>
               
               <span className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ml-2 ${
-                category.isActive
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-gray-100 text-gray-800'
-              }`}>
-                {category.isActive ? 'Active' : 'Inactive'}
-              </span>
+                  category.isActive
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-gray-100 text-gray-800'
+                }`}>
+                  {category.isActive ? 'Active' : 'Inactive'}
+                </span>
             </div>
 
             <p className="text-xs md:text-sm text-mf-gray mb-4 line-clamp-2">
@@ -326,36 +326,36 @@ export default function AdminCategoriesPage() {
               </button>
               
               <div className="flex space-x-2 md:contents">
-                <button
-                  onClick={() => toggleCategoryStatus(category.id, category.isActive)}
+              <button
+                onClick={() => toggleCategoryStatus(category.id, category.isActive)}
                   className={`flex-1 md:flex-1 text-white text-center py-2 rounded-lg transition-colors flex items-center justify-center space-x-1 text-sm ${
-                    category.isActive 
-                      ? 'bg-yellow-600 hover:bg-yellow-700' 
-                      : 'bg-green-600 hover:bg-green-700'
-                  }`}
-                >
-                  {category.isActive ? (
-                    <>
+                  category.isActive 
+                    ? 'bg-yellow-600 hover:bg-yellow-700' 
+                    : 'bg-green-600 hover:bg-green-700'
+                }`}
+              >
+                {category.isActive ? (
+                  <>
                       <ToggleLeft className="w-3 h-3 md:w-4 md:h-4" />
                       <span className="hidden sm:inline">Hide</span>
                       <span className="sm:hidden">Hide</span>
-                    </>
-                  ) : (
-                    <>
+                  </>
+                ) : (
+                  <>
                       <ToggleRight className="w-3 h-3 md:w-4 md:h-4" />
                       <span className="hidden sm:inline">Show</span>
                       <span className="sm:hidden">Show</span>
-                    </>
-                  )}
-                </button>
-                
-                <button
-                  onClick={() => deleteCategory(category.id)}
+                  </>
+                )}
+              </button>
+              
+              <button
+                onClick={() => deleteCategory(category.id)}
                   className="flex-1 md:flex-1 bg-red-600 text-white text-center py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center space-x-1 text-sm"
-                >
+              >
                   <Trash2 className="w-3 h-3 md:w-4 md:h-4" />
-                  <span>Delete</span>
-                </button>
+                <span>Delete</span>
+              </button>
               </div>
             </div>
           </motion.div>
