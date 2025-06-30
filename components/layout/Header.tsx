@@ -16,6 +16,22 @@ export const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+      setIsInitialized(true)
+    }
+    
+    // Initial check
+    checkMobile()
+    
+    // Listen for resize
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -62,31 +78,43 @@ export const Header: React.FC = () => {
           {/* Enhanced Logo - Mobile Optimized */}
           <Link href="/">
             <motion.div
-              animate={{ 
+              animate={!isMobile || isInitialized ? { 
                 y: [0, -2, 0], // Reduced animation for mobile
-              }}
-              transition={{
+              } : {}}
+              transition={!isMobile ? {
                 duration: 3,
                 repeat: Infinity,
-                ease: "easeInOut"
+                ease: "easeInOut",
+                delay: 0.5 // Add delay for mobile stability
+              } : {
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 1 // Longer delay on mobile for viewport stability
               }}
-              whileHover={{ 
-                scale: 1.02, // Reduced scale for mobile
+              whileHover={!isMobile ? { 
+                scale: 1.02,
                 transition: { duration: 0.2 }
-              }}
-              whileTap={{ scale: 0.98 }} // Added tap feedback for mobile
+              } : {}}
+              whileTap={{ scale: 0.98 }}
               className="flex items-center space-x-2 md:space-x-3 group retro-glow touch-manipulation"
             >
               {/* DOOM Mask Icon - Mobile Optimized */}
               <div className="relative">
                 <motion.div
-                  animate={{ 
-                    rotate: [0, 3, -3, 0], // Reduced rotation for mobile
-                  }}
-                  transition={{
+                  animate={!isMobile || isInitialized ? { 
+                    rotate: [0, 3, -3, 0],
+                  } : {}}
+                  transition={!isMobile ? {
                     duration: 4,
                     repeat: Infinity,
-                    ease: "easeInOut"
+                    ease: "easeInOut",
+                    delay: 0.8
+                  } : {
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 1.5 // Extra delay on mobile
                   }}
                   className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 relative glitch"
                 >
@@ -99,7 +127,7 @@ export const Header: React.FC = () => {
                     unoptimized
                     priority
                   />
-                  {/* Mobile-optimized glowing effect */}
+                  {/* Mobile-optimized glowing effect - Delayed */}
                   <div className="absolute inset-0 bg-gradient-to-r from-mf-blue via-purple-500 to-mf-blue opacity-0 group-hover:opacity-30 md:group-hover:opacity-40 blur-md md:blur-lg transition-all duration-300 md:duration-500 rounded-full animate-pulse"></div>
                   {/* Secondary glow layer - reduced for mobile */}
                   <div className="absolute inset-0 bg-mf-blue opacity-0 group-hover:opacity-15 md:group-hover:opacity-20 blur-sm transition-opacity duration-300 rounded-full"></div>
@@ -110,9 +138,9 @@ export const Header: React.FC = () => {
               <div className="flex flex-col scanlines">
                 <motion.div
                   className="relative"
-                  whileHover={{
+                  whileHover={!isMobile ? {
                     textShadow: "0 0 8px rgba(140, 212, 230, 0.6), 0 0 16px rgba(140, 212, 230, 0.3)"
-                  }}
+                  } : {}}
                 >
                   {/* Main logo text with mobile-friendly sizing */}
                   <span className="font-black text-base sm:text-lg md:text-xl tracking-tight relative z-10 bg-gradient-to-r from-black via-gray-800 to-black bg-clip-text text-transparent group-hover:from-black group-hover:via-mf-dark-blue group-hover:to-black transition-all duration-300 md:duration-500 glitch">
@@ -132,7 +160,7 @@ export const Header: React.FC = () => {
                 <motion.span 
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
+                  transition={{ delay: isMobile ? 0.5 : 0.2 }} // Longer delay on mobile
                   className="text-[9px] sm:text-[10px] md:text-xs text-mf-gray uppercase tracking-wider md:tracking-widest font-medium opacity-60 sm:opacity-70 group-hover:opacity-100 group-hover:text-mf-dark-blue transition-all duration-300 md:duration-500 relative"
                 >
                   VILLAIN COLLECTIVE

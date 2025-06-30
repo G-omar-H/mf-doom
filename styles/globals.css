@@ -302,6 +302,19 @@
 
 /* Mobile-specific enhancements */
 @media (max-width: 768px) {
+  /* Prevent zoom and viewport issues */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  
+  body {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
+    position: relative;
+  }
+
   /* Enhanced touch targets */
   button, a {
     min-height: 44px;
@@ -381,6 +394,55 @@
     outline: 2px solid rgba(140, 212, 230, 0.8);
     outline-offset: 2px;
     border-radius: 8px;
+  }
+  
+  /* Prevent mobile zoom issues on first load */
+  header {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 50 !important;
+    transform: none !important;
+  }
+  
+  /* Ensure hamburger menu is always visible */
+  header nav {
+    min-height: 64px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+  
+  /* Mobile hamburger menu button visibility */
+  header button[class*="md:hidden"] {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    z-index: 51 !important;
+    position: relative !important;
+    transform: none !important;
+  }
+  
+  /* Prevent animations from affecting mobile viewport on load */
+  @media (prefers-reduced-motion: no-preference) {
+    header * {
+      animation-delay: 1s; /* Delay all header animations on mobile */
+    }
+  }
+  
+  /* Mobile-specific viewport stability */
+  .retro-glow {
+    transform: translateZ(0); /* Force hardware acceleration */
+    backface-visibility: hidden;
+  }
+  
+  /* Prevent mobile Safari zoom bugs */
+  input, select, textarea {
+    font-size: 16px !important;
+    border-radius: 0;
+    -webkit-appearance: none;
   }
 }
 
