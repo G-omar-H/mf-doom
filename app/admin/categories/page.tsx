@@ -165,17 +165,17 @@ export default function AdminCategoriesPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
+      <div className="mb-6 md:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
           <div>
-            <h1 className="text-3xl font-black">CATEGORY MANAGEMENT</h1>
-            <p className="text-mf-gray mt-1">Organize your villain merchandise catalog</p>
+            <h1 className="text-2xl md:text-3xl font-black">CATEGORY MANAGEMENT</h1>
+            <p className="text-mf-gray mt-1 text-sm md:text-base">Organize your villain merchandise catalog</p>
           </div>
           <button
             onClick={() => setShowForm(true)}
-            className="btn-primary flex items-center space-x-2"
+            className="btn-primary flex items-center space-x-2 text-sm md:text-base w-full sm:w-auto justify-center sm:justify-start"
           >
             <Plus className="w-4 h-4" />
             <span>Add Category</span>
@@ -184,15 +184,15 @@ export default function AdminCategoriesPage() {
       </div>
 
       {/* Search */}
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-6">
-        <div className="relative max-w-md">
+      <div className="bg-white rounded-lg md:rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 mb-6">
+        <div className="relative max-w-full md:max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mf-gray w-5 h-5" />
           <input
             type="text"
             placeholder="Search categories..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+            className="w-full pl-12 pr-4 py-2 md:py-3 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors text-sm md:text-base"
           />
         </div>
       </div>
@@ -203,9 +203,9 @@ export default function AdminCategoriesPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-xl shadow-xl max-w-md w-full p-6"
+            className="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto p-4 md:p-6"
           >
-            <h2 className="text-xl font-bold mb-4">
+            <h2 className="text-lg md:text-xl font-bold mb-4">
               {editingCategory ? 'Edit Category' : 'Add New Category'}
             </h2>
             
@@ -218,7 +218,7 @@ export default function AdminCategoriesPage() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
+                  className="w-full px-3 py-2 md:py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none text-sm md:text-base"
                   required
                 />
               </div>
@@ -230,7 +230,7 @@ export default function AdminCategoriesPage() {
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none"
+                  className="w-full px-3 py-2 md:py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none text-sm md:text-base"
                   rows={3}
                 />
               </div>
@@ -241,23 +241,23 @@ export default function AdminCategoriesPage() {
                     type="checkbox"
                     checked={formData.isActive}
                     onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                    className="mr-2"
+                    className="mr-2 w-4 h-4"
                   />
-                  <span className="text-sm text-gray-700">Active Category</span>
+                  <span className="text-sm md:text-base text-gray-700">Active Category</span>
                 </label>
               </div>
 
-              <div className="flex space-x-3">
+              <div className="flex flex-col sm:flex-row sm:space-x-3 space-y-2 sm:space-y-0">
                 <button
                   type="button"
                   onClick={cancelEdit}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-2 md:py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm md:text-base"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-mf-blue text-white px-4 py-2 rounded-lg hover:bg-mf-dark-blue transition-colors"
+                  className="flex-1 bg-mf-blue text-white px-4 py-2 md:py-3 rounded-lg hover:bg-mf-dark-blue transition-colors text-sm md:text-base"
                 >
                   {editingCategory ? 'Update' : 'Create'}
                 </button>
@@ -268,46 +268,44 @@ export default function AdminCategoriesPage() {
       )}
 
       {/* Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {filteredCategories.map((category) => (
           <motion.div
             key={category.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow"
+            className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 hover:shadow-md transition-shadow"
           >
             <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+              <div className="flex items-center space-x-3 flex-1 min-w-0">
+                <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center ${
                   category.isActive ? 'bg-mf-blue' : 'bg-gray-400'
                 }`}>
-                  <Tag className="w-5 h-5 text-white" />
+                  <Tag className="w-4 h-4 md:w-5 md:h-5 text-white" />
                 </div>
-                <div>
-                  <h3 className="font-semibold">{category.name}</h3>
-                  <p className="text-sm text-mf-gray">/{category.slug}</p>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-semibold text-sm md:text-base line-clamp-1">{category.name}</h3>
+                  <p className="text-xs md:text-sm text-mf-gray truncate">/{category.slug}</p>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-2">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  category.isActive
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-gray-100 text-gray-800'
-                }`}>
-                  {category.isActive ? 'Active' : 'Inactive'}
-                </span>
-              </div>
+              <span className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ml-2 ${
+                category.isActive
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-gray-100 text-gray-800'
+              }`}>
+                {category.isActive ? 'Active' : 'Inactive'}
+              </span>
             </div>
 
-            <p className="text-sm text-mf-gray mb-4">
+            <p className="text-xs md:text-sm text-mf-gray mb-4 line-clamp-2">
               {category.description || 'No description available'}
             </p>
 
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
-                <Package className="w-4 h-4 text-mf-gray" />
-                <span className="text-sm text-mf-gray">
+                <Package className="w-3 h-3 md:w-4 md:h-4 text-mf-gray" />
+                <span className="text-xs md:text-sm text-mf-gray">
                   {category.productCount} products
                 </span>
               </div>
@@ -316,43 +314,49 @@ export default function AdminCategoriesPage() {
               </span>
             </div>
 
-            <div className="flex items-center space-x-2">
+            {/* Mobile-Optimized Action Buttons */}
+            <div className="space-y-2 md:space-y-0 md:flex md:items-center md:space-x-2">
+              {/* Mobile: Stacked buttons, Desktop: Row */}
               <button
                 onClick={() => startEdit(category)}
-                className="flex-1 bg-gray-600 text-white text-center py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center space-x-1"
+                className="w-full md:flex-1 bg-gray-600 text-white text-center py-2 md:py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center space-x-1 text-sm"
               >
-                <Edit className="w-4 h-4" />
+                <Edit className="w-3 h-3 md:w-4 md:h-4" />
                 <span>Edit</span>
               </button>
               
-              <button
-                onClick={() => toggleCategoryStatus(category.id, category.isActive)}
-                className={`flex-1 text-white text-center py-2 rounded-lg transition-colors flex items-center justify-center space-x-1 ${
-                  category.isActive 
-                    ? 'bg-yellow-600 hover:bg-yellow-700' 
-                    : 'bg-green-600 hover:bg-green-700'
-                }`}
-              >
-                {category.isActive ? (
-                  <>
-                    <ToggleLeft className="w-4 h-4" />
-                    <span>Hide</span>
-                  </>
-                ) : (
-                  <>
-                    <ToggleRight className="w-4 h-4" />
-                    <span>Show</span>
-                  </>
-                )}
-              </button>
-              
-              <button
-                onClick={() => deleteCategory(category.id)}
-                className="flex-1 bg-red-600 text-white text-center py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center space-x-1"
-              >
-                <Trash2 className="w-4 h-4" />
-                <span>Delete</span>
-              </button>
+              <div className="flex space-x-2 md:contents">
+                <button
+                  onClick={() => toggleCategoryStatus(category.id, category.isActive)}
+                  className={`flex-1 md:flex-1 text-white text-center py-2 rounded-lg transition-colors flex items-center justify-center space-x-1 text-sm ${
+                    category.isActive 
+                      ? 'bg-yellow-600 hover:bg-yellow-700' 
+                      : 'bg-green-600 hover:bg-green-700'
+                  }`}
+                >
+                  {category.isActive ? (
+                    <>
+                      <ToggleLeft className="w-3 h-3 md:w-4 md:h-4" />
+                      <span className="hidden sm:inline">Hide</span>
+                      <span className="sm:hidden">Hide</span>
+                    </>
+                  ) : (
+                    <>
+                      <ToggleRight className="w-3 h-3 md:w-4 md:h-4" />
+                      <span className="hidden sm:inline">Show</span>
+                      <span className="sm:hidden">Show</span>
+                    </>
+                  )}
+                </button>
+                
+                <button
+                  onClick={() => deleteCategory(category.id)}
+                  className="flex-1 md:flex-1 bg-red-600 text-white text-center py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center space-x-1 text-sm"
+                >
+                  <Trash2 className="w-3 h-3 md:w-4 md:h-4" />
+                  <span>Delete</span>
+                </button>
+              </div>
             </div>
           </motion.div>
         ))}
@@ -360,14 +364,14 @@ export default function AdminCategoriesPage() {
 
       {filteredCategories.length === 0 && (
         <div className="text-center py-12">
-          <Tag className="w-16 h-16 text-mf-gray mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-mf-gray mb-2">No categories found</h3>
-          <p className="text-mf-gray mb-6">
+          <Tag className="w-12 h-12 md:w-16 md:h-16 text-mf-gray mx-auto mb-4" />
+          <h3 className="text-lg md:text-xl font-semibold text-mf-gray mb-2">No categories found</h3>
+          <p className="text-sm md:text-base text-mf-gray mb-6">
             {searchTerm ? 'Try adjusting your search criteria' : 'Start by creating your first category'}
           </p>
           <button
             onClick={() => setShowForm(true)}
-            className="btn-primary"
+            className="btn-primary text-sm md:text-base"
           >
             Add Category
           </button>

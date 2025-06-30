@@ -189,7 +189,7 @@ export default function AdminOrdersPage() {
   const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0)
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       {/* Header */}
       <div className="mb-6 md:mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
