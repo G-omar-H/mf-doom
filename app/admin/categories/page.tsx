@@ -14,10 +14,12 @@ import {
   MoreHorizontal,
   Eye,
   ToggleLeft,
-  ToggleRight
+  ToggleRight,
+  X
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { useOptimisticUpdate } from '@/lib/hooks/useOptimisticUpdate'
 
 interface Category {
   id: string
@@ -25,7 +27,7 @@ interface Category {
   slug: string
   description: string
   isActive: boolean
-  productCount: number
+  productCount?: number
   createdAt: string
 }
 
@@ -42,6 +44,9 @@ export default function AdminCategoriesPage() {
     description: '',
     isActive: true
   })
+
+  // Optimistic updates hook
+  const { updateItem, deleteItem, addItem, loading: optimisticLoading } = useOptimisticUpdate(categories, setCategories)
 
   useEffect(() => {
     if (status === 'loading') return
@@ -70,69 +75,79 @@ export default function AdminCategoriesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    try {
-      const method = editingCategory ? 'PUT' : 'POST'
-      const url = editingCategory 
-        ? `/api/admin/categories/${editingCategory.id}` 
-        : '/api/admin/categories'
-
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
-
-      if (response.ok) {
-        toast.success(`Category ${editingCategory ? 'updated' : 'created'} successfully`)
-        setShowForm(false)
-        setEditingCategory(null)
-        setFormData({ name: '', description: '', isActive: true })
-        fetchCategories()
-      } else {
-        toast.error('Failed to save category')
-      }
-    } catch (error) {
-      toast.error('Something went wrong')
+    if (editingCategory) {
+      // Update existing category
+      await updateItem(
+        editingCategory.id,
+        (category) => ({ ...category, ...formData }),
+        () => fetch(`/api/admin/categories/${editingCategory.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        }),
+        {
+          successMessage: 'Category updated successfully',
+          errorMessage: 'Failed to update category'
+        }
+      )
+    } else {
+      // Add new category
+      await addItem(
+        { 
+          ...formData, 
+          slug: formData.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+          productCount: 0, 
+          createdAt: new Date().toISOString() 
+        },
+        async () => {
+          const response = await fetch('/api/admin/categories', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData),
+          })
+          return response.json()
+        },
+        {
+          successMessage: 'Category created successfully',
+          errorMessage: 'Failed to create category'
+        }
+      )
     }
+
+    setShowForm(false)
+    setEditingCategory(null)
+    setFormData({ name: '', description: '', isActive: true })
   }
 
   const toggleCategoryStatus = async (categoryId: string, currentStatus: boolean) => {
-    try {
-      const response = await fetch(`/api/admin/categories/${categoryId}`, {
+    await updateItem(
+      categoryId,
+      (category) => ({ ...category, isActive: !currentStatus }),
+      () => fetch(`/api/admin/categories/${categoryId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isActive: !currentStatus }),
-      })
-
-      if (response.ok) {
-        toast.success(`Category ${!currentStatus ? 'activated' : 'deactivated'}`)
-        fetchCategories()
-      } else {
-        toast.error('Failed to update category')
+      }),
+      {
+        successMessage: `Category ${!currentStatus ? 'activated' : 'deactivated'}`,
+        errorMessage: 'Failed to update category'
       }
-    } catch (error) {
-      toast.error('Something went wrong')
-    }
+    )
   }
 
   const deleteCategory = async (categoryId: string) => {
     if (!confirm('Are you sure you want to delete this category? This will affect all products in this category.')) return
 
-    try {
-      const response = await fetch(`/api/admin/categories/${categoryId}`, {
+    await deleteItem(
+      categoryId,
+      () => fetch(`/api/admin/categories/${categoryId}`, {
         method: 'DELETE',
-      })
-
-      if (response.ok) {
-        toast.success('Category deleted successfully')
-        fetchCategories()
-      } else {
-        const error = await response.json()
-        toast.error(error.message || 'Failed to delete category')
+      }),
+      {
+        successMessage: 'Category deleted successfully',
+        errorMessage: 'Failed to delete category'
       }
-    } catch (error) {
-      toast.error('Something went wrong')
-    }
+    )
   }
 
   const startEdit = (category: Category) => {
@@ -205,61 +220,73 @@ export default function AdminCategoriesPage() {
             animate={{ opacity: 1, scale: 1 }}
             className="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto p-4 md:p-6"
           >
-            <h2 className="text-lg md:text-xl font-bold mb-4">
-              {editingCategory ? 'Edit Category' : 'Add New Category'}
-            </h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold">
+                {editingCategory ? 'Edit Category' : 'Add Category'}
+              </h2>
+              <button
+                onClick={cancelEdit}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
             
             <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 md:py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none text-sm md:text-base"
-                  required
-                />
-              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Category Name
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+                    required
+                  />
+                </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3 py-2 md:py-3 border border-gray-300 rounded-lg focus:border-mf-blue focus:outline-none text-sm md:text-base"
-                  rows={3}
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                    rows={3}
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-mf-blue focus:outline-none transition-colors"
+                    required
+                  />
+                </div>
 
-              <div className="mb-6">
-                <label className="flex items-center">
+                <div className="flex items-center space-x-3">
                   <input
                     type="checkbox"
+                    id="isActive"
                     checked={formData.isActive}
-                    onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                    className="mr-2 w-4 h-4"
+                    onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
+                    className="w-4 h-4 text-mf-blue bg-gray-100 border-gray-300 rounded focus:ring-mf-blue focus:ring-2"
                   />
-                  <span className="text-sm md:text-base text-gray-700">Active Category</span>
-                </label>
+                  <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
+                    Active Category
+                  </label>
+                </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:space-x-3 space-y-2 sm:space-y-0">
+              <div className="flex items-center space-x-3 mt-6">
+                <button
+                  type="submit"
+                  className="flex-1 bg-mf-blue text-white py-2 px-4 rounded-lg hover:bg-mf-dark-blue transition-colors font-medium"
+                >
+                  {editingCategory ? 'Update' : 'Create'} Category
+                </button>
                 <button
                   type="button"
                   onClick={cancelEdit}
-                  className="flex-1 px-4 py-2 md:py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm md:text-base"
+                  className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors font-medium"
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 bg-mf-blue text-white px-4 py-2 md:py-3 rounded-lg hover:bg-mf-dark-blue transition-colors text-sm md:text-base"
-                >
-                  {editingCategory ? 'Update' : 'Create'}
                 </button>
               </div>
             </form>
@@ -274,7 +301,9 @@ export default function AdminCategoriesPage() {
             key={category.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 hover:shadow-md transition-shadow"
+            className={`bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 hover:shadow-md transition-shadow ${
+              optimisticLoading[category.id] ? 'opacity-75' : ''
+            }`}
           >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center space-x-3 flex-1 min-w-0">
@@ -319,6 +348,7 @@ export default function AdminCategoriesPage() {
               {/* Mobile: Stacked buttons, Desktop: Row */}
               <button
                 onClick={() => startEdit(category)}
+                disabled={optimisticLoading[category.id]}
                 className="w-full md:flex-1 bg-gray-600 text-white text-center py-2 md:py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center space-x-1 text-sm"
               >
                 <Edit className="w-3 h-3 md:w-4 md:h-4" />
@@ -328,7 +358,8 @@ export default function AdminCategoriesPage() {
               <div className="flex space-x-2 md:contents">
               <button
                 onClick={() => toggleCategoryStatus(category.id, category.isActive)}
-                  className={`flex-1 md:flex-1 text-white text-center py-2 rounded-lg transition-colors flex items-center justify-center space-x-1 text-sm ${
+                disabled={optimisticLoading[category.id]}
+                className={`flex-1 md:flex-1 text-white text-center py-2 rounded-lg transition-colors flex items-center justify-center space-x-1 text-sm ${
                   category.isActive 
                     ? 'bg-yellow-600 hover:bg-yellow-700' 
                     : 'bg-green-600 hover:bg-green-700'
@@ -351,7 +382,8 @@ export default function AdminCategoriesPage() {
               
               <button
                 onClick={() => deleteCategory(category.id)}
-                  className="flex-1 md:flex-1 bg-red-600 text-white text-center py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center space-x-1 text-sm"
+                disabled={optimisticLoading[category.id]}
+                className="flex-1 md:flex-1 bg-red-600 text-white text-center py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center space-x-1 text-sm"
               >
                   <Trash2 className="w-3 h-3 md:w-4 md:h-4" />
                 <span>Delete</span>
