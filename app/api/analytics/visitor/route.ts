@@ -88,160 +88,230 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+  const timeoutPromise = new Promise((_, reject) => 
+    setTimeout(() => reject(new Error('Request timeout')), 25000) // 25 second timeout
+  )
+
   try {
-    // Comprehensive analytics endpoint for admin use
-    const { searchParams } = new URL(request.url)
-    const days = parseInt(searchParams.get('days') || '7')
-    const limit = parseInt(searchParams.get('limit') || '100')
-
-    if (!prisma) {
-      return NextResponse.json({ error: 'Database not available' }, { status: 503 })
-    }
-
-    // Get visitor stats for the last N days
-    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
-    const lastHour = new Date(Date.now() - 60 * 60 * 1000) // Last hour for real-time
-    const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
-
-    const [
-      totalVisitors, 
-      uniqueVisitors, 
-      topCountries, 
-      topPages, 
-      deviceStats,
-      realtimeVisitors,
-      sessionData,
-      hourlyData
-    ] = await Promise.all([
-      // Total page views
-      prisma.visitorAnalytics.count({
-        where: { timestamp: { gte: since } }
-      }),
-
-      // Unique visitors (unique sessions)
-      prisma.visitorAnalytics.groupBy({
-        by: ['sessionId'],
-        where: { timestamp: { gte: since } },
-        _count: { sessionId: true }
-      }),
-
-      // Top countries
-      prisma.visitorAnalytics.groupBy({
-        by: ['country'],
-        where: { 
-          timestamp: { gte: since },
-          country: { not: null }
-        },
-        _count: { country: true },
-        orderBy: { _count: { country: 'desc' } },
-        take: 10
-      }),
-
-      // Top pages
-      prisma.visitorAnalytics.groupBy({
-        by: ['pathname'],
-        where: { timestamp: { gte: since } },
-        _count: { pathname: true },
-        orderBy: { _count: { pathname: 'desc' } },
-        take: 10
-      }),
-
-      // Device type stats
-      prisma.visitorAnalytics.groupBy({
-        by: ['deviceType'],
-        where: { timestamp: { gte: since } },
-        _count: { deviceType: true },
-        orderBy: { _count: { deviceType: 'desc' } }
-      }),
-
-      // Real-time visitors (last hour)
-      prisma.visitorAnalytics.groupBy({
-        by: ['sessionId'],
-        where: { timestamp: { gte: lastHour } },
-        _count: { sessionId: true }
-      }),
-
-      // Session data for calculating average session duration
-      prisma.visitorAnalytics.groupBy({
-        by: ['sessionId'],
-        where: { timestamp: { gte: since } },
-        _min: { timestamp: true },
-        _max: { timestamp: true },
-        _count: { sessionId: true }
-      }),
-
-      // Hourly traffic data for last 24 hours
-      prisma.visitorAnalytics.findMany({
-        where: { timestamp: { gte: last24Hours } },
-        select: {
-          timestamp: true,
-          sessionId: true
-        }
-      })
+    const result = await Promise.race([
+      getAnalyticsData(request),
+      timeoutPromise
     ])
-
-    // Calculate average session duration
-    let totalSessionDuration = 0
-    let validSessions = 0
-    
-    sessionData.forEach(session => {
-      if (session._min.timestamp && session._max.timestamp && session._count.sessionId > 1) {
-        const duration = session._max.timestamp.getTime() - session._min.timestamp.getTime()
-        totalSessionDuration += duration
-        validSessions++
-      }
-    })
-    
-    const avgSessionDuration = validSessions > 0 ? Math.round(totalSessionDuration / validSessions / 1000) : 0
-
-    // Calculate bounce rate (sessions with only 1 page view)
-    const bouncedSessions = sessionData.filter(session => session._count.sessionId === 1).length
-    const bounceRate = uniqueVisitors.length > 0 ? (bouncedSessions / uniqueVisitors.length) * 100 : 0
-
-    // Process hourly traffic data
-    const hourlyTraffic = Array.from({ length: 24 }, (_, hour) => {
-      const hourStart = new Date(last24Hours.getTime() + hour * 60 * 60 * 1000)
-      const hourEnd = new Date(hourStart.getTime() + 60 * 60 * 1000)
-      
-      const hourData = hourlyData.filter(record => 
-        record.timestamp >= hourStart && record.timestamp < hourEnd
-      )
-      
-      const uniqueSessionsThisHour = new Set(hourData.map(record => record.sessionId)).size
-      
-      return {
-        hour: hour,
-        visitors: uniqueSessionsThisHour,
-        pageViews: hourData.length
-      }
-    })
-
-    return NextResponse.json({
-      period: `${days} days`,
-      totalPageViews: totalVisitors,
-      uniqueVisitors: uniqueVisitors.length,
-      realTimeVisitors: realtimeVisitors.length,
-      avgSessionDuration: avgSessionDuration,
-      bounceRate: Math.round(bounceRate * 10) / 10, // Round to 1 decimal
-      topCountries: topCountries.map(item => ({
-        country: item.country,
-        visits: item._count.country
-      })),
-      topPages: topPages.map(item => ({
-        page: item.pathname,
-        visits: item._count.pathname
-      })),
-      deviceTypes: deviceStats.map(item => ({
-        device: item.deviceType,
-        visits: item._count.deviceType
-      })),
-      hourlyTraffic: hourlyTraffic
-    })
+    return result as NextResponse
   } catch (error) {
     console.error('Analytics fetch error:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch analytics' },
+      { 
+        error: 'Analytics data temporarily unavailable',
+        details: process.env.NODE_ENV === 'development' ? String(error) : undefined
+      },
       { status: 500 }
     )
   }
+}
+
+async function getAnalyticsData(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
+  const days = parseInt(searchParams.get('days') || '7')
+  const limit = parseInt(searchParams.get('limit') || '100')
+
+  if (!prisma) {
+    return NextResponse.json({ error: 'Database not available' }, { status: 503 })
+  }
+
+  // Calculate time ranges
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+  const lastHour = new Date(Date.now() - 60 * 60 * 1000)
+  const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000)
+
+  // Step 1: Get basic counts (fast queries)
+  console.log('📊 Fetching basic analytics...')
+  const [totalVisitors, deviceStats] = await Promise.all([
+    prisma.visitorAnalytics.count({
+      where: { timestamp: { gte: since } }
+    }).catch(() => 0),
+
+    prisma.visitorAnalytics.groupBy({
+      by: ['deviceType'],
+      where: { timestamp: { gte: since } },
+      _count: { deviceType: true },
+      orderBy: { _count: { deviceType: 'desc' } }
+    }).catch(() => [])
+  ])
+
+  // Step 2: Get unique visitors and countries (simplified)
+  console.log('🌍 Fetching visitor demographics...')
+  const [uniqueVisitorsRaw, topCountriesRaw] = await Promise.all([
+    prisma.visitorAnalytics.findMany({
+      where: { timestamp: { gte: since } },
+      select: { sessionId: true },
+      distinct: ['sessionId']
+    }).catch(() => []),
+
+    prisma.visitorAnalytics.groupBy({
+      by: ['country'],
+      where: { 
+        timestamp: { gte: since },
+        country: { not: null }
+      },
+      _count: { country: true },
+      orderBy: { _count: { country: 'desc' } },
+      take: 10
+    }).catch(() => [])
+  ])
+
+  const uniqueVisitors = uniqueVisitorsRaw.length
+
+  // Step 3: Get page data and real-time visitors
+  console.log('📄 Fetching page analytics...')
+  const [topPages, realtimeVisitorsRaw] = await Promise.all([
+    prisma.visitorAnalytics.groupBy({
+      by: ['pathname'],
+      where: { timestamp: { gte: since } },
+      _count: { pathname: true },
+      orderBy: { _count: { pathname: 'desc' } },
+      take: 10
+    }).catch(() => []),
+
+    prisma.visitorAnalytics.findMany({
+      where: { timestamp: { gte: lastHour } },
+      select: { sessionId: true },
+      distinct: ['sessionId']
+    }).catch(() => [])
+  ])
+
+  const realTimeVisitors = realtimeVisitorsRaw.length
+
+  // Step 4: Get session data for duration calculation (optimized)
+  console.log('⏱️ Calculating session metrics...')
+  const sessionData = await prisma.visitorAnalytics.groupBy({
+    by: ['sessionId'],
+    where: { timestamp: { gte: since } },
+    _min: { timestamp: true },
+    _max: { timestamp: true },
+    _count: { sessionId: true }
+  }).catch(() => [])
+
+  // Calculate session metrics
+  let totalSessionDuration = 0
+  let validSessions = 0
+  let bouncedSessions = 0
+
+  sessionData.forEach(session => {
+    if (session._count.sessionId === 1) {
+      bouncedSessions++
+    } else if (session._min.timestamp && session._max.timestamp && session._count.sessionId > 1) {
+      const duration = session._max.timestamp.getTime() - session._min.timestamp.getTime()
+      totalSessionDuration += duration
+      validSessions++
+    }
+  })
+
+  const avgSessionDuration = validSessions > 0 ? Math.round(totalSessionDuration / validSessions / 1000) : 0
+  const bounceRate = uniqueVisitors > 0 ? (bouncedSessions / uniqueVisitors) * 100 : 0
+
+  // Step 5: Get hourly traffic data (simplified)
+  console.log('📈 Fetching hourly traffic...')
+  const hourlyDataRaw = await prisma.visitorAnalytics.findMany({
+    where: { timestamp: { gte: last24Hours } },
+    select: {
+      timestamp: true,
+      sessionId: true
+    }
+  }).catch(() => [])
+
+  // Step 6: Get individual visitor locations with coordinates (optimized for Vercel)
+  console.log('🗺️ Fetching visitor locations...')
+  let visitorLocations: Array<{
+    sessionId: string;
+    latitude: number | null;
+    longitude: number | null;
+    country: string | null;
+    city: string | null;
+    timestamp: Date;
+  }> = []
+  
+  try {
+    // Optimized query: only fetch locations from last 3 days for performance
+    const locationsSince = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+    
+    visitorLocations = await prisma.visitorAnalytics.findMany({
+      where: { 
+        timestamp: { 
+          gte: locationsSince, // Shorter time range for performance
+          lte: new Date() 
+        },
+        latitude: { 
+          not: null,
+          gte: -90,  // Valid latitude range
+          lte: 90
+        },
+        longitude: { 
+          not: null,
+          gte: -180, // Valid longitude range  
+          lte: 180
+        }
+      },
+      select: {
+        sessionId: true,
+        latitude: true,
+        longitude: true,
+        country: true,
+        city: true,
+        timestamp: true
+      },
+      distinct: ['sessionId'], // One location per unique visitor
+      take: 100, // Reduced limit for Vercel performance
+      orderBy: { timestamp: 'desc' }
+    })
+    
+    console.log(`📍 Found ${visitorLocations.length} visitor locations`)
+  } catch (error) {
+    console.warn('⚠️ Visitor locations query failed, map will show countries only:', error)
+    visitorLocations = [] // Graceful fallback - map still works without individual locations
+  }
+
+  // Process hourly data efficiently
+  const hourlyTraffic = Array.from({ length: 24 }, (_, hour) => {
+    const hourStart = new Date(last24Hours.getTime() + hour * 60 * 60 * 1000)
+    const hourEnd = new Date(hourStart.getTime() + 60 * 60 * 1000)
+    
+    const hourData = hourlyDataRaw.filter(record => 
+      record.timestamp >= hourStart && record.timestamp < hourEnd
+    )
+    
+    const uniqueSessionsThisHour = new Set(hourData.map(record => record.sessionId)).size
+    
+    return {
+      hour: hour,
+      visitors: uniqueSessionsThisHour,
+      pageViews: hourData.length
+    }
+  })
+
+  console.log('✅ Analytics data compiled successfully')
+
+  // Return the exact same data structure as before
+  return NextResponse.json({
+    period: `${days} days`,
+    totalPageViews: totalVisitors,
+    uniqueVisitors: uniqueVisitors,
+    realTimeVisitors: realTimeVisitors,
+    avgSessionDuration: avgSessionDuration,
+    bounceRate: Math.round(bounceRate * 10) / 10,
+    topCountries: topCountriesRaw.map(item => ({
+      country: item.country,
+      visits: item._count.country
+    })),
+    topPages: topPages.map(item => ({
+      page: item.pathname,
+      visits: item._count.pathname
+    })),
+    deviceTypes: deviceStats.map(item => ({
+      device: item.deviceType,
+      visits: item._count.deviceType
+    })),
+    hourlyTraffic: hourlyTraffic,
+    visitorLocations: visitorLocations
+  })
 } 
