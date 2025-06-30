@@ -8,6 +8,7 @@ import { ShoppingCart, Menu, X, Instagram, User, LogOut, Settings } from 'lucide
 import { useCartStore } from '@/lib/store/cartStore'
 import { useSession, signOut } from 'next-auth/react'
 import { useState, useEffect } from 'react'
+import toast from 'react-hot-toast'
 
 export const Header: React.FC = () => {
   const { toggleCart, getTotalItems } = useCartStore()
@@ -64,19 +65,48 @@ export const Header: React.FC = () => {
   ]
 
   const handleSignOut = async () => {
-    console.log('Logout initiated...')
+    console.log('🚪 Logout initiated by user:', session?.user?.email)
     setIsUserMenuOpen(false)
     
     try {
-      // Use window.location for more reliable logout
+      // Show immediate feedback
+      const loadingToast = toast.loading('Signing out...')
+      
+      // Use NextAuth's signOut with enhanced options
       await signOut({ 
         callbackUrl: '/',
-        redirect: true // Let NextAuth handle the redirect
+        redirect: true // Let NextAuth handle the redirect for consistency
       })
+      
+      // Clear any additional client-side data
+      if (typeof window !== 'undefined') {
+        // Clear any custom session storage
+        sessionStorage.removeItem('doom_session_id')
+        sessionStorage.removeItem('admin-session-id')
+        
+        // Clear any cached data (if using SWR or similar)
+        if (window.localStorage) {
+          // Remove any auth-related localStorage items
+          Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('auth-') || key.startsWith('session-') || key.startsWith('user-')) {
+              localStorage.removeItem(key)
+            }
+          })
+        }
+      }
+      
+      toast.dismiss(loadingToast)
+      toast.success('Successfully signed out')
+      
+      console.log('✅ Logout completed successfully')
     } catch (error) {
-      console.error('Logout error:', error)
-      // Force logout if NextAuth fails
-      window.location.href = '/'
+      console.error('❌ Logout error:', error)
+      toast.error('Error signing out. Redirecting...')
+      
+      // Force logout by redirecting to home
+      if (typeof window !== 'undefined') {
+        window.location.href = '/'
+      }
     }
   }
 

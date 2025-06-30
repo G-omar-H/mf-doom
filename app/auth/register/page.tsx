@@ -29,13 +29,31 @@ export default function RegisterPage() {
   }
 
   const validateForm = () => {
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+    if (!formData.name?.trim() || !formData.email?.trim() || !formData.password || !formData.confirmPassword) {
       toast.error('Please fill in all fields')
+      return false
+    }
+
+    if (formData.name.trim().length < 2) {
+      toast.error('Name must be at least 2 characters')
+      return false
+    }
+
+    // Email format validation (consistent with API)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email.trim())) {
+      toast.error('Please enter a valid email address')
       return false
     }
 
     if (formData.password.length < 8) {
       toast.error('Password must be at least 8 characters')
+      return false
+    }
+
+    // Enhanced password validation (consistent with API)
+    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+      toast.error('Password must contain at least one uppercase letter, one lowercase letter, and one number')
       return false
     }
 
@@ -61,8 +79,8 @@ export default function RegisterPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
+          name: formData.name.trim(),
+          email: formData.email.trim(),
           password: formData.password,
         }),
       })
@@ -76,7 +94,8 @@ export default function RegisterPage() {
         toast.error(data.error || 'Registration failed')
       }
     } catch (error) {
-      toast.error('Something went wrong')
+      console.error('Registration error:', error)
+      toast.error('Network error. Please try again.')
     } finally {
       setIsLoading(false)
     }

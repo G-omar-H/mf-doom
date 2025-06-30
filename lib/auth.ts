@@ -91,28 +91,35 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials): Promise<User | null> {
         try {
-          // Validate input
-          if (!credentials?.email || !credentials?.password) {
-            console.warn('Missing email or password in login attempt')
+          console.log('🔑 Authorization attempt for:', credentials?.email)
+          
+          // Validate input with detailed logging
+          if (!credentials?.email?.trim() || !credentials?.password) {
+            console.warn('❌ Missing credentials:', { 
+              hasEmail: !!credentials?.email, 
+              hasPassword: !!credentials?.password 
+            })
             return null
           }
 
           if (!prisma) {
-            console.error('Database connection not available')
+            console.error('❌ Database connection not available')
             return null
           }
 
-          // Validate email format
+          const normalizedEmail = credentials.email.toLowerCase().trim()
+
+          // Validate email format for security
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-          if (!emailRegex.test(credentials.email)) {
-            console.warn('Invalid email format:', credentials.email)
+          if (!emailRegex.test(normalizedEmail)) {
+            console.warn('❌ Invalid email format:', credentials.email)
             return null
           }
 
-          // Find user - exclude password reset fields to avoid conflicts
+          // Find user with explicit field selection for performance
           const user = await prisma.user.findUnique({
             where: {
-              email: credentials.email.toLowerCase().trim()
+              email: normalizedEmail
             },
             select: {
               id: true,
@@ -122,46 +129,55 @@ export const authOptions: NextAuthOptions = {
               role: true,
               avatar: true,
               phone: true,
-              // Explicitly exclude password reset fields
+              emailVerified: true,
+              // Explicitly exclude password reset fields for security
             }
           })
 
           if (!user) {
-            console.warn('User not found:', credentials.email)
+            console.warn('❌ User not found:', normalizedEmail)
             return null
           }
 
           if (!user.password) {
-            console.warn('User has no password set:', credentials.email)
+            console.warn('❌ User has no password set:', normalizedEmail)
             return null
           }
 
-          // Verify password
+          // Verify password with timing-safe comparison
           const isPasswordValid = await bcrypt.compare(
             credentials.password,
             user.password
           )
 
           if (!isPasswordValid) {
-            console.warn('Invalid password for user:', credentials.email)
+            console.warn('❌ Invalid password for user:', normalizedEmail)
             return null
           }
 
-          console.info('Successful login:', credentials.email)
+          console.log('✅ Successful login for:', normalizedEmail)
 
-          const returnUser = {
+          // Return user object with explicit type casting for consistency
+          const returnUser: User = {
             id: user.id,
             email: user.email,
-            name: user.name,
+            name: user.name || '',
             role: user.role,
-            avatar: user.avatar ?? undefined,
-            phone: user.phone ?? undefined,
+            avatar: user.avatar || undefined,
+            phone: user.phone || undefined,
           }
 
-          console.log('🎯 Returning user object:', returnUser)
+          console.log('🎯 Returning user object:', {
+            id: returnUser.id,
+            email: returnUser.email,
+            role: returnUser.role,
+            hasAvatar: !!returnUser.avatar,
+            hasPhone: !!returnUser.phone
+          })
+          
           return returnUser
         } catch (error) {
-          console.error('Authentication error:', error)
+          console.error('❌ Authentication error:', error)
           return null
         }
       }
@@ -169,31 +185,35 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-    async jwt({ token, user, account, profile, trigger }): Promise<JWT> {
+    async jwt({ token, user, account, profile, trigger, session }): Promise<JWT> {
       console.log('🔐 JWT Callback triggered:', { 
         hasUser: !!user, 
         hasToken: !!token, 
+        hasAccount: !!account,
         trigger,
         tokenId: token?.id,
-        userId: user?.id 
+        userId: user?.id,
+        timestamp: new Date().toISOString()
       })
 
-      // Initial sign in
-      if (user) {
-        console.log('👤 Setting JWT token for new login:', user.email)
+      // Initial sign in - establish token
+      if (user && account) {
+        console.log('👤 Establishing JWT token for new login:', user.email)
         token.id = user.id
         token.role = user.role
-        token.avatar = user.avatar ?? undefined
-        token.phone = user.phone ?? undefined
+        token.avatar = user.avatar
+        token.phone = user.phone
         
-        console.log('✅ JWT token created:', {
+        console.log('✅ JWT token established:', {
           id: token.id,
           email: token.email,
-          role: token.role
+          role: token.role,
+          provider: account.provider,
+          tokenSub: token.sub
         })
       }
 
-      // Handle token refresh
+      // Handle token refresh and updates
       if (trigger === 'update' && prisma) {
         try {
           console.log('🔄 Refreshing JWT token for user:', token.id)
@@ -206,21 +226,53 @@ export const authOptions: NextAuthOptions = {
               role: true,
               avatar: true,
               phone: true,
+              emailVerified: true
             }
           })
 
           if (refreshedUser) {
-            token.name = refreshedUser.name ?? undefined
-            token.email = refreshedUser.email ?? undefined
+            // Update token with fresh user data
+            token.name = refreshedUser.name || undefined
+            token.email = refreshedUser.email || undefined
             token.role = refreshedUser.role
-            token.avatar = refreshedUser.avatar ?? undefined
-            token.phone = refreshedUser.phone ?? undefined
-            console.log('✅ JWT token refreshed for:', refreshedUser.email)
+            token.avatar = refreshedUser.avatar || undefined
+            token.phone = refreshedUser.phone || undefined
+            
+            console.log('✅ JWT token refreshed successfully:', {
+              id: refreshedUser.id,
+              email: refreshedUser.email,
+              role: refreshedUser.role,
+              refreshTime: new Date().toISOString()
+            })
+          } else {
+            console.error('❌ User not found during token refresh:', token.id)
           }
         } catch (error) {
-          console.error('❌ Error refreshing user data:', error)
+          console.error('❌ Error refreshing JWT token:', error)
         }
       }
+
+      // Session update trigger
+      if (trigger === 'update' && session) {
+        console.log('🔄 Updating JWT token from session data')
+        // Update token with any session changes
+        if (session.user) {
+          token.name = session.user.name || token.name
+          token.avatar = session.user.avatar || token.avatar
+          token.phone = session.user.phone || token.phone
+        }
+      }
+
+      console.log('🎯 JWT token finalized:', {
+        id: token.id,
+        email: token.email,
+        role: token.role,
+        hasAvatar: !!token.avatar,
+        hasPhone: !!token.phone,
+        sub: token.sub,
+        iat: token.iat,
+        exp: token.exp
+      })
 
       return token
     },
@@ -231,29 +283,45 @@ export const authOptions: NextAuthOptions = {
         hasToken: !!token,
         hasUser: !!(session?.user),
         tokenId: token?.id,
-        tokenEmail: token?.email
+        tokenEmail: token?.email,
+        tokenRole: token?.role
       })
 
-      if (token && session.user) {
+      if (token && session?.user) {
+        // Map token data to session with explicit type checking
         session.user.id = token.id
         session.user.role = token.role
         session.user.avatar = token.avatar
         session.user.phone = token.phone
         
-        console.log('✅ Session created successfully:', {
+        console.log('✅ Session synchronized successfully:', {
           id: session.user.id,
           email: session.user.email,
-          role: session.user.role
+          role: session.user.role,
+          hasAvatar: !!session.user.avatar,
+          hasPhone: !!session.user.phone,
+          syncTime: new Date().toISOString()
         })
       } else {
-        console.error('❌ Session creation failed:', {
+        console.error('❌ Session synchronization failed:', {
+          reason: !token ? 'No token' : !session ? 'No session' : !session.user ? 'No session.user' : 'Unknown',
           hasToken: !!token,
           hasSession: !!session,
           hasUser: !!(session?.user),
-          tokenData: token ? { id: token.id, email: token.email, role: token.role } : null,
-          sessionData: session ? { userExists: !!session.user } : null
+          tokenData: token ? { 
+            id: token.id, 
+            email: token.email, 
+            role: token.role,
+            sub: token.sub 
+          } : null,
+          sessionData: session ? { 
+            userExists: !!session.user,
+            expires: session.expires 
+          } : null,
+          timestamp: new Date().toISOString()
         })
       }
+      
       return session
     },
 
