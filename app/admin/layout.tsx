@@ -83,30 +83,85 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter()
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sessionChecked, setSessionChecked] = useState(false)
 
   useEffect(() => {
-    if (status === 'loading') return
+    console.log('🔍 Admin Layout - Session Check:', {
+      status,
+      hasSession: !!session,
+      userRole: session?.user?.role,
+      pathname,
+      timestamp: new Date().toISOString()
+    })
 
-    if (!session || session.user.role !== 'ADMIN') {
-      router.push('/auth/login')
+    // Wait for session to be determined (not loading)
+    if (status === 'loading') {
+      console.log('⏳ Session still loading, waiting...')
       return
     }
-  }, [session, status, router])
+
+    // Mark that we've checked the session
+    setSessionChecked(true)
+
+    // Enhanced session validation with more detailed logging
+    if (!session) {
+      console.warn('❌ No session found, redirecting to login')
+      router.push('/auth/login?callbackUrl=' + encodeURIComponent(pathname))
+      return
+    }
+
+    if (!session.user) {
+      console.warn('❌ Session has no user data, redirecting to login')
+      router.push('/auth/login?callbackUrl=' + encodeURIComponent(pathname))
+      return
+    }
+
+    if (session.user.role !== 'ADMIN') {
+      console.warn('❌ User is not admin:', session.user.role)
+      router.push('/auth/login?callbackUrl=' + encodeURIComponent(pathname))
+      return
+    }
+
+    console.log('✅ Admin session validated successfully:', {
+      userId: session.user.id,
+      userEmail: session.user.email,
+      userRole: session.user.role
+    })
+  }, [session, status, router, pathname])
 
   const handleSignOut = async () => {
+    console.log('🚪 Admin logout initiated')
     await signOut({ callbackUrl: '/' })
   }
 
-  if (status === 'loading') {
+  // Show loading state while session is being determined
+  if (status === 'loading' || !sessionChecked) {
     return (
       <div className="min-h-screen bg-mf-light-gray flex items-center justify-center">
-        <LoadingSpinner size={64} text="Loading admin panel..." />
+        <div className="text-center">
+          <LoadingSpinner size={64} />
+          <p className="mt-4 text-mf-gray font-medium">
+            {status === 'loading' ? 'Loading admin panel...' : 'Validating session...'}
+          </p>
+          <p className="mt-2 text-sm text-mf-gray">
+            Session status: {status}
+          </p>
+        </div>
       </div>
     )
   }
 
-  if (!session || session.user.role !== 'ADMIN') {
-    return null
+  // Show nothing while redirecting (prevents flash of admin content)
+  if (!session || !session.user || session.user.role !== 'ADMIN') {
+    console.log('🔄 Invalid session, redirecting...')
+    return (
+      <div className="min-h-screen bg-mf-light-gray flex items-center justify-center">
+        <div className="text-center">
+          <LoadingSpinner size={48} />
+          <p className="mt-4 text-mf-gray">Redirecting to login...</p>
+        </div>
+      </div>
+    )
   }
 
   return (

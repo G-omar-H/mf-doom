@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
@@ -19,6 +19,19 @@ export default function LoginPage() {
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/admin/dashboard'
 
+  // Show message if redirected from admin panel
+  useEffect(() => {
+    const message = searchParams.get('message')
+    if (message === 'registered') {
+      toast.success('Registration successful! Please log in.')
+    }
+    
+    if (searchParams.get('callbackUrl')) {
+      console.log('🔄 Redirected to login with callback URL:', callbackUrl)
+      toast.success('Please log in to access the admin panel')
+    }
+  }, [searchParams, callbackUrl])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email || !password) {
@@ -29,8 +42,14 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      console.log('🔑 Attempting login for:', email)
-      console.log('🔄 Callback URL:', callbackUrl)
+      console.log('🔑 Login attempt:', {
+        email,
+        callbackUrl,
+        timestamp: new Date().toISOString()
+      })
+      
+      // Show loading feedback
+      const loadingToast = toast.loading('Signing in...')
       
       // Use NextAuth's built-in redirect handling for better session sync
       const result = await signIn('credentials', {
@@ -43,9 +62,12 @@ export default function LoginPage() {
       // This code will only run if redirect: false, but we're using redirect: true
       // So this is a fallback that shouldn't normally execute
       if (result?.error) {
+        toast.dismiss(loadingToast)
         console.error('❌ Login failed:', result.error)
         toast.error('Invalid credentials')
         setIsLoading(false)
+      } else {
+        console.log('✅ Login successful, NextAuth handling redirect to:', callbackUrl)
       }
     } catch (error) {
       console.error('❌ Login error:', error)

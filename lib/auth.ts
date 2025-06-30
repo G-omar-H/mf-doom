@@ -326,7 +326,11 @@ export const authOptions: NextAuthOptions = {
     },
 
     async redirect({ url, baseUrl }): Promise<string> {
-      console.log('🔄 Redirect callback:', { url, baseUrl })
+      console.log('🔄 Redirect callback triggered:', { 
+        url, 
+        baseUrl,
+        timestamp: new Date().toISOString()
+      })
       
       // Handle logout redirect
       if (url.includes('/auth/logout') || url.includes('signout')) {
@@ -334,13 +338,32 @@ export const authOptions: NextAuthOptions = {
         return baseUrl
       }
       
-      // Handle post-login redirect - check for role-based routing
-      if (url.includes('/admin/dashboard') || url.includes('callbackUrl')) {
-        console.log('🔐 Post-login redirect detected')
-        
-        // For now, always redirect to admin dashboard for successful login
-        // The client-side code will handle role-based routing
+      // Handle post-login redirect - enhanced for admin dashboard
+      if (url.includes('/admin/dashboard') || url.includes('admin')) {
+        console.log('🔐 Admin dashboard redirect detected')
         return `${baseUrl}/admin/dashboard`
+      }
+      
+      // Handle callback URL parameter
+      const urlObj = new URL(url, baseUrl)
+      const callbackUrl = urlObj.searchParams.get('callbackUrl')
+      if (callbackUrl) {
+        // Ensure callback URL is safe (same origin)
+        if (callbackUrl.startsWith('/') && !callbackUrl.startsWith('//')) {
+          console.log('📍 Using callback URL:', callbackUrl)
+          return `${baseUrl}${callbackUrl}`
+        }
+        // If callback URL is absolute, check if it's same origin
+        try {
+          const callbackUrlObj = new URL(callbackUrl)
+          const baseUrlObj = new URL(baseUrl)
+          if (callbackUrlObj.origin === baseUrlObj.origin) {
+            console.log('🏠 Same origin callback URL:', callbackUrl)
+            return callbackUrl
+          }
+        } catch (e) {
+          console.warn('⚠️ Invalid callback URL:', callbackUrl)
+        }
       }
       
       // Allows relative callback URLs
@@ -355,9 +378,9 @@ export const authOptions: NextAuthOptions = {
         return url
       }
       
-      // Default to base URL for safety
-      console.log('🏠 Default redirect to baseUrl')
-      return baseUrl
+      // Default to admin dashboard for authenticated users
+      console.log('🏠 Default redirect to admin dashboard')
+      return `${baseUrl}/admin/dashboard`
     },
 
     async signIn({ user, account, profile, email, credentials }): Promise<boolean> {
