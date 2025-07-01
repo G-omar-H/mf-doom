@@ -17,6 +17,21 @@ export const metadata: Metadata = {
   description: 'Official MF DOOM merchandise store featuring exclusive streetwear, vinyl records, and collectibles. Just remember ALL CAPS when you spell the man name.',
   keywords: ['MF DOOM', 'streetwear', 'vinyl', 'hip hop', 'merchandise', 'collectibles', 'THISMFDOOM'],
   metadataBase: new URL('https://thismfdoom.shop'),
+  icons: {
+    icon: [
+      {
+        url: '/favicon.gif',
+        type: 'image/gif',
+      },
+      {
+        url: '/icons/mfdoomcask.gif',
+        type: 'image/gif',
+        sizes: '1080x1080',
+      }
+    ],
+    shortcut: '/favicon.gif',
+    apple: '/icons/mfdoomcask.gif',
+  },
   openGraph: {
     title: 'THISMFDOOM - Premium Streetwear Collection',
     description: 'Official MF DOOM merchandise featuring exclusive streetwear, vinyl records, and collectibles.',
